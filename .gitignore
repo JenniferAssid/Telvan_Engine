@@ -2,7 +2,7 @@
 *.d
 
 # General Clutter
-/.vs
+.vs/
 
 # Compiled Object files
 *.slo

@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# General Clutter
+/.vs
+
 # Compiled Object files
 *.slo
 *.lo

@@ -39,6 +39,9 @@
     <ClInclude Include="stb_image.h">
       <Filter>Base Architecture\General</Filter>
     </ClInclude>
+    <ClInclude Include="sprite_renderer.h">
+      <Filter>Base Architecture\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag">
@@ -72,6 +75,9 @@
     </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>Base Architecture\General</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite_renderer.cpp">
+      <Filter>Base Architecture\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

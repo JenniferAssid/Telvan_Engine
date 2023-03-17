@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "resource_manager.h"
+#include "sprite_renderer.h"
 
 #include <iostream>
 
@@ -54,11 +55,22 @@ Engine::~Engine()
     glfwTerminate();
 }
 
+Sprite_Renderer* renderer;
+
 void Engine::Initialize()
 {
     deltaTime = last_frame = 0.0f;
 
-    //TODO: Add the input bindings here (or just make an initialization in Input)
+    Resource_Manager::Load_Shader("default.vert", "default.frag", nullptr, "sprite");
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),
+        static_cast<float>(this->height_), 0.0f, -1.0f, 1.0f);
+    Resource_Manager::Get_Shader("sprite").Use().Set_Integer("tex", 0);
+    Resource_Manager::Get_Shader("sprite").Set_Matrix_4("projection", projection);
+    // set render-specific controls
+    Shader tmp = Resource_Manager::Get_Shader("sprite");
+    renderer = new Sprite_Renderer(tmp);
+    // load textures
+    Resource_Manager::Load_Texture("Assets/awesomeface.png", true, "face");
 }
 
 void Engine::Process_Input()
@@ -82,4 +94,11 @@ void Engine::Update()
     Render();
 
     glfwSwapBuffers(window_);
+}
+
+void Engine::Render()
+{
+    Texture tmp = Resource_Manager::Get_Texture("face");
+    renderer->Draw_Sprite(tmp,
+        glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 }

@@ -1,15 +1,14 @@
-#version 330
+#version 330 core
 
-uniform mat4 WorldView, WorldProj, ModelTr;
+layout (location = 0) in vec4 vertex; // <pos x, pos y, texCoord x, texCoord y
 
-in vec3 position;
-in vec3 in_color;
+out vec2 texCoord;
 
-out vec4 color;
+uniform mat4 model;
+uniform mat4 projection;
 
 void main()
 {
-	gl_Position = WorldProj*WorldView*ModelTr*vec4(position,1.0);
-
-	color = vec4(in_color, 1.0);
+	texCoord = vertex.zw;
+	gl_Position = projection * model * vec4(vertex.xy, 0.0, 1.0);
 }

@@ -47,15 +47,15 @@ void Shader::Compile(const char* vertex_source,
     glCompileShader(s_vertex);
     checked_compile_errors(s_vertex, "VERTEX");
 
-    s_fragment = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(s_fragment, 1, &vertex_source, NULL);
+    s_fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(s_fragment, 1, &fragment_source, NULL);
     glCompileShader(s_fragment);
     checked_compile_errors(s_fragment, "FRAGMENT");
 
     if (geometry_source != nullptr)
     {
-        s_geometry = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(s_geometry, 1, &vertex_source, NULL);
+        s_geometry = glCreateShader(GL_GEOMETRY_SHADER);
+        glShaderSource(s_geometry, 1, &geometry_source, NULL);
         glCompileShader(s_geometry);
         checked_compile_errors(s_geometry, "GEOMETRY");
     }
@@ -64,6 +64,7 @@ void Shader::Compile(const char* vertex_source,
     glAttachShader(ID, s_vertex);
     glAttachShader(ID, s_fragment);
     if (geometry_source != nullptr) glAttachShader(ID, s_geometry);
+    glLinkProgram(ID);
     checked_compile_errors(ID, "PROGRAM");
 
     glDeleteShader(s_vertex);

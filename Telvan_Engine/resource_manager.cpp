@@ -24,7 +24,7 @@ Shader Resource_Manager::load_shader_from_file(const char* s_vertex,
         std::stringstream ss_vertex, ss_fragement;
 
         ss_vertex << vertex_shader.rdbuf();
-        ss_fragement << vertex_shader.rdbuf();
+        ss_fragement << fragment_shader.rdbuf();
 
         vertex_shader.close();
         fragment_shader.close();

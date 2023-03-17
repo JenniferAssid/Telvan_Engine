@@ -30,7 +30,7 @@ public:
     void Initialize();
     void Process_Input();
     void Update();
-    void Render() {}
+    void Render();
 
     inline bool Should_Engine_Shutdown() { return glfwWindowShouldClose(window_); }
 };

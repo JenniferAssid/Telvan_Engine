@@ -54,6 +54,9 @@
     <ClInclude Include="transform.h">
       <Filter>Base Architecture\Components</Filter>
     </ClInclude>
+    <ClInclude Include="serialize.h">
+      <Filter>Base Architecture\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag">
@@ -96,6 +99,12 @@
     </ClCompile>
     <ClCompile Include="entity.cpp">
       <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClCompile>
+    <ClCompile Include="serialize.cpp">
+      <Filter>Base Architecture\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="transform.cpp">
+      <Filter>Base Architecture\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

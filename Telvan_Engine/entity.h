@@ -5,11 +5,14 @@
 #include <vector>
 
 #include "components.h"
+#include "serialize.h"
+
 
 class Entity
 {
 private:
     std::string name_;
+    std::string filepath_;
     bool destroy_;
     bool instantiated_;
     std::vector<class Component*> components_;
@@ -31,6 +34,10 @@ public:
     void Update(float dT);
     void Post_Update(float dT);
     void Render();
+
+    // Serialization Functions
+    void Write_To();
+    void Read_From();
 
     // General Getter Functions
     inline Entity* Get_Parent() const { return parent_; }

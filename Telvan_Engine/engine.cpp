@@ -98,16 +98,18 @@ void Engine::Initialize()
 {
     deltaTime = last_frame = 0.0f;
     entity = new Entity("Entity - Test");
+    entity->Read_From();
     transform = entity->Get_Component<Transform>();
     transform->Set_Translation(glm::vec2(200.0f, 200.0f));
     transform->Set_Scale(glm::vec2(300.0f, 400.0f));
     transform->Set_Rotation(45.0f);
+    entity->Write_To();
 
     input = Input::Get_Instance();
-    input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Press);
-    input->Add_Binding(GLFW_KEY_S, Move_Down, Input::Callback_Type::cb_Press);
-    input->Add_Binding(GLFW_KEY_A, Move_Left, Input::Callback_Type::cb_Press);
-    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Press);
+    input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Down);
+    input->Add_Binding(GLFW_KEY_S, Move_Down, Input::Callback_Type::cb_Down);
+    input->Add_Binding(GLFW_KEY_A, Move_Left, Input::Callback_Type::cb_Down);
+    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);
 
     Resource_Manager::Load_Shader("default.vert", "default.frag", nullptr, "sprite");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),

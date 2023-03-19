@@ -30,7 +30,7 @@ void Input::Handle_Events(float dT)
         else if (info.next == false && info.current == true && info.on_release != nullptr)
             info.on_release(dT);
 
-        info.current = info.next;
+        bindings_[key].current = info.next;
     }
 }
 

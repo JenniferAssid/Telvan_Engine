@@ -2,6 +2,7 @@
 #define TRANSFORM_CLASS_H
 
 #include <glm/glm.hpp>
+#include <rapidjson/prettywriter.h>
 
 #include "components.h"
 
@@ -21,6 +22,9 @@ public:
     {}
     // TODO: Make copy constructor
     ~Transform() {}
+
+    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;
+    void Read_From(rapidjson::Document& document) override;
 
     inline glm::vec2 Get_Translation() const { return glm::vec2(translation_.x, translation_.y); }
     inline float Get_Z_Sorting_Value() const { return translation_.z; }

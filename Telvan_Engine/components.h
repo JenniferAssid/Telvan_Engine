@@ -2,6 +2,7 @@
 #define COMPONENT_CLASS_H
 
 #include "entity.h"
+#include "serialize.h"
 
 class Component
 {
@@ -19,6 +20,9 @@ public:
     inline virtual void Render() {}
     inline virtual void Stop() {}
     inline virtual void Delete() {}
+
+    inline virtual void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) {}
+    inline virtual void Read_From(rapidjson::Document& document) {}
 };
 
 #endif

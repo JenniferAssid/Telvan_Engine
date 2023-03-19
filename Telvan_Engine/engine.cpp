@@ -1,8 +1,14 @@
 #include "engine.h"
 #include "resource_manager.h"
 #include "sprite_renderer.h"
+#include "error_logging.h"
+
+#include "entity.h"
+#include "transform.h"
 
 #include <iostream>
+
+Engine* Engine::instance_ = nullptr;
 
 Engine::Engine(unsigned int width,
     unsigned height)
@@ -27,7 +33,10 @@ Engine::Engine(unsigned int width,
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "| ERROR::Engine: Failed to initailze GLAD\n";
+        Error_Logging::Get_Instance()->Record_Message("Failed to initialize GLAD",
+            Error_Logging::Message_Level::ot_Error,
+            "Engine",
+            "Engine");
         abort();
     }
 
@@ -56,10 +65,49 @@ Engine::~Engine()
 }
 
 Sprite_Renderer* renderer;
+Entity* entity;
+Transform* transform;
+Input* input;
+
+void Move_Up(float dT)
+{
+    glm::vec2 pos = transform->Get_Translation();
+    pos.y -= 5.0f;
+    transform->Set_Translation(pos);
+}
+void Move_Down(float dT)
+{
+    glm::vec2 pos = transform->Get_Translation();
+    pos.y += 5.0f;
+    transform->Set_Translation(pos);
+}
+void Move_Left(float dT)
+{
+    glm::vec2 pos = transform->Get_Translation();
+    pos.x -= 5.0f;
+    transform->Set_Translation(pos);
+}
+void Move_Right(float dT)
+{
+    glm::vec2 pos = transform->Get_Translation();
+    pos.x += 5.0f;
+    transform->Set_Translation(pos);
+}
 
 void Engine::Initialize()
 {
     deltaTime = last_frame = 0.0f;
+    entity = new Entity("Entity - Test");
+    transform = entity->Get_Component<Transform>();
+    transform->Set_Translation(glm::vec2(200.0f, 200.0f));
+    transform->Set_Scale(glm::vec2(300.0f, 400.0f));
+    transform->Set_Rotation(45.0f);
+
+    input = Input::Get_Instance();
+    input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Press);
+    input->Add_Binding(GLFW_KEY_S, Move_Down, Input::Callback_Type::cb_Press);
+    input->Add_Binding(GLFW_KEY_A, Move_Left, Input::Callback_Type::cb_Press);
+    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Press);
 
     Resource_Manager::Load_Shader("default.vert", "default.frag", nullptr, "sprite");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),
@@ -100,5 +148,5 @@ void Engine::Render()
 {
     Texture tmp = Resource_Manager::Get_Texture("face");
     renderer->Draw_Sprite(tmp,
-        glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        transform->Get_Translation(), transform->Get_Scale(), transform->Get_Rotation(), glm::vec3(0.0f, 1.0f, 0.0f));
 }

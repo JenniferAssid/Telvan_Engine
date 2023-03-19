@@ -1,8 +1,9 @@
 #include "shader.h"
+#include "error_logging.h"
 
 #include <iostream>
 
-void Shader::checked_compile_errors(unsigned int object, std::string type)
+void Shader::checked_compile_errors(unsigned int object, std::string type, std::string function_name)
 {
     int success;
     char info_buffer[1024];
@@ -12,9 +13,15 @@ void Shader::checked_compile_errors(unsigned int object, std::string type)
         if (!success)
         {
             glGetShaderInfoLog(object, 1024, NULL, info_buffer);
-            std::cout << "| ERROR::Shader: Compile-time error: Type: " << type << "\n"
+            Error_Logging::Get_Instance()->Record_Message(Error_Logging::Format_Output("Compile-time error (type %s):\n%s",
+                                                            type.c_str(), 
+                                                            info_buffer),
+                Error_Logging::Message_Level::ot_Error,
+                "Shader",
+                function_name);
+            /*std::cout << "| ERROR::Shader: Compile-time error: Type: " << type << "\n"
                 << info_buffer << "\n -- --------------------------------------------------- -- "
-                << std::endl;
+                << std::endl;*/
         }
     }
     else
@@ -23,9 +30,15 @@ void Shader::checked_compile_errors(unsigned int object, std::string type)
         if (!success)
         {
             glGetProgramInfoLog(object, 1024, NULL, info_buffer);
-            std::cout << "| ERROR::Shader: Link-time error: Type: " << type << "\n"
+            Error_Logging::Get_Instance()->Record_Message(Error_Logging::Format_Output("Link-time error (type %s):\n%s",
+                                                            type.c_str(),
+                                                            info_buffer),
+                Error_Logging::Message_Level::ot_Error,
+                "Shader",
+                function_name);
+            /*std::cout << "| ERROR::Shader: Link-time error: Type: " << type << "\n"
                 << info_buffer << "\n -- --------------------------------------------------- -- "
-                << std::endl;
+                << std::endl;*/
         }
     }
 }
@@ -45,19 +58,19 @@ void Shader::Compile(const char* vertex_source,
     s_vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(s_vertex, 1, &vertex_source, NULL);
     glCompileShader(s_vertex);
-    checked_compile_errors(s_vertex, "VERTEX");
+    checked_compile_errors(s_vertex, "VERTEX", "Compile");
 
     s_fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(s_fragment, 1, &fragment_source, NULL);
     glCompileShader(s_fragment);
-    checked_compile_errors(s_fragment, "FRAGMENT");
+    checked_compile_errors(s_fragment, "FRAGMENT", "Compile");
 
     if (geometry_source != nullptr)
     {
         s_geometry = glCreateShader(GL_GEOMETRY_SHADER);
         glShaderSource(s_geometry, 1, &geometry_source, NULL);
         glCompileShader(s_geometry);
-        checked_compile_errors(s_geometry, "GEOMETRY");
+        checked_compile_errors(s_geometry, "GEOMETRY", "Compile");
     }
 
     ID = glCreateProgram();
@@ -65,7 +78,7 @@ void Shader::Compile(const char* vertex_source,
     glAttachShader(ID, s_fragment);
     if (geometry_source != nullptr) glAttachShader(ID, s_geometry);
     glLinkProgram(ID);
-    checked_compile_errors(ID, "PROGRAM");
+    checked_compile_errors(ID, "PROGRAM", "Compile");
 
     glDeleteShader(s_vertex);
     glDeleteShader(s_fragment);

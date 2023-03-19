@@ -16,6 +16,12 @@
     <Filter Include="Base Architecture\Resource_Managment">
       <UniqueIdentifier>{4074384f-9a4b-4a1f-a005-5b56428c7036}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Base Architecture\Systems">
+      <UniqueIdentifier>{ed5bd222-c917-4a9c-8e8f-87058f1c3245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base Architecture\Components">
+      <UniqueIdentifier>{fc0aeb8d-6b9b-4e20-9e46-ad180e594fc9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h">
@@ -41,6 +47,12 @@
     </ClInclude>
     <ClInclude Include="sprite_renderer.h">
       <Filter>Base Architecture\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="error_logging.h">
+      <Filter>Base Architecture\General</Filter>
+    </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Base Architecture\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +90,12 @@
     </ClCompile>
     <ClCompile Include="sprite_renderer.cpp">
       <Filter>Base Architecture\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="error_logging.cpp">
+      <Filter>Base Architecture\General</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

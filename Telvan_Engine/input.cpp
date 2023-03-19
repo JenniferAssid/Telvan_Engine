@@ -1,5 +1,7 @@
 #include "input.h"
 
+Input* Input::instance_ = nullptr;
+
 Input* Input::Get_Instance()
 {
     if (instance_ == nullptr)
@@ -12,10 +14,9 @@ Input* Input::Get_Instance()
 void Input::Handle_Events(float dT)
 {
     int key;
-    while (events_.empty() == false)
+    for (unsigned i = 0; i < events_.size(); i++)
     {
-        key = events_.back();
-        events_.pop_back();
+        key = events_[i];
 
         Input_Information info = bindings_[key];
 
@@ -28,6 +29,8 @@ void Input::Handle_Events(float dT)
         // Kye has been released
         else if (info.next == false && info.current == true && info.on_release != nullptr)
             info.on_release(dT);
+
+        info.current = info.next;
     }
 }
 
@@ -71,9 +74,6 @@ bool Input::Is_Binded(int key,
         break;
     }
 
-    // Add the key to the events that will be updated this cycle
-    events_.push_back(key);
-
     return true;
 }
 
@@ -85,15 +85,22 @@ void Input::Internal_Keyboard_Callback(GLFWwindow* window,
 {
     Input* input = Input::Get_Instance();
 
-    if (input->bindings_.find(key) == bindings_.end()) return;
+    if (input->bindings_.find(key) == bindings_.end()) 
+        return;
 
     if (action == GLFW_PRESS)
     {
         bindings_[key].next = true;
+        events_.push_back(key);
     }
     else if (action == GLFW_RELEASE)
     {
         bindings_[key].next = false;
+
+        auto var = std::find(events_.begin(), events_.end(), key);
+        if (var == events_.end()) return;
+
+        events_.erase(events_.begin() + (var - events_.begin()));
     }
 }
 

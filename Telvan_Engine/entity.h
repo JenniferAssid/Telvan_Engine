@@ -4,46 +4,60 @@
 #include <string>
 #include <vector>
 
+#include "components.h"
 
 class Entity
 {
 private:
     std::string name_;
-    //std::vector<Component*> components_;
-
     bool destroy_;
+    bool instantiated_;
+    std::vector<class Component*> components_;
+
+    Entity* parent_;
+    std::vector<Entity*> children_;
 
 public:
-    inline Entity(std::string name) : name_(name) {}
+    // Base Functions
+    Entity(std::string name);
+    // TODO: Make a copy constructor
+    ~Entity();
 
-    /*void AddComponent(Component* component)
-    {
-        component->SetParent(this);
-        component->Start();
+    // TODO: Serialize/Deserialize entity
 
-        components_.push_back(component);
-    }*/
+    // Logic Functions
+    void Start();
+    void Pre_Update(float dT);
+    void Update(float dT);
+    void Post_Update(float dT);
+    void Render();
 
-    /*void Update(float dT)
-    {
-        for (int i = 0; i < components_.size(); i++)
-        {
-            components_[i]->Update(dT);
-        }
-    }
+    // General Getter Functions
+    inline Entity* Get_Parent() const { return parent_; }
+    inline std::string Get_Name() const { return name_; }
+    inline bool Is_Destroyed() const { return destroy_; }
 
-    inline void SetToDestroy() { destroy_ = true; }
+    // General Setter Functions
+    void Set_Parent(Entity* parent);
+    inline void Set_Name(std::string name) { name_ = name; }
+    inline void Destroy() { destroy_ = true; }
 
-    ~Entity()
-    {
-        for (int i = 0; i < components_.size(); i++)
-        {
-            components_[i]->Delete();
-            components_[i] = nullptr;
-        }
+    // Component Functions
+    template <class T>
+    T* Add_Component();
+    template <class T>
+    T* Get_Component() const;
+    template <class T>
+    void Remove_Component(T* component);
 
-        components_.clear();
-    }*/
+    inline std::vector<Component*>& Get_Components() { return components_; }
+
+    // Children Functions
+    void Add_Child(Entity* child);
+    void Remove_Child(Entity* child);
+    Entity* Find_Child(Entity* child);
+
+    inline std::vector<Entity*>& Get_Children() { return children_; }
 };
 
 #endif

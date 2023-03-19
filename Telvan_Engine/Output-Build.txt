@@ -1,0 +1,4 @@
+﻿Build started...
+1>------ Build started: Project: Telvan_Engine, Configuration: Debug x64 ------
+1>Telvan_Engine.vcxproj -> D:\GitHub_Repositiories\Telvan_Engine\Telvan_Engine\x64\Debug\Telvan_Engine.exe
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========

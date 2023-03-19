@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClInclude Include="components.h" />
     <ClInclude Include="entity.h" />
+    <ClInclude Include="error_logging.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="sprite_renderer.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />
@@ -34,6 +36,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine.cpp" />
+    <ClCompile Include="entity.cpp" />
+    <ClCompile Include="error_logging.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />

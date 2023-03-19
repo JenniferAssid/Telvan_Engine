@@ -10,7 +10,7 @@
 class Shader
 {
 private:
-    void checked_compile_errors(unsigned int object, std::string type);
+    void checked_compile_errors(unsigned int object, std::string type, std::string function_name);
 
 public:
     unsigned int ID;

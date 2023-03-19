@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "stb_image.h"
+#include "error_logging.h"
 
 std::map<std::string, Texture> Resource_Manager::Textures;
 std::map<std::string, Shader> Resource_Manager::Shaders;
@@ -46,7 +47,11 @@ Shader Resource_Manager::load_shader_from_file(const char* s_vertex,
     }
     catch (std::exception e)
     {
-        std::cout << "| ERROR::Shader: Failed to read shader files" << std::endl;
+        Error_Logging::Get_Instance()->Record_Message("Failed to read shader files",
+            Error_Logging::Message_Level::ot_Warning,
+            "Resource_Manager",
+            "load_shader_from_file");
+        /*std::cout << "| ERROR::Shader: Failed to read shader files" << std::endl;*/
     }
 
     const char* code_vertex = vertex.c_str();

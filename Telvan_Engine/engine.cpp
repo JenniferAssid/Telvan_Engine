@@ -1,5 +1,5 @@
 #include "engine.h"
-#include "resource_manager.h"
+#include "shader_manager.h"
 #include "sprite_renderer.h"
 #include "error_logging.h"
 
@@ -59,7 +59,8 @@ Engine* Engine::Get_Instance()
 
 Engine::~Engine()
 {
-    Resource_Manager::Clear();
+    Texture_Manager::Get_Instance()->Clear();
+    Shader_Manager::Get_Instance()->Clear();
 
     glfwTerminate();
 }
@@ -103,14 +104,17 @@ void Engine::Initialize()
     input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Down);
     input->Add_Binding(GLFW_KEY_S, Move_Down, Input::Callback_Type::cb_Down);
     input->Add_Binding(GLFW_KEY_A, Move_Left, Input::Callback_Type::cb_Down);
-    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);    
+    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);
 
-    Shader shader = Resource_Manager::Load_Shader("default.vert", "default.frag", nullptr, "sprite");
+    Shader_Manager* shader_manager = Shader_Manager::Get_Instance();
+
+    Shader shader = shader_manager->Load_Shader("Assets/Shaders/default.vert", "Assets/Shaders/default.frag", nullptr, "sprite");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),
         static_cast<float>(this->height_), 0.0f, -1.0f, 1.0f);
     shader.Use().Set_Integer("tex", 0);
     shader.Set_Matrix_4("projection", projection);
-    Texture texture = Resource_Manager::Load_Texture("Assets/awesomeface.png", true, "face");
+    /*Texture texture = Texture_Manager::Get_Instance()->Load_Texture("Assets/Textures/awesomeface.png", true, "face");*/
+    Texture_Manager::Get_Instance()->Initialize();
 
     entity->Read_From();
 
@@ -145,7 +149,6 @@ void Engine::Update()
 
 void Engine::Render()
 {
-    Texture tmp = Resource_Manager::Get_Texture("face");
     /*renderer->Draw_Sprite(tmp,
         transform->Get_Translation(), transform->Get_Scale(), transform->Get_Rotation(), glm::vec3(0.0f, 1.0f, 0.0f));*/
     entity->Render();

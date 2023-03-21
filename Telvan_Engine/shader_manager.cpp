@@ -1,16 +1,12 @@
-#include "resource_manager.h"
-
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
-#include "stb_image.h"
+#include "shader_manager.h"
 #include "error_logging.h"
 
-std::map<std::string, Texture> Resource_Manager::Textures;
-std::map<std::string, Shader> Resource_Manager::Shaders;
+#include <sstream>
 
-Shader Resource_Manager::load_shader_from_file(const char* s_vertex,
+std::map<std::string, Shader> Shader_Manager::shaders_;
+Shader_Manager* Shader_Manager::instance_;
+
+Shader Shader_Manager::load_shader_from_file(const char* s_vertex,
     const char* s_fragment,
     const char* s_geometry)
 {
@@ -32,7 +28,7 @@ Shader Resource_Manager::load_shader_from_file(const char* s_vertex,
 
         vertex = ss_vertex.str();
         fragment = ss_fragement.str();
-        
+
         if (s_geometry != nullptr)
         {
             std::ifstream geometry_shader(s_vertex);
@@ -63,62 +59,33 @@ Shader Resource_Manager::load_shader_from_file(const char* s_vertex,
     return shader;
 }
 
-Texture Resource_Manager::load_texture_from_file(const char* file,
-    bool alpha)
+Shader_Manager* Shader_Manager::Get_Instance()
 {
-    Texture texture;
-    if (alpha)
+    if (instance_ == nullptr)
     {
-        texture.Internal_Format = GL_RGBA;
-        texture.Image_Format = GL_RGBA;
+        instance_ = new Shader_Manager();
     }
-
-    int width, height, nr_channels;
-    unsigned char* data = stbi_load(file, &width, &height, &nr_channels, 0);
-    
-    texture.Generate(width, height, data);
-
-    stbi_image_free(data);
-
-    return texture;
+    return instance_;
 }
 
-//TODO: Add error checking for the key accessing on the maps
-Shader Resource_Manager::Load_Shader(const char* s_vertex,
+Shader Shader_Manager::Load_Shader(const char* s_vertex,
     const char* s_fragment,
     const char* s_geometry,
     std::string name)
 {
     Shader tmp = load_shader_from_file(s_vertex, s_fragment, s_geometry);
     tmp.Name = name;
-    Shaders[name] = tmp;
-    return Shaders[name];
+    shaders_[name] = tmp;
+    return shaders_[name];
 }
 
-Shader Resource_Manager::Get_Shader(std::string name)
+Shader Shader_Manager::Get_Shader(std::string name)
 {
-    return Shaders[name];
+    return shaders_[name];
 }
 
-Texture Resource_Manager::Load_Texture(const char* file,
-    bool alpha,
-    std::string name)
+void Shader_Manager::Clear()
 {
-    Texture tmp = load_texture_from_file(file, alpha);
-    tmp.Name = name;
-    Textures[name] = tmp;
-    return Textures[name];
-}
-
-Texture Resource_Manager::Get_Texture(std::string name)
-{
-    return Textures[name];
-}
-
-void Resource_Manager::Clear()
-{
-    for (auto iter : Shaders)
-        glDeleteProgram(iter.second.ID);
-    for (auto iter : Textures)
+    for (auto iter : shaders_)
         glDeleteTextures(1, &iter.second.ID);
 }

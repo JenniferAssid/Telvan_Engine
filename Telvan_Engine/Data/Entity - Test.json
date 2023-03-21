@@ -14,6 +14,6 @@
     },
     "sprite_renderer": {
         "shader": "sprite",
-        "texture": "face"
+        "texture": "tree"
     }
 }

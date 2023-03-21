@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef ERROR_LOGGING_CLASS_H
 #define ERROR_LOGGING_CLASS_H
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef ENGINE_CLASS_H
 #define ENGINE_CLASS_H
 

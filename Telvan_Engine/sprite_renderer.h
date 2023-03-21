@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef SPRITE_RENDERER_H
 #define SPRITE_RENDERER_H
 
@@ -5,7 +7,8 @@
 #include <rapidjson/prettywriter.h>
 
 #include "components.h"
-#include "resource_manager.h"
+#include "texture_manager.h"
+#include "shader_manager.h"
 
 class Sprite_Renderer : Component
 {

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef COMPONENT_CLASS_H
 #define COMPONENT_CLASS_H
 

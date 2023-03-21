@@ -1,4 +1,5 @@
 #include "sprite_renderer.h"
+#include "shader_manager.h"
 #include "entity.h"
 #include "transform.h"
 #include "error_logging.h"
@@ -115,7 +116,7 @@ void Sprite_Renderer::Read_From(rapidjson::Document& document)
     {
         const rapidjson::Value& shader = document["sprite_renderer"]["shader"];
 
-        shader_ = Resource_Manager::Get_Shader(shader.GetString());
+        shader_ = Shader_Manager::Get_Instance()->Get_Shader(shader.GetString());
     }
 
     if (document["sprite_renderer"].GetObject().HasMember("texture") &&
@@ -123,6 +124,6 @@ void Sprite_Renderer::Read_From(rapidjson::Document& document)
     {
         const rapidjson::Value& texture = document["sprite_renderer"]["texture"];
 
-        texture_ = Resource_Manager::Get_Texture(texture.GetString());
+        texture_ = Texture_Manager::Get_Instance()->Get_Texture(texture.GetString());
     }
 }

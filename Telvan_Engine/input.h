@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef INPUT_CLASS_H
 #define INPUT_CLASS_H
 

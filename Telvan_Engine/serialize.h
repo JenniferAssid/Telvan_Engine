@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef SERIALIZE_CLASS_H
 #define SERIALIZE_CLASS_H
 

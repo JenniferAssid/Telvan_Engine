@@ -3,6 +3,8 @@
 
 #include <sstream>
 
+
+
 std::map<std::string, Shader> Shader_Manager::shaders_;
 Shader_Manager* Shader_Manager::instance_;
 
@@ -59,6 +61,21 @@ Shader Shader_Manager::load_shader_from_file(const char* s_vertex,
     return shader;
 }
 
+void Shader_Manager::open_files(std::string path, 
+    std::vector<std::filesystem::path>& vertex,
+    std::vector<std::filesystem::path>& fragment)
+{
+    for (const auto& entry : std::filesystem::directory_iterator(path))
+    {
+        if (entry.is_directory() == true) open_files(entry.path().string() + "/", vertex, fragment);
+        else
+        {
+            if (entry.path().extension() == ".vert") vertex.push_back(entry.path());
+            else if (entry.path().extension() == ".frag") fragment.push_back(entry.path());
+        }
+    }
+}
+
 Shader_Manager* Shader_Manager::Get_Instance()
 {
     if (instance_ == nullptr)
@@ -66,6 +83,26 @@ Shader_Manager* Shader_Manager::Get_Instance()
         instance_ = new Shader_Manager();
     }
     return instance_;
+}
+
+void Shader_Manager::Initialize()
+{
+    std::vector<std::filesystem::path> vertex_shaders;
+    std::vector<std::filesystem::path> fragment_shaders;
+
+    std::string path = "Assets/Shaders/";
+    open_files(path, vertex_shaders, fragment_shaders);
+
+    unsigned int vertex_step = 0;
+    unsigned int fragment_step = 0;
+
+    for (unsigned int i = 0; i < vertex_shaders.size(); i++)
+    {
+        Load_Shader(vertex_shaders[i].string().c_str(),
+            fragment_shaders[i].string().c_str(),
+            nullptr,
+            vertex_shaders[i].stem().string().c_str());
+    }
 }
 
 Shader Shader_Manager::Load_Shader(const char* s_vertex,

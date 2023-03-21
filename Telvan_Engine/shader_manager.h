@@ -5,6 +5,8 @@
 
 #include <map>
 #include <string>
+#include <vector>
+#include <filesystem>
 
 #include "shader.h"
 
@@ -20,8 +22,14 @@ private:
         const char* s_fragment,
         const char* s_geometry = nullptr);
 
+    void open_files(std::string path,
+        std::vector<std::filesystem::path>& vertex,
+        std::vector<std::filesystem::path>& fragment);
+
 public:
     static Shader_Manager* Get_Instance();
+
+    void Initialize();
 
     static Shader Load_Shader(const char* s_vertex,
         const char* s_fragment,

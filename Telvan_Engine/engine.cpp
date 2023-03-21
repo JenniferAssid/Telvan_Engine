@@ -7,6 +7,7 @@
 #include "scene.h"
 #include "entity.h"
 #include "transform.h"
+#include "input_controller.h"
 
 #include <iostream>
 
@@ -104,10 +105,10 @@ void Engine::Initialize()
     /*entity = new Entity("Entity - Test");*/
     
     input = Input::Get_Instance();
-    input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Down);
+    /*input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Down);
     input->Add_Binding(GLFW_KEY_S, Move_Down, Input::Callback_Type::cb_Down);
     input->Add_Binding(GLFW_KEY_A, Move_Left, Input::Callback_Type::cb_Down);
-    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);
+    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);*/
 
     Shader_Manager* shader_manager = Shader_Manager::Get_Instance();
 
@@ -121,18 +122,19 @@ void Engine::Initialize()
 
     Prefab_Manager::Get_Instance()->Initialize();
 
-    Scene* scene = new Scene("Test_Scene");
-    scene->Load();
+    /*Scene* scene = new Scene("Test_Scene");
+    scene->Load();*/
 
-    /*entity = Prefab_Manager::Get_Instance()->Get_Prefab("Entity - Test");
+    entity = Prefab_Manager::Get_Instance()->Get_Prefab("Entity - Test");
 
     test = new Entity(*entity);
     test->Set_Name("Clone");
+    test->Remove_Component(Component_Type::ct_Input_Controller);
 
     Entity_Manager::Get_Instance()->Add_Entity(entity);
     Entity_Manager::Get_Instance()->Add_Entity(test);
 
-    transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
+    /*transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
     renderer = entity->Get_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer);
 
     std::ofstream ofs("./Data/Scenes/Test_Scene.json");
@@ -153,11 +155,8 @@ void Engine::Initialize()
     ofs.clear();
     ofs << sb.GetString();
     ofs.close();*/
-}
 
-void Engine::Process_Input()
-{
-    Input::Get_Instance()->Handle_Events(deltaTime);
+    Entity_Manager::Get_Instance()->Start();
 }
 
 void Engine::Update()
@@ -167,7 +166,6 @@ void Engine::Update()
     last_frame = current_frame;
     glfwPollEvents();
 
-    Process_Input();
 
     // Update game state
     Entity_Manager::Get_Instance()->Update(deltaTime);

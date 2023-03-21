@@ -15,5 +15,6 @@
     "sprite_renderer": {
         "shader": "sprite",
         "texture": "tree"
-    }
+    },
+    "input_controller": {}
 }

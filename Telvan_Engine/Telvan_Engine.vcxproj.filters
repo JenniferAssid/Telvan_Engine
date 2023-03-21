@@ -72,6 +72,9 @@
     <ClInclude Include="entity_manager.h">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
+    <ClInclude Include="input_controller.h">
+      <Filter>Base Architecture\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag">
@@ -132,6 +135,9 @@
     </ClCompile>
     <ClCompile Include="scene.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="input_controller.cpp">
+      <Filter>Base Architecture\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

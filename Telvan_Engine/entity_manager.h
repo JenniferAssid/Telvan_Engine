@@ -18,7 +18,7 @@ public:
     static Entity_Manager* Get_Instance();
 
     void Start();
-
+    
     void Update(float dT);
     void Render();
 

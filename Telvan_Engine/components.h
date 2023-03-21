@@ -11,7 +11,8 @@ class Entity;
 enum class Component_Type
 {
     ct_Transform = 0,
-    ct_Sprite_Renderer
+    ct_Sprite_Renderer,
+    ct_Input_Controller
 };
 
 class Component

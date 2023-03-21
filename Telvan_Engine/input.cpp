@@ -11,29 +11,6 @@ Input* Input::Get_Instance()
     return instance_;
 }
 
-void Input::Handle_Events(float dT)
-{
-    int key;
-    for (unsigned i = 0; i < events_.size(); i++)
-    {
-        key = events_[i];
-
-        Input_Information info = bindings_[key];
-
-        // Key has just been pressed
-        if (info.next == true && info.current == false && info.on_press != nullptr)
-            info.on_press(dT);
-        // Key is being held down
-        else if (info.next == true && info.current == true && info.on_down != nullptr)
-            info.on_down(dT);
-        // Kye has been released
-        else if (info.next == false && info.current == true && info.on_release != nullptr)
-            info.on_release(dT);
-
-        bindings_[key].current = info.next;
-    }
-}
-
 void Input::Add_Binding(int key,
     const Callback& function,
     Callback_Type type)
@@ -48,6 +25,25 @@ void Input::Add_Binding(int key,
         break;
     case Input::Callback_Type::cb_Release:
         bindings_[key].on_release = function;
+        break;
+    default:
+        break;
+    }
+}
+
+void Input::Remove_Binding(int key,
+    Callback_Type type)
+{
+    switch (type)
+    {
+    case Input::Callback_Type::cb_Press:
+        bindings_[key].on_press = nullptr;
+        break;
+    case Input::Callback_Type::cb_Down:
+        bindings_[key].on_down = nullptr;
+        break;
+    case Input::Callback_Type::cb_Release:
+        bindings_[key].on_release = nullptr;
         break;
     default:
         break;

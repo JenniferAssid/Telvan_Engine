@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "transform.h"
 #include "sprite_renderer.h"
+#include "input_controller.h"
 #include "error_logging.h"
 
 // Base Functions
@@ -120,11 +121,9 @@ void Entity::Write_To(bool overwrite_prefab,
         return;
     }
 
-    if (overwrite_prefab == false) return;
-
     unsigned int counter = 0;
 
-    while (std::filesystem::exists(filepath_))
+    while (std::filesystem::exists(filepath_) && overwrite_prefab == false)
     {
         filepath_ = "./Data/Prefabs/" + name_ + "_" + std::to_string(counter) + ".json";
     }
@@ -186,6 +185,10 @@ void Entity::Read_From(std::string filepath)
     if (serialize->document_.HasMember("sprite_renderer"))
     {
         Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Read_From(writer);
+    }
+    if (serialize->document_.HasMember("input_controller"))
+    {
+        Add_Component<Input_Controller>(Component_Type::ct_Input_Controller)->Read_From(writer);
     }
 }
 

@@ -25,6 +25,7 @@
     <ClInclude Include="error_logging.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="engine.h" />
+    <ClInclude Include="input_controller.h" />
     <ClInclude Include="prefab_manager.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="serialize.h" />
@@ -46,6 +47,7 @@
     <ClCompile Include="error_logging.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="input_controller.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="prefab_manager.cpp" />
     <ClCompile Include="scene.cpp" />

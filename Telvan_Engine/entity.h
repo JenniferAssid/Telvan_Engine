@@ -86,16 +86,18 @@ public:
         return nullptr;
     }
 
-    template <class T>
-    inline void Remove_Component(T* component)
+    inline void Remove_Component(Component_Type type)
     {
-        auto result = std::find(components_.begin(), components_.end(), component);
+        int index = 0;
+        for (index; index < components_.size(); index++)
+        {
+            if (components_[index]->Get_Type() == type)
+                break;
+        }
 
-        if (result == components_.end()) return;
+        if (index >= components_.size()) return;
 
-        int index = result - components_.begin();
-
-        (*result)->Stop();
+        components_[index]->Stop();
 
         components_.erase(components_.begin() + index);
     }

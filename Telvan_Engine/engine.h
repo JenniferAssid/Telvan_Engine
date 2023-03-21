@@ -30,7 +30,6 @@ public:
     ~Engine();
 
     void Initialize();
-    void Process_Input();
     void Update();
     void Render();
 

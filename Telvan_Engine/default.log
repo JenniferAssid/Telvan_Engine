@@ -1,2 +1,2 @@
 [info] Initialize::Error Logging: Successfully opened "default.log"
-[info] Serialize::Serialize: Successfully parsed file "./Data/Entity - Test.json"
+[info] Serialize::Serialize: Successfully parsed file "Data/Prefabs/Entity - Test.json"

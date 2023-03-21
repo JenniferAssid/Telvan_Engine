@@ -1,0 +1,8 @@
+{
+    "Entity - Test": {
+        "prefab": "Data/Prefabs/Entity - Test.json"
+    },
+    "Clone": {
+        "prefab": "Data/Prefabs/Entity - Test.json"
+    }
+}

@@ -24,6 +24,8 @@ public:
     Sprite_Renderer();
     ~Sprite_Renderer();
 
+    Component* Clone() override;
+
     void Render() override;
 
     void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;

@@ -43,6 +43,18 @@ Sprite_Renderer::~Sprite_Renderer()
     glDeleteVertexArrays(1, &this->quad_VAO_);
 }
 
+Component* Sprite_Renderer::Clone()
+{
+    Sprite_Renderer* sprite_renderer = new Sprite_Renderer();
+
+    Shader shader = Shader_Manager::Get_Instance()->Get_Shader(shader_.Name);
+    sprite_renderer->Set_Shader(shader);
+    Texture texture = Texture_Manager::Get_Instance()->Get_Texture(texture_.Name);
+    sprite_renderer->Set_Texture(texture);
+    
+    return (Component*)sprite_renderer;
+}
+
 void Sprite_Renderer::Render()
 {
     if (parent_ == nullptr)

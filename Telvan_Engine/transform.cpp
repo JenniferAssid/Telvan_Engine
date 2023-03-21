@@ -1,5 +1,15 @@
 #include "transform.h"
 
+Component* Transform::Clone()
+{
+    Transform* transform = new Transform();
+    transform->translation_ = translation_;
+    transform->scale_ = scale_;
+    transform->rotation_ = rotation_;
+
+    return (Component*)transform;
+}
+
 void Transform::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
 {
     writer.Key("transform");

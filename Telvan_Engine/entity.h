@@ -5,6 +5,8 @@
 
 #include <string>
 #include <vector>
+#include <rapidjson/prettywriter.h>
+#include <filesystem>
 
 #include "components.h"
 #include "serialize.h"
@@ -23,11 +25,11 @@ private:
 
 public:
     // Base Functions
+    Entity() : name_("NoName") {}
     Entity(std::string name);
-    // TODO: Make a copy constructor
+    Entity(std::filesystem::path path);
+    Entity(const Entity& other);
     ~Entity();
-
-    // TODO: Serialize/Deserialize entity
 
     // Logic Functions
     void Start();
@@ -37,8 +39,9 @@ public:
     void Render();
 
     // Serialization Functions
-    void Write_To();
-    void Read_From();
+    void Write_To(bool overwrite_prefab = false, 
+        rapidjson::PrettyWriter<rapidjson::StringBuffer>* scene = nullptr);
+    void Read_From(std::string filepath = "");
 
     // General Getter Functions
     inline Entity* Get_Parent() const { return parent_; }

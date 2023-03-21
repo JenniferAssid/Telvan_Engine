@@ -23,6 +23,8 @@ protected:
 public:
     Component(Component_Type type) : parent_(nullptr), type_(type) {}
 
+    virtual Component* Clone() { return nullptr; }
+
     inline void Set_Parent(Entity* parent) { parent_ = parent; }
     inline virtual void Start() {}
     inline virtual void Pre_Update(float dT) {}

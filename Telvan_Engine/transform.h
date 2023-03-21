@@ -26,6 +26,8 @@ public:
     // TODO: Make copy constructor
     ~Transform() {}
 
+    Component* Clone() override;
+
     void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;
     void Read_From(rapidjson::Document& document) override;
 

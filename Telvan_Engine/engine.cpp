@@ -1,6 +1,8 @@
 #include "engine.h"
 #include "shader_manager.h"
 #include "sprite_renderer.h"
+#include "prefab_manager.h"
+#include "entity_manager.h"
 #include "error_logging.h"
 
 #include "entity.h"
@@ -67,6 +69,7 @@ Engine::~Engine()
 
 Sprite_Renderer* renderer;
 Entity* entity;
+Entity* test;
 Transform* transform;
 Input* input;
 
@@ -98,7 +101,7 @@ void Move_Right(float dT)
 void Engine::Initialize()
 {
     deltaTime = last_frame = 0.0f;
-    entity = new Entity("Entity - Test");
+    /*entity = new Entity("Entity - Test");*/
     
     input = Input::Get_Instance();
     input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Down);
@@ -116,12 +119,34 @@ void Engine::Initialize()
     /*Texture texture = Texture_Manager::Get_Instance()->Load_Texture("Assets/Textures/awesomeface.png", true, "face");*/
     Texture_Manager::Get_Instance()->Initialize();
 
-    entity->Read_From();
+    Prefab_Manager::Get_Instance()->Initialize();
+
+    entity = Prefab_Manager::Get_Instance()->Get_Prefab("Entity - Test");
+
+    test = new Entity(*entity);
+    test->Set_Name("Clone");
+
+    Entity_Manager::Get_Instance()->Add_Entity(entity);
+    Entity_Manager::Get_Instance()->Add_Entity(test);
 
     transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
     renderer = entity->Get_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer);
 
-    /*entity->Write_To();*/
+    std::ofstream ofs("./Data/Scenes/Test_Scene.json");
+
+    rapidjson::StringBuffer sb;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+
+    writer.StartObject();
+
+    entity->Write_To(false, &writer);
+    test->Write_To(false, &writer);
+
+    writer.EndObject();
+
+    ofs.clear();
+    ofs << sb.GetString();
+    ofs.close();
 }
 
 void Engine::Process_Input()
@@ -139,6 +164,7 @@ void Engine::Update()
     Process_Input();
 
     // Update game state
+    Entity_Manager::Get_Instance()->Update(deltaTime);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -151,5 +177,5 @@ void Engine::Render()
 {
     /*renderer->Draw_Sprite(tmp,
         transform->Get_Translation(), transform->Get_Scale(), transform->Get_Rotation(), glm::vec3(0.0f, 1.0f, 0.0f));*/
-    entity->Render();
+    Entity_Manager::Get_Instance()->Render();
 }

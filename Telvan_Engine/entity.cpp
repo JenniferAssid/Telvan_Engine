@@ -9,8 +9,35 @@ destroy_(false),
 instantiated_(false),
 parent_(nullptr)
 {
-    filepath_ = "./Data/" + name + ".json";
+    filepath_ = "./Data/Prefabs" + name + ".json";
+
     Add_Component<Transform>(Component_Type::ct_Transform);
+}
+
+Entity::Entity(std::filesystem::path path) : destroy_(false),
+instantiated_(false),
+parent_(nullptr)
+{
+    filepath_ = path.string();
+    Read_From(filepath_);
+}
+
+Entity::Entity(const Entity& other)
+{
+    name_ = other.name_;
+    instantiated_ = false;
+    parent_ = nullptr;
+    destroy_ = false;
+    filepath_ = other.filepath_;
+
+    for (Component* component : other.components_)
+    {
+        Component* clone = component->Clone();
+        clone->Set_Parent(this);
+        components_.push_back(clone);
+        if (instantiated_)
+            clone->Start();
+    }
 }
 
 Entity::~Entity()
@@ -70,8 +97,30 @@ void Entity::Render()
 }
 
 // Serialization Functions
-void Entity::Write_To()
+void Entity::Write_To(bool overwrite_prefab,
+    rapidjson::PrettyWriter<rapidjson::StringBuffer>* scene)
 {
+    if (scene != nullptr)
+    {
+        scene->Key(name_.c_str());
+        scene->StartObject();
+
+        scene->Key("prefab");
+        scene->String(filepath_.c_str());
+
+        scene->EndObject();
+        return;
+    }
+
+    if (overwrite_prefab == false) return;
+
+    unsigned int counter = 0;
+
+    while (std::filesystem::exists(filepath_))
+    {
+        filepath_ = "./Data/Prefabs/" + name_ + "_" + std::to_string(counter) + ".json";
+    }
+
     std::ofstream ofs(filepath_.c_str());
 
     if (ofs.is_open() == false)
@@ -108,11 +157,14 @@ void Entity::Write_To()
 
     ofs.clear();
     ofs << sb.GetString();
+    ofs.close();
 }
 
-void Entity::Read_From()
+void Entity::Read_From(std::string filepath)
 {
-    Serialize* serialize = new Serialize(filepath_);
+    std::string file = (filepath == "") ? filepath_ : filepath;
+
+    Serialize* serialize = new Serialize(file);
 
     if (serialize->document_.HasMember("name") == false) name_ = "No_Name";
     else name_ = serialize->document_["name"].GetString();

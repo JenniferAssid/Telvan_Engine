@@ -21,9 +21,12 @@
   <ItemGroup>
     <ClInclude Include="components.h" />
     <ClInclude Include="entity.h" />
+    <ClInclude Include="entity_manager.h" />
     <ClInclude Include="error_logging.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="engine.h" />
+    <ClInclude Include="prefab_manager.h" />
+    <ClInclude Include="scene.h" />
     <ClInclude Include="serialize.h" />
     <ClInclude Include="shader_manager.h" />
     <ClInclude Include="sprite_renderer.h" />
@@ -39,10 +42,12 @@
   <ItemGroup>
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="entity.cpp" />
+    <ClCompile Include="entity_manager.cpp" />
     <ClCompile Include="error_logging.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="prefab_manager.cpp" />
     <ClCompile Include="serialize.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shader.h" />

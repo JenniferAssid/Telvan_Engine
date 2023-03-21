@@ -22,16 +22,13 @@
     <Filter Include="Base Architecture\Components">
       <UniqueIdentifier>{fc0aeb8d-6b9b-4e20-9e46-ad180e594fc9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{32d29806-7a8b-4949-a906-d3485b5c2133}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h">
       <Filter>Base Architecture\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="components.h">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClInclude>
-    <ClInclude Include="entity.h">
-      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
     <ClInclude Include="engine.h">
       <Filter>Base Architecture\General</Filter>
@@ -58,6 +55,21 @@
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
     <ClInclude Include="texture_manager.h">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Base Architecture\General</Filter>
+    </ClInclude>
+    <ClInclude Include="components.h">
+      <Filter>Base Architecture\General</Filter>
+    </ClInclude>
+    <ClInclude Include="prefab_manager.h">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="entity_manager.h">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
   </ItemGroup>
@@ -94,9 +106,6 @@
     <ClCompile Include="error_logging.cpp">
       <Filter>Base Architecture\General</Filter>
     </ClCompile>
-    <ClCompile Include="entity.cpp">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClCompile>
     <ClCompile Include="serialize.cpp">
       <Filter>Base Architecture\Systems</Filter>
     </ClCompile>
@@ -110,6 +119,15 @@
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
     <ClCompile Include="texture_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Base Architecture\General</Filter>
+    </ClCompile>
+    <ClCompile Include="prefab_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClCompile>
+    <ClCompile Include="entity_manager.cpp">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
   </ItemGroup>

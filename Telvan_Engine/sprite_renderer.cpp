@@ -119,22 +119,22 @@ void Sprite_Renderer::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>&
     writer.EndObject();
 }
 
-void Sprite_Renderer::Read_From(rapidjson::Document& document)
+void Sprite_Renderer::Read_From(rapidjson::GenericObject<false, rapidjson::Value>& writer)
 {
-    if (document.HasMember("sprite_renderer") == false) return;
+    if (writer.HasMember("sprite_renderer") == false) return;
 
-    if (document["sprite_renderer"].GetObject().HasMember("shader") &&
-        document["sprite_renderer"]["shader"].IsString())
+    if (writer["sprite_renderer"].GetObject().HasMember("shader") &&
+        writer["sprite_renderer"]["shader"].IsString())
     {
-        const rapidjson::Value& shader = document["sprite_renderer"]["shader"];
+        const rapidjson::Value& shader = writer["sprite_renderer"]["shader"];
 
         shader_ = Shader_Manager::Get_Instance()->Get_Shader(shader.GetString());
     }
 
-    if (document["sprite_renderer"].GetObject().HasMember("texture") &&
-        document["sprite_renderer"]["texture"].IsString())
+    if (writer["sprite_renderer"].GetObject().HasMember("texture") &&
+        writer["sprite_renderer"]["texture"].IsString())
     {
-        const rapidjson::Value& texture = document["sprite_renderer"]["texture"];
+        const rapidjson::Value& texture = writer["sprite_renderer"]["texture"];
 
         texture_ = Texture_Manager::Get_Instance()->Get_Texture(texture.GetString());
     }

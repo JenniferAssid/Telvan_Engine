@@ -130,5 +130,8 @@
     <ClCompile Include="entity_manager.cpp">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

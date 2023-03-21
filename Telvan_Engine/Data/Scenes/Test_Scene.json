@@ -1,8 +1,36 @@
 {
-    "Entity - Test": {
-        "prefab": "Data/Prefabs/Entity - Test.json"
-    },
-    "Clone": {
-        "prefab": "Data/Prefabs/Entity - Test.json"
-    }
+    "Test_Scene": [
+        {
+            "name": "Entity - Test",
+            "prefab": "Data/Prefabs/Entity - Test.json",
+            "transform": {
+                "translation": [
+                    200.0,
+                    200.0,
+                    0.0
+                ],
+                "scale": [
+                    500.0,
+                    400.0
+                ],
+                "rotation": 45.0
+            }
+        },
+        {
+            "name": "Clone",
+            "prefab": "Data/Prefabs/Entity - Test.json",
+            "transform": {
+                "translation": [
+                    200.0,
+                    200.0,
+                    0.0
+                ],
+                "scale": [
+                    300.0,
+                    400.0
+                ],
+                "rotation": 45.0
+            }
+        }
+    ]
 }

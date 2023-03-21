@@ -35,7 +35,7 @@ public:
     inline virtual void Delete() {}
 
     inline virtual void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) {}
-    inline virtual void Read_From(rapidjson::Document& document) {}
+    inline virtual void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& writer) {}
 
     inline Component_Type Get_Type() { return type_; }
 };

@@ -102,11 +102,19 @@ void Entity::Write_To(bool overwrite_prefab,
 {
     if (scene != nullptr)
     {
-        scene->Key(name_.c_str());
         scene->StartObject();
+
+        scene->Key("name");
+        scene->String(name_.c_str());
 
         scene->Key("prefab");
         scene->String(filepath_.c_str());
+
+        Transform* transform = Get_Component<Transform>(Component_Type::ct_Transform);
+        if (transform != nullptr)
+        {
+            transform->Write_To(*scene);
+        }
 
         scene->EndObject();
         return;
@@ -169,13 +177,15 @@ void Entity::Read_From(std::string filepath)
     if (serialize->document_.HasMember("name") == false) name_ = "No_Name";
     else name_ = serialize->document_["name"].GetString();
 
+    rapidjson::GenericObject<false, rapidjson::Value> writer = serialize->document_.GetObject();
+
     if (serialize->document_.HasMember("transform"))
     {
-        Add_Component<Transform>(Component_Type::ct_Transform)->Read_From(serialize->document_);
+        Add_Component<Transform>(Component_Type::ct_Transform)->Read_From(writer);
     }
     if (serialize->document_.HasMember("sprite_renderer"))
     {
-        Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Read_From(serialize->document_);
+        Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Read_From(writer);
     }
 }
 

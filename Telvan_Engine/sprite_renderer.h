@@ -29,7 +29,7 @@ public:
     void Render() override;
 
     void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;
-    void Read_From(rapidjson::Document& document) override;
+    void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& writer) override;
 
     inline Shader& Get_Shader() { return shader_; }
     inline Texture& Get_Texture() { return texture_; }

@@ -34,32 +34,33 @@ void Transform::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& write
     writer.EndObject();
 }
 
-void Transform::Read_From(rapidjson::Document& document)
+// TODO: Switch the document intake into an object intake?
+void Transform::Read_From(rapidjson::GenericObject<false, rapidjson::Value>& writer)
 {
-    if (document.HasMember("transform") == false) return;
+    if (writer.HasMember("transform") == false) return;
 
-    if (document["transform"].GetObject().HasMember("translation") &&
-        document["transform"]["translation"].IsArray())
+    if (writer["transform"].GetObject().HasMember("translation") &&
+        writer["transform"]["translation"].IsArray())
     {
-        const rapidjson::Value& translation = document["transform"]["translation"];
+        const rapidjson::Value& translation = writer["transform"]["translation"];
 
         translation_.x = (float)translation[0].GetDouble();
         translation_.y = (float)translation[1].GetDouble();
         translation_.z = (float)translation[2].GetDouble();
     }
 
-    if (document["transform"].GetObject().HasMember("scale") &&
-        document["transform"]["scale"].IsArray())
+    if (writer["transform"].GetObject().HasMember("scale") &&
+        writer["transform"]["scale"].IsArray())
     {
-        const rapidjson::Value& scale = document["transform"]["scale"];
+        const rapidjson::Value& scale = writer["transform"]["scale"];
 
         scale_.x = (float)scale[0].GetDouble();
         scale_.y = (float)scale[1].GetDouble();
     }
 
-    if (document["transform"].GetObject().HasMember("rotation") &&
-        document["transform"]["rotation"].IsDouble())
+    if (writer["transform"].GetObject().HasMember("rotation") &&
+        writer["transform"]["rotation"].IsDouble())
     {
-        rotation_ = (float)document["transform"]["rotation"].GetDouble();
+        rotation_ = (float)writer["transform"]["rotation"].GetDouble();
     }
 }

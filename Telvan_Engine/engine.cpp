@@ -4,7 +4,7 @@
 #include "prefab_manager.h"
 #include "entity_manager.h"
 #include "error_logging.h"
-
+#include "scene.h"
 #include "entity.h"
 #include "transform.h"
 
@@ -121,7 +121,10 @@ void Engine::Initialize()
 
     Prefab_Manager::Get_Instance()->Initialize();
 
-    entity = Prefab_Manager::Get_Instance()->Get_Prefab("Entity - Test");
+    Scene* scene = new Scene("Test_Scene");
+    scene->Load();
+
+    /*entity = Prefab_Manager::Get_Instance()->Get_Prefab("Entity - Test");
 
     test = new Entity(*entity);
     test->Set_Name("Clone");
@@ -138,15 +141,18 @@ void Engine::Initialize()
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
 
     writer.StartObject();
+    writer.Key("Test_Scene");
+    writer.StartArray();
 
     entity->Write_To(false, &writer);
     test->Write_To(false, &writer);
 
+    writer.EndArray();
     writer.EndObject();
 
     ofs.clear();
     ofs << sb.GetString();
-    ofs.close();
+    ofs.close();*/
 }
 
 void Engine::Process_Input()

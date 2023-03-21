@@ -2,28 +2,35 @@
 #define SPRITE_RENDERER_H
 
 #include <glm/glm.hpp>
+#include <rapidjson/prettywriter.h>
 
-#include "shader.h"
-#include "texture.h"
+#include "components.h"
+#include "resource_manager.h"
 
-class Sprite_Renderer
+class Sprite_Renderer : Component
 {
 private:
     Shader shader_;
+    Texture texture_;
     unsigned int quad_VAO_;
 
 private:
     void initialize_render_data();
 
 public:
-    Sprite_Renderer(Shader& shader);
+    Sprite_Renderer();
     ~Sprite_Renderer();
 
-    void Draw_Sprite(Texture& texture,
-        glm::vec2 position,
-        glm::vec2 size = glm::vec2(10.0f, 10.0f),
-        float rotate = 0.0f,
-        glm::vec3 color = glm::vec3(1.0f));
+    void Render() override;
+
+    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;
+    void Read_From(rapidjson::Document& document) override;
+
+    inline Shader& Get_Shader() { return shader_; }
+    inline Texture& Get_Texture() { return texture_; }
+    
+    inline void Set_Shader(Shader& shader) { shader_ = shader; }
+    inline void Set_Texture(Texture& texture) { texture_ = texture; }
 };
 
 #endif // !SPRITE_RENDERER_H

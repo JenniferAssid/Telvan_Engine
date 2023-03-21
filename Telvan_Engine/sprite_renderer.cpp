@@ -1,4 +1,7 @@
 #include "sprite_renderer.h"
+#include "entity.h"
+#include "transform.h"
+#include "error_logging.h"
 
 #include <glad/glad.h>
 
@@ -29,9 +32,8 @@ void Sprite_Renderer::initialize_render_data()
     glBindVertexArray(0);
 }
 
-Sprite_Renderer::Sprite_Renderer(Shader& shader)
+Sprite_Renderer::Sprite_Renderer() : Component(Component_Type::ct_Sprite_Renderer)
 {
-    this->shader_ = shader;
     this->initialize_render_data();
 }
 
@@ -40,14 +42,36 @@ Sprite_Renderer::~Sprite_Renderer()
     glDeleteVertexArrays(1, &this->quad_VAO_);
 }
 
-void Sprite_Renderer::Draw_Sprite(Texture& texture, 
-    glm::vec2 position,
-    glm::vec2 size, 
-    float rotate, 
-    glm::vec3 color)
+void Sprite_Renderer::Render()
 {
+    if (parent_ == nullptr)
+    {
+        Error_Logging::Get_Instance()->Record_Message("Parent not found",
+            Error_Logging::Message_Level::ot_Information,
+            "Sprite_Renderer",
+            "Render");
+        return;
+    }
+
+    Transform* transform = parent_->Get_Component<Transform>(Component_Type::ct_Transform);
+
+    if (transform == nullptr)
+    {
+        Error_Logging::Get_Instance()->Record_Message(
+            Error_Logging::Get_Instance()->Format_Output("Transform not found for entity \"%s\"", 
+                                                            parent_->Get_Name().c_str()),
+            Error_Logging::Message_Level::ot_Information,
+            "Sprite_Renderer",
+            "Render");
+        return;
+    }
+
+    glm::vec2 position = transform->Get_Translation();
+    glm::vec2 size = transform->Get_Scale();
+    float rotate = transform->Get_Rotation();
+
     // prepare transformations
-    this->shader_.Use();
+    shader_.Use();
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));
 
@@ -58,12 +82,47 @@ void Sprite_Renderer::Draw_Sprite(Texture& texture,
     model = glm::scale(model, glm::vec3(size, 1.0f));
 
     this->shader_.Set_Matrix_4("model", model);
-    this->shader_.Set_Vector_3f("tex_color", color);
+    this->shader_.Set_Vector_3f("tex_color", glm::vec3(1.0f));
 
     glActiveTexture(GL_TEXTURE0);
-    texture.Bind();
+    texture_.Bind();
 
     glBindVertexArray(this->quad_VAO_);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+}
+
+void Sprite_Renderer::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+{
+    writer.Key("sprite_renderer");
+    writer.StartObject();
+
+    writer.Key("shader");
+    writer.String(shader_.Name.c_str());
+
+    writer.Key("texture");
+    writer.String(texture_.Name.c_str());
+
+    writer.EndObject();
+}
+
+void Sprite_Renderer::Read_From(rapidjson::Document& document)
+{
+    if (document.HasMember("sprite_renderer") == false) return;
+
+    if (document["sprite_renderer"].GetObject().HasMember("shader") &&
+        document["sprite_renderer"]["shader"].IsString())
+    {
+        const rapidjson::Value& shader = document["sprite_renderer"]["shader"];
+
+        shader_ = Resource_Manager::Get_Shader(shader.GetString());
+    }
+
+    if (document["sprite_renderer"].GetObject().HasMember("texture") &&
+        document["sprite_renderer"]["texture"].IsString())
+    {
+        const rapidjson::Value& texture = document["sprite_renderer"]["texture"];
+
+        texture_ = Resource_Manager::Get_Texture(texture.GetString());
+    }
 }

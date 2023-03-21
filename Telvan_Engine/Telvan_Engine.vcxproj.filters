@@ -45,9 +45,6 @@
     <ClInclude Include="stb_image.h">
       <Filter>Base Architecture\General</Filter>
     </ClInclude>
-    <ClInclude Include="sprite_renderer.h">
-      <Filter>Base Architecture\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="error_logging.h">
       <Filter>Base Architecture\General</Filter>
     </ClInclude>
@@ -56,6 +53,9 @@
     </ClInclude>
     <ClInclude Include="serialize.h">
       <Filter>Base Architecture\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite_renderer.h">
+      <Filter>Base Architecture\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -91,9 +91,6 @@
     <ClCompile Include="glad.c">
       <Filter>Base Architecture\General</Filter>
     </ClCompile>
-    <ClCompile Include="sprite_renderer.cpp">
-      <Filter>Base Architecture\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="error_logging.cpp">
       <Filter>Base Architecture\General</Filter>
     </ClCompile>
@@ -104,6 +101,9 @@
       <Filter>Base Architecture\Systems</Filter>
     </ClCompile>
     <ClCompile Include="transform.cpp">
+      <Filter>Base Architecture\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite_renderer.cpp">
       <Filter>Base Architecture\Components</Filter>
     </ClCompile>
   </ItemGroup>

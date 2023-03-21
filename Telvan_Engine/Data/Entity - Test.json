@@ -11,5 +11,9 @@
             400.0
         ],
         "rotation": 45.0
+    },
+    "sprite_renderer": {
+        "shader": "sprite",
+        "texture": "face"
     }
 }

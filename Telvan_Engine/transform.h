@@ -16,7 +16,8 @@ private:
 public:
     Transform(glm::vec3 translation = glm::vec3(0.0f),
         glm::vec3 scale = glm::vec3(1.0f),
-        float rotation = 0.0f) : translation_(translation),
+        float rotation = 0.0f) : Component(Component_Type::ct_Transform),
+                                    translation_(translation),
                                     scale_(scale),
                                     rotation_(rotation)
     {}

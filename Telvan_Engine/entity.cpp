@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "transform.h"
+#include "sprite_renderer.h"
 #include "error_logging.h"
 
 // Base Functions
@@ -9,7 +10,7 @@ instantiated_(false),
 parent_(nullptr)
 {
     filepath_ = "./Data/" + name + ".json";
-    Add_Component<Transform>();
+    Add_Component<Transform>(Component_Type::ct_Transform);
 }
 
 Entity::~Entity()
@@ -118,7 +119,11 @@ void Entity::Read_From()
 
     if (serialize->document_.HasMember("transform"))
     {
-        Add_Component<Transform>()->Read_From(serialize->document_);
+        Add_Component<Transform>(Component_Type::ct_Transform)->Read_From(serialize->document_);
+    }
+    if (serialize->document_.HasMember("sprite_renderer"))
+    {
+        Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Read_From(serialize->document_);
     }
 }
 
@@ -138,48 +143,48 @@ void Entity::Set_Parent(Entity* parent)
 }
 
 // Component Functions
-template <class T>
-T* Entity::Add_Component()
-{
-    Component* component = (Component*)Get_Component<T>();
+//template <class T>
+//T* Entity::Add_Component()
+//{
+//    Component* component = (Component*)Get_Component<T>();
+//
+//    if (component == nullptr)
+//    {
+//        component = (Component*)new T();
+//
+//        component->Set_Parent(this);
+//
+//        components_.push_back(component);
+//
+//        if (instantiated_)
+//            component->Start();
+//    }
+//
+//    return (T*)component;
+//}
 
-    if (component == nullptr)
-    {
-        component = (Component*)new T();
+//template <class T>
+//T* Entity::Get_Component() const
+//{
+//    for (int i = 0; i < components_.size(); i++)
+//    {
+//        if ((T*)components_[i] != nullptr) return (T*)components_[i];
+//    }
+//
+//    return nullptr;
+//}
 
-        component->Set_Parent(this);
-
-        components_.push_back(component);
-
-        if (instantiated_)
-            component->Start();
-    }
-
-    return (T*)component;
-}
-
-template <class T>
-T* Entity::Get_Component() const
-{
-    for (int i = 0; i < components_.size(); i++)
-    {
-        if ((T*)components_[i] != nullptr) return (T*)components_[i];
-    }
-
-    return nullptr;
-}
-
-template <class T>
-void Entity::Remove_Component(T* component)
-{
-    auto result = std::find(components_.begin(), components_.end(), component);
-
-    if (result == components_.end()) return;
-
-    int index = result - components_.begin();
-
-    (*result)->Stop();
-}
+//template <class T>
+//void Entity::Remove_Component(T* component)
+//{
+//    auto result = std::find(components_.begin(), components_.end(), component);
+//
+//    if (result == components_.end()) return;
+//
+//    int index = result - components_.begin();
+//
+//    (*result)->Stop();
+//}
 
 // Children Functions
 void Entity::Add_Child(Entity* child)

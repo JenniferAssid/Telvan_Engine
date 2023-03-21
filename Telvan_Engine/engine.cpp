@@ -98,29 +98,26 @@ void Engine::Initialize()
 {
     deltaTime = last_frame = 0.0f;
     entity = new Entity("Entity - Test");
-    entity->Read_From();
-    transform = entity->Get_Component<Transform>();
-    transform->Set_Translation(glm::vec2(200.0f, 200.0f));
-    transform->Set_Scale(glm::vec2(300.0f, 400.0f));
-    transform->Set_Rotation(45.0f);
-    entity->Write_To();
-
+    
     input = Input::Get_Instance();
     input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Down);
     input->Add_Binding(GLFW_KEY_S, Move_Down, Input::Callback_Type::cb_Down);
     input->Add_Binding(GLFW_KEY_A, Move_Left, Input::Callback_Type::cb_Down);
-    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);
+    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);    
 
-    Resource_Manager::Load_Shader("default.vert", "default.frag", nullptr, "sprite");
+    Shader shader = Resource_Manager::Load_Shader("default.vert", "default.frag", nullptr, "sprite");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),
         static_cast<float>(this->height_), 0.0f, -1.0f, 1.0f);
-    Resource_Manager::Get_Shader("sprite").Use().Set_Integer("tex", 0);
-    Resource_Manager::Get_Shader("sprite").Set_Matrix_4("projection", projection);
-    // set render-specific controls
-    Shader tmp = Resource_Manager::Get_Shader("sprite");
-    renderer = new Sprite_Renderer(tmp);
-    // load textures
-    Resource_Manager::Load_Texture("Assets/awesomeface.png", true, "face");
+    shader.Use().Set_Integer("tex", 0);
+    shader.Set_Matrix_4("projection", projection);
+    Texture texture = Resource_Manager::Load_Texture("Assets/awesomeface.png", true, "face");
+
+    entity->Read_From();
+
+    transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
+    renderer = entity->Get_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer);
+
+    /*entity->Write_To();*/
 }
 
 void Engine::Process_Input()
@@ -149,6 +146,7 @@ void Engine::Update()
 void Engine::Render()
 {
     Texture tmp = Resource_Manager::Get_Texture("face");
-    renderer->Draw_Sprite(tmp,
-        transform->Get_Translation(), transform->Get_Scale(), transform->Get_Rotation(), glm::vec3(0.0f, 1.0f, 0.0f));
+    /*renderer->Draw_Sprite(tmp,
+        transform->Get_Translation(), transform->Get_Scale(), transform->Get_Rotation(), glm::vec3(0.0f, 1.0f, 0.0f));*/
+    entity->Render();
 }

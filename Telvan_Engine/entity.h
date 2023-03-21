@@ -7,7 +7,6 @@
 #include "components.h"
 #include "serialize.h"
 
-
 class Entity
 {
 private:
@@ -15,7 +14,7 @@ private:
     std::string filepath_;
     bool destroy_;
     bool instantiated_;
-    std::vector<class Component*> components_;
+    std::vector<Component*> components_;
 
     Entity* parent_;
     std::vector<Entity*> children_;
@@ -51,11 +50,50 @@ public:
 
     // Component Functions
     template <class T>
-    T* Add_Component();
+    inline T* Add_Component(Component_Type type)
+    {
+        Component* component = (Component*)Get_Component<T>(type);
+
+        if (component == nullptr)
+        {
+            component = (Component*)new T();
+
+            component->Set_Parent(this);
+
+            components_.push_back(component);
+
+            if (instantiated_)
+                component->Start();
+        }
+
+        return (T*)component;
+    }
+
     template <class T>
-    T* Get_Component() const;
+    inline T* Get_Component(Component_Type type) const
+    {
+        for (int i = 0; i < components_.size(); i++)
+        {
+            T* component = (T*)components_[i];
+            if (components_[i]->Get_Type() == type) return component;
+        }
+
+        return nullptr;
+    }
+
     template <class T>
-    void Remove_Component(T* component);
+    inline void Remove_Component(T* component)
+    {
+        auto result = std::find(components_.begin(), components_.end(), component);
+
+        if (result == components_.end()) return;
+
+        int index = result - components_.begin();
+
+        (*result)->Stop();
+
+        components_.erase(components_.begin() + index);
+    }
 
     inline std::vector<Component*>& Get_Components() { return components_; }
 
@@ -67,4 +105,5 @@ public:
     inline std::vector<Entity*>& Get_Children() { return children_; }
 };
 
+//#include "entity.cpp"
 #endif

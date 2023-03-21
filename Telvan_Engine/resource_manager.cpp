@@ -89,7 +89,9 @@ Shader Resource_Manager::Load_Shader(const char* s_vertex,
     const char* s_geometry,
     std::string name)
 {
-    Shaders[name] = load_shader_from_file(s_vertex, s_fragment, s_geometry);
+    Shader tmp = load_shader_from_file(s_vertex, s_fragment, s_geometry);
+    tmp.Name = name;
+    Shaders[name] = tmp;
     return Shaders[name];
 }
 
@@ -102,7 +104,9 @@ Texture Resource_Manager::Load_Texture(const char* file,
     bool alpha,
     std::string name)
 {
-    Textures[name] = load_texture_from_file(file, alpha);
+    Texture tmp = load_texture_from_file(file, alpha);
+    tmp.Name = name;
+    Textures[name] = tmp;
     return Textures[name];
 }
 

@@ -1,16 +1,25 @@
 #ifndef COMPONENT_CLASS_H
 #define COMPONENT_CLASS_H
 
-#include "entity.h"
+//#include "entity.h"
 #include "serialize.h"
+
+class Entity;
+
+enum class Component_Type
+{
+    ct_Transform = 0,
+    ct_Sprite_Renderer
+};
 
 class Component
 {
 protected:
-    class Entity* parent_;
+    Entity* parent_;
+    Component_Type type_;
 
 public:
-    Component() : parent_(nullptr) {}
+    Component(Component_Type type) : parent_(nullptr), type_(type) {}
 
     inline void Set_Parent(Entity* parent) { parent_ = parent; }
     inline virtual void Start() {}
@@ -23,6 +32,8 @@ public:
 
     inline virtual void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) {}
     inline virtual void Read_From(rapidjson::Document& document) {}
+
+    inline Component_Type Get_Type() { return type_; }
 };
 
 #endif

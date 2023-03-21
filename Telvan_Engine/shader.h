@@ -14,9 +14,10 @@ private:
 
 public:
     unsigned int ID;
+    std::string Name;
 
 public:
-    Shader() : ID(-1) {}
+    Shader() : ID(-1), Name("Shader_NoName") {}
     
     Shader& Use();
     void Compile(const char* vertex_source, 

@@ -7,6 +7,7 @@
 #include <rapidjson/prettywriter.h>
 
 #include "components.h"
+#include "entity.h"
 
 class Transform : Component
 {
@@ -43,17 +44,38 @@ public:
     inline float Get_Rotation() const { return rotation_; }
     inline bool Get_Print_Full_Transform() const { return print_full_transform_; }
 
-    inline void Set_Translation(glm::vec3 translation) { translation_ = glm::vec3(translation.x,
-                                                                                    translation.y,
-                                                                                    translation.z); }
-    inline void Set_Translation(glm::vec2 translation) { translation_ = glm::vec3(translation.x, 
-                                                                                    translation.y, 
-                                                                                    translation_.z); }
-    inline void Set_Z_Sorting_Value(float z) { translation_.z = z; }
-    inline void Set_Scale(glm::vec2 scale) { scale_ = scale; }
-    inline void Set_Scale_X(float x) { scale_.x = x; }
-    inline void Set_Scale_Y(float y) { scale_.y = y; }
-    inline void Set_Rotation(float deg) { rotation_ = deg; }
+    inline void Set_Translation(glm::vec3 translation) 
+    { 
+        translation_ = glm::vec3(translation.x,
+        translation.y,
+        translation.z);
+    }
+    inline void Set_Translation(glm::vec2 translation) 
+    { 
+        translation_ = glm::vec3(translation.x, 
+            translation.y, 
+            translation_.z); 
+    }
+    inline void Set_Z_Sorting_Value(float z) 
+    { 
+        translation_.z = z; 
+    }
+    inline void Set_Scale(glm::vec2 scale) 
+    { 
+        scale_ = scale; 
+    }
+    inline void Set_Scale_X(float x) 
+    { 
+        scale_.x = x; 
+    }
+    inline void Set_Scale_Y(float y) 
+    { 
+        scale_.y = y; 
+    }
+    inline void Set_Rotation(float deg) 
+    { 
+        rotation_ = deg; 
+    }
     inline void Set_Print_Full_Transform(bool print_full_transform) { print_full_transform_ = print_full_transform; }
 };
 

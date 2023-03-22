@@ -83,6 +83,17 @@ void Sprite_Renderer::Render()
     glm::vec2 size = transform->Get_Scale();
     float rotate = transform->Get_Rotation();
 
+    if (parent_->Get_Parent() != nullptr)
+    {
+        Transform* parent_transform = parent_->Get_Component<Transform>(Component_Type::ct_Transform);
+        if (parent_transform != nullptr)
+        {
+            position += parent_transform->Get_Translation();
+            size += parent_transform->Get_Scale();
+            rotate += parent_transform->Get_Rotation();
+        }
+    }
+
     // prepare transformations
     shader_.Use();
     glm::mat4 model = glm::mat4(1.0f);

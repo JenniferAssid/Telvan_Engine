@@ -1,4 +1,5 @@
 #include "entity_manager.h"
+#include "entity.h"
 
 Entity_Manager* Entity_Manager::instance_;
 

@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "entity.h"
+class Entity;
 
 class Entity_Manager
 {

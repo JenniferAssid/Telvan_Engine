@@ -68,33 +68,37 @@ void Entity::Start()
 void Entity::Pre_Update(float dT)
 {
     for (unsigned i = 0; i < components_.size(); i++)
-    {
         components_[i]->Pre_Update(dT);
-    }
+
+    for (unsigned i = 0; i < children_.size(); i++)
+        children_[i]->Pre_Update(dT);
 }
 
 void Entity::Update(float dT)
 {
     for (unsigned i = 0; i < components_.size(); i++)
-    {
         components_[i]->Update(dT);
-    }
+
+    for (unsigned i = 0; i < children_.size(); i++)
+        children_[i]->Update(dT);
 }
 
 void Entity::Post_Update(float dT)
 {
     for (unsigned i = 0; i < components_.size(); i++)
-    {
         components_[i]->Post_Update(dT);
-    }
+
+    for (unsigned i = 0; i < children_.size(); i++)
+        children_[i]->Post_Update(dT);
 }
 
 void Entity::Render()
 {
     for (unsigned i = 0; i < components_.size(); i++)
-    {
         components_[i]->Render();
-    }
+
+    for (unsigned i = 0; i < children_.size(); i++)
+        children_[i]->Render();
 }
 
 // Serialization Functions

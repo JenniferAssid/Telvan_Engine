@@ -71,9 +71,9 @@ void Shader_Manager::open_files(std::string path)
     }
 }
 
-void Shader_Manager::Initialize(std::string path)
+void Shader_Manager::Initialize()
 {
-    open_files(path);
+    open_files(master_path_);
 
     for (int i = 0; i < vertexs_.size(); i++)
     {

@@ -13,7 +13,7 @@
 class Prefab_Manager : public Resource_Manager<Entity>
 {
 protected:
-    Prefab_Manager() {}
+    Prefab_Manager() : Resource_Manager<Entity>("Prefab_Manager", "./Data/Prefabs/") {}
     static Prefab_Manager* instance_;
 
 public:

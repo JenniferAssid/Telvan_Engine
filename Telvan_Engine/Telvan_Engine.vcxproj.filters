@@ -39,9 +39,6 @@
     <ClInclude Include="stb_image.h">
       <Filter>Base Architecture\General</Filter>
     </ClInclude>
-    <ClInclude Include="error_logging.h">
-      <Filter>Base Architecture\General</Filter>
-    </ClInclude>
     <ClInclude Include="transform.h">
       <Filter>Base Architecture\Components</Filter>
     </ClInclude>
@@ -75,11 +72,17 @@
     <ClInclude Include="scene_manager.h">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
-    <ClInclude Include="resource_manager.h">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClInclude>
     <ClInclude Include="entity_manager.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>Base Architecture\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_manager.h">
+      <Filter>Base Architecture\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="error_logging.h">
+      <Filter>Base Architecture\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -110,9 +113,6 @@
       <Filter>Base Architecture\General</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
-      <Filter>Base Architecture\General</Filter>
-    </ClCompile>
-    <ClCompile Include="error_logging.cpp">
       <Filter>Base Architecture\General</Filter>
     </ClCompile>
     <ClCompile Include="serialize.cpp">
@@ -147,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="scene_manager.cpp">
       <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClCompile>
+    <ClCompile Include="error_logging.cpp">
+      <Filter>Base Architecture\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,8 +7,10 @@
 #include <string>
 #include <filesystem>
 
+#include "system.h"
+
 template <class Resource>
-class Resource_Manager
+class Resource_Manager : public System
 {
 protected:
     std::map<std::string, Resource*> resources_;
@@ -27,11 +29,13 @@ protected:
     }
 
 public:
-    Resource_Manager() {}
+    Resource_Manager(std::string name = "Resource_Manager-No_Name",
+        std::string master_path = "") : System(name, master_path) {}
 
-    void virtual Initialize(std::string path)
+    void virtual Initialize() override
     {
-        open_files(path);
+        if (std::filesystem::exists(master_path_) == false) return;
+        open_files(master_path_);
     }
 
     inline Resource* Get_Resource(std::string name)
@@ -42,6 +46,7 @@ public:
     }
 
     virtual void Clear() { resources_.clear(); }
+    void inline Shutdown() override { Clear(); }
 };
 
 #endif // !RESOURCE_MANAGER_CLASS_H

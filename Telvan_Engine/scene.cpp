@@ -63,6 +63,17 @@ void Scene::Load()
         
         if (transform->Get_Scale() == glm::vec2(-1.0f, -1.0f))
             transform->Read_From(writer);
+        else if (writer.HasMember("translation") && writer["translation"].IsArray())
+        {
+            const rapidjson::Value& translation = writer["transform"]["translation"];
+            glm::vec3 translation_;
+
+            translation_.x = (float)translation[0].GetDouble();
+            translation_.y = (float)translation[1].GetDouble();
+            translation_.z = (float)translation[2].GetDouble();
+
+            transform->Set_Translation(translation_);
+        }
 
         Entity_Manager::Get_Instance()->Add_Entity(entity);
     }

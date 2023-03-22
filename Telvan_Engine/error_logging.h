@@ -6,7 +6,9 @@
 #include <string>
 #include <fstream>
 
-class Error_Logging
+#include "system.h"
+
+class Error_Logging : public System
 {
 public:
     enum class Message_Level {
@@ -28,12 +30,13 @@ private:
         std::string function_name = "");
 
 public:
-    Error_Logging() : name_("Error Logging"), level_(Message_Level::ot_Information) {}
+    Error_Logging() : System("Error_Logging", ""),
+        name_("Error Logging"), level_(Message_Level::ot_Information) {}
     static Error_Logging* Get_Instance();
     ~Error_Logging() {}
 
-    void Initialize();
-    void Shutdown();
+    void Initialize() override;
+    void Shutdown() override;
 
     inline void Set_Message_Level(Message_Level level) { level_ = level; }
 

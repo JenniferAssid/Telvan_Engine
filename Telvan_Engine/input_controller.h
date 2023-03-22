@@ -13,6 +13,8 @@ protected:
     friend void move_left(float dT, Input_Controller& ic);
     friend void move_right(float dT, Input_Controller& ic);
 
+    friend void save_to_scene(float dT, Input_Controller& ic);
+
     int* action_bindings_;
 public:
     enum class Input_Actions

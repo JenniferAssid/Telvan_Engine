@@ -12,7 +12,7 @@
 class Texture_Manager : public Resource_Manager<Texture>
 {
 private:
-    Texture_Manager() {}
+    Texture_Manager() : Resource_Manager<Texture>("Texture_Manager", "./Assets/Textures/") {}
     static Texture_Manager* instance_;
 
 public:

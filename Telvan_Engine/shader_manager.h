@@ -14,7 +14,7 @@
 class Shader_Manager : public Resource_Manager<Shader>
 {
 protected:
-    Shader_Manager() {}
+    Shader_Manager() : Resource_Manager<Shader>("Shader_Manager", "./Assets/Shaders/") {}
     static Shader_Manager* instance_;
 
     Shader* load_shader_from_file(const char* s_vertex,
@@ -35,7 +35,7 @@ public:
         return instance_;
     }
 
-    void Initialize(std::string path) override;
+    void Initialize() override;
 
     void Clear() override;
 };

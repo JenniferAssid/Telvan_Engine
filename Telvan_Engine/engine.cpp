@@ -54,6 +54,12 @@ Engine::Engine(unsigned int width,
     glViewport(0, 0, width_, height_);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    Register_System((System*)Error_Logging::Get_Instance());
+    Register_System((System*)Shader_Manager::Get_Instance());
+    Register_System((System*)Texture_Manager::Get_Instance());
+    Register_System((System*)Prefab_Manager::Get_Instance());
+    Register_System((System*)Scene_Manager::Get_Instance());
 }
 
 Engine* Engine::Get_Instance()
@@ -89,15 +95,13 @@ void Engine::Initialize()
     deltaTime = last_frame = 0.0f;
     
     input = Input::Get_Instance();
-    shader_manager = Shader_Manager::Get_Instance();
-    texture_manager = Texture_Manager::Get_Instance();
-    prefab_manager = Prefab_Manager::Get_Instance();
-    scene_manager = Scene_Manager::Get_Instance();
+    shader_manager = (Shader_Manager*)Find_System("Shader_Manager");
+    texture_manager = (Texture_Manager*)Find_System("Texture_Manager");
+    prefab_manager = (Prefab_Manager*)Find_System("Prefab_Manager");
+    scene_manager = (Scene_Manager*)Find_System("Scene_Manager");
 
-    shader_manager->Initialize("./Assets/Shaders/");
-    texture_manager->Initialize("./Assets/Textures/");
-    scene_manager->Initialize("./Data/Scenes/");
-    prefab_manager->Initialize("./Data/Prefabs/");
+    for (System* system : systems_)
+        system->Initialize();
 
     Scene* scene = scene_manager->Get_Resource("Test_Scene");
     scene->Load();

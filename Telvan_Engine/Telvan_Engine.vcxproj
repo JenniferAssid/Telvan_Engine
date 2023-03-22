@@ -34,6 +34,7 @@
     <ClInclude Include="shader_manager.h" />
     <ClInclude Include="sprite_renderer.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="system.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="texture_manager.h" />
     <ClInclude Include="transform.h" />

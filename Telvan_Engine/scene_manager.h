@@ -12,7 +12,7 @@
 class Scene_Manager : public Resource_Manager<Scene>
 {
 private:
-    Scene_Manager() {}
+    Scene_Manager() : Resource_Manager<Scene>("Scene_Manager", "./Data/Scenes/") {}
     static Scene_Manager* instance_;
 
 public:

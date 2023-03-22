@@ -1,0 +1,25 @@
+{
+    "name": "Entity - Test",
+    "transform": {
+        "translation": [
+            200.0,
+            200.0,
+            0.0
+        ],
+        "scale": [
+            400.0,
+            400.0
+        ],
+        "rotation": 0.0
+    },
+    "sprite_renderer": {
+        "shader": "default",
+        "texture": "tree"
+    },
+    "input_controller": {},
+    "children": [
+        {
+            "prefab": "Write_Out_Test"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Write_Out_Test",
+    "transform": {
+        "translation": [
+            100.0,
+            300.0,
+            0.0
+        ],
+        "scale": [
+            300.0,
+            200.0
+        ],
+        "rotation": 20.0
+    },
+  "sprite_renderer": {
+    "shader": "default",
+    "texture": "sadface"
+  }
+}

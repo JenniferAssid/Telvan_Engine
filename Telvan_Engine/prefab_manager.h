@@ -7,8 +7,9 @@
 #include <string>
 #include <filesystem>
 
-#include "entity.h"
 #include "resource_manager.h"
+
+class Entity;
 
 class Prefab_Manager : public Resource_Manager<Entity>
 {
@@ -22,6 +23,8 @@ public:
         if (instance_ == nullptr) instance_ = new Prefab_Manager();
         return instance_;
     }
+
+    void Initialize() override;
 
     void Clear() override;
 };

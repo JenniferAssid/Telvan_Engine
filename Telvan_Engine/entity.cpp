@@ -4,13 +4,191 @@
 #include "input_controller.h"
 #include "error_logging.h"
 
+#include "prefab_manager.h"
+
+void Entity::overwrite_prefab()
+{
+    System* prefab_manager = (System*)Prefab_Manager::Get_Instance();
+    if (prefab_ == "")
+        prefab_ = prefab_manager->Get_Master_Path() + name_ + ".json";
+
+    unsigned counter = 0;
+
+    while (std::filesystem::exists(prefab_))
+    {
+        prefab_ = prefab_manager->Get_Master_Path() + name_ + "_" + std::to_string(counter) + ".json";
+        counter++;
+    }
+
+    std::ofstream ofs(prefab_.c_str());
+
+    if (ofs.is_open() == false)
+    {
+        Error_Logging::Get_Instance()->Record_Message(
+            Error_Logging::Get_Instance()->Format_Output("Failed to create file \"%s\"",
+                prefab_.c_str()),
+            Error_Logging::Message_Level::ot_Error,
+            "Entity",
+            "Write_To");
+        return;
+    }
+
+    Error_Logging::Get_Instance()->Record_Message(
+        Error_Logging::Get_Instance()->Format_Output("Created file \"%s\"",
+            prefab_.c_str()),
+        Error_Logging::Message_Level::ot_Information,
+        "Entity",
+        "Write_To");
+
+    rapidjson::StringBuffer sb;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+
+    write_out_instance(writer);
+
+    ofs.clear();
+    ofs << sb.GetString();
+    ofs.close();
+}
+
+void Entity::write_out_instance(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+{
+    writer.StartObject();
+
+    writer.Key("name");
+    writer.String(name_.c_str());
+
+    Transform* tranform = Get_Component<Transform>(Component_Type::ct_Transform);
+    if (tranform != nullptr)
+        tranform->Set_Print_Full_Transform(true);
+
+    for (unsigned i = 0; i < components_.size(); i++)
+        components_[i]->Write_To(writer);
+
+    if (children_.empty() == true)
+    {
+        writer.EndObject();
+        return;
+    }
+
+    writer.Key("children");
+    writer.StartArray();
+
+    for (unsigned i = 0; i < children_.size(); i++)
+    {
+        if (children_[i]->prefab_ != "")
+        {
+            /*children_[i]->write_out_prefab(writer);*/
+            writer.StartObject();
+            writer.Key("prefab");
+            writer.String(children_[i]->prefab_.c_str());
+            writer.EndObject();
+        }
+        else
+            children_[i]->write_out_instance(writer);
+    }
+
+    writer.EndArray();
+    writer.EndObject();
+}
+
+void Entity::write_out_prefab(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+{
+    writer.StartObject();
+
+    writer.Key("name");
+    writer.String(name_.c_str());
+
+    writer.Key("prefab");
+    writer.String(prefab_.c_str());
+
+    Transform* transform = Get_Component<Transform>(Component_Type::ct_Transform);
+    if (transform != nullptr)
+    {
+        transform->Set_Print_Full_Transform(true);
+        transform->Write_To(writer);
+    }
+
+    if (children_.empty() == true)
+    {
+        writer.EndObject();
+        return;
+    }
+
+    writer.Key("children");
+    writer.StartArray();
+
+    for (unsigned i = 0; i < children_.size(); i++)
+    {
+        if (children_[i]->prefab_ != "")
+        {
+            /*children_[i]->write_out_prefab(writer);*/
+            writer.StartObject();
+            writer.Key("prefab");
+            writer.String(children_[i]->prefab_.c_str());
+            writer.EndObject();
+        }
+        else
+            children_[i]->write_out_instance(writer);
+    }
+
+    writer.EndArray();
+    writer.EndObject();
+}
+
+void Entity::read_from_object(rapidjson::GenericObject<false, rapidjson::Value>& reader)
+{
+    if (reader.HasMember("name") == false) name_ = "No_Name";
+    else name_ = reader["name"].GetString();
+
+    if (reader.HasMember("transform"))
+    {
+        Add_Component<Transform>(Component_Type::ct_Transform)->Read_From(reader);
+    }
+    if (reader.HasMember("sprite_renderer"))
+    {
+        Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Read_From(reader);
+    }
+    if (reader.HasMember("input_controller"))
+    {
+        Add_Component<Input_Controller>(Component_Type::ct_Input_Controller)->Read_From(reader);
+    }
+
+    if (reader.HasMember("children") &&
+        reader["children"].IsArray())
+    {
+        rapidjson::Value::ValueIterator itr;
+
+        if (reader["children"].Begin() == nullptr)
+        {
+            return;
+        }
+
+        for (itr = reader["children"].Begin();
+            itr != reader["children"].End();
+            itr++)
+        {
+            rapidjson::GenericObject<false, rapidjson::Value> child_reader = itr->GetObject();
+
+            if (child_reader.HasMember("prefab"))
+            {
+                std::string entity_name = child_reader["prefab"].GetString();
+                Add_Child(new Entity(entity_name));
+            }
+            else
+            {
+                read_from_object(child_reader);
+            }
+        }
+    }
+}
+
 // Base Functions
 Entity::Entity(std::string name) : name_(name),
 destroy_(false),
 instantiated_(false),
 parent_(nullptr)
 {
-    filepath_ = "./Data/Prefabs" + name + ".json";
+    prefab_ = "";
 
     Add_Component<Transform>(Component_Type::ct_Transform);
 }
@@ -19,8 +197,8 @@ Entity::Entity(std::filesystem::path path) : destroy_(false),
 instantiated_(false),
 parent_(nullptr)
 {
-    filepath_ = path.string();
-    Read_From(filepath_);
+    name_ = prefab_ = path.stem().string();
+    Read_From(path);
 }
 
 Entity::Entity(const Entity& other)
@@ -29,7 +207,7 @@ Entity::Entity(const Entity& other)
     instantiated_ = false;
     parent_ = nullptr;
     destroy_ = false;
-    filepath_ = other.filepath_;
+    prefab_ = other.prefab_;
 
     for (Component* component : other.components_)
     {
@@ -38,6 +216,11 @@ Entity::Entity(const Entity& other)
         components_.push_back(clone);
         if (instantiated_)
             clone->Start();
+    }
+
+    for (Entity* entity : other.children_)
+    {
+        entity->Add_Child(new Entity(*entity));
     }
 }
 
@@ -102,99 +285,35 @@ void Entity::Render()
 }
 
 // Serialization Functions
-void Entity::Write_To(bool overwrite_prefab,
+void Entity::Write_To(bool overwrite,
     rapidjson::PrettyWriter<rapidjson::StringBuffer>* scene)
 {
     if (scene != nullptr)
     {
-        scene->StartObject();
-
-        scene->Key("name");
-        scene->String(name_.c_str());
-
-        scene->Key("prefab");
-        scene->String(filepath_.c_str());
-
-        Transform* transform = Get_Component<Transform>(Component_Type::ct_Transform);
-        if (transform != nullptr)
-        {
-            transform->Set_Print_Full_Transform(true);
-            transform->Write_To(*scene);
-        }
-
-        scene->EndObject();
+        if (prefab_ != "")
+            write_out_prefab(*scene);
+        else
+            write_out_instance(*scene);
         return;
     }
 
-    unsigned int counter = 0;
+    if (overwrite == false)
+        prefab_ = "";
 
-    while (std::filesystem::exists(filepath_) && overwrite_prefab == false)
-    {
-        filepath_ = "./Data/Prefabs/" + name_ + "_" + std::to_string(counter) + ".json";
-    }
-
-    std::ofstream ofs(filepath_.c_str());
-
-    if (ofs.is_open() == false)
-    {
-        Error_Logging::Get_Instance()->Record_Message(
-            Error_Logging::Get_Instance()->Format_Output("Failed to create file \"%s\"",
-                filepath_.c_str()),
-            Error_Logging::Message_Level::ot_Error,
-            "Entity",
-            "Write_To");
-        return;
-    }
-
-    Error_Logging::Get_Instance()->Record_Message(
-        Error_Logging::Get_Instance()->Format_Output("Created file \"%s\"",
-            filepath_.c_str()),
-        Error_Logging::Message_Level::ot_Information,
-        "Entity",
-        "Write_To");
-
-    rapidjson::StringBuffer sb;
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-
-    writer.StartObject();
-    writer.Key("name");
-    writer.String(name_.c_str());
-
-    for (unsigned i = 0; i < components_.size(); i++)
-    {
-        components_[i]->Write_To(writer);
-    }
-
-    writer.EndObject();
-
-    ofs.clear();
-    ofs << sb.GetString();
-    ofs.close();
+    overwrite_prefab();
 }
 
-void Entity::Read_From(std::string filepath)
+void Entity::Read_From(std::filesystem::path path)
 {
-    std::string file = (filepath == "") ? filepath_ : filepath;
+    if (std::filesystem::exists(path) == false) return;
 
-    Serialize* serialize = new Serialize(file);
+    Serialize* serialize = new Serialize(path.string().c_str());
 
-    if (serialize->document_.HasMember("name") == false) name_ = "No_Name";
-    else name_ = serialize->document_["name"].GetString();
+    rapidjson::GenericObject<false, rapidjson::Value> entity = serialize->document_.GetObject();
 
-    rapidjson::GenericObject<false, rapidjson::Value> writer = serialize->document_.GetObject();
+    read_from_object(entity);
 
-    if (serialize->document_.HasMember("transform"))
-    {
-        Add_Component<Transform>(Component_Type::ct_Transform)->Read_From(writer);
-    }
-    if (serialize->document_.HasMember("sprite_renderer"))
-    {
-        Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Read_From(writer);
-    }
-    if (serialize->document_.HasMember("input_controller"))
-    {
-        Add_Component<Input_Controller>(Component_Type::ct_Input_Controller)->Read_From(writer);
-    }
+    delete serialize;
 }
 
 // General Setter Functions

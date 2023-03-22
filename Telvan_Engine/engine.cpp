@@ -99,12 +99,21 @@ void Engine::Initialize()
     texture_manager = (Texture_Manager*)Find_System("Texture_Manager");
     prefab_manager = (Prefab_Manager*)Find_System("Prefab_Manager");
     scene_manager = (Scene_Manager*)Find_System("Scene_Manager");
+    entity_manager = Entity_Manager::Get_Instance();
 
     for (System* system : systems_)
         system->Initialize();
 
-    Scene* scene = scene_manager->Get_Resource("Test_Scene");
-    scene->Load();
+    /*Scene* scene = scene_manager->Get_Resource("Test_Scene");
+    scene->Load();*/
+
+    entity = new Entity(*prefab_manager->Get_Resource("Entity - Test"));
+
+    //Input_Controller* input_controller = entity->Add_Component<Input_Controller>(Component_Type::ct_Input_Controller);
+
+    entity->Write_To(true);
+
+    entity_manager->Add_Entity(entity);
 
     Shader shader = *shader_manager->Get_Resource("default");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),

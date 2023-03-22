@@ -36,7 +36,7 @@ public:
     Component* Clone() override;
 
     void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;
-    void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& writer) override;
+    void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader) override;
 
     inline glm::vec2 Get_Translation() const { return glm::vec2(translation_.x, translation_.y); }
     inline float Get_Z_Sorting_Value() const { return translation_.z; }

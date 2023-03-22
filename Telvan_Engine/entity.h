@@ -15,7 +15,7 @@ class Entity
 {
 private:
     std::string name_;
-    std::string filepath_;
+    std::string prefab_;
     bool destroy_;
     bool instantiated_;
     std::vector<Component*> components_;
@@ -23,6 +23,12 @@ private:
     Entity* parent_;
     std::vector<Entity*> children_;
 
+private:
+    void overwrite_prefab();
+    void write_out_instance(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+    void write_out_prefab(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+
+    void read_from_object(rapidjson::GenericObject<false, rapidjson::Value>& reader);
 public:
     // Base Functions
     Entity() : name_("NoName") {}
@@ -38,10 +44,13 @@ public:
     void Post_Update(float dT);
     void Render();
 
-    // Serialization Functions
-    void Write_To(bool overwrite_prefab = false, 
+    // Write To Functions
+    void Write_To(bool overwrite = false,
         rapidjson::PrettyWriter<rapidjson::StringBuffer>* scene = nullptr);
-    void Read_From(std::string filepath = "");
+
+    // Read From Functions
+    void Read_From(std::filesystem::path path);
+
 
     // General Getter Functions
     inline Entity* Get_Parent() const { return parent_; }

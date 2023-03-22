@@ -4,6 +4,7 @@
 #define SHADER_CLASS_H
 
 #include <string>
+#include <filesystem>
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -20,6 +21,7 @@ public:
 
 public:
     Shader() : ID(-1), Name("Shader_NoName") {}
+    Shader(std::filesystem::path path) : ID(-1), Name(path.stem().string()) {}
     
     Shader& Use();
     void Compile(const char* vertex_source, 

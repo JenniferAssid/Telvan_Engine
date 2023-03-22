@@ -9,36 +9,35 @@
 #include <filesystem>
 
 #include "shader.h"
+#include "resource_manager.h"
 
-class Shader_Manager
+class Shader_Manager : public Resource_Manager<Shader>
 {
-private:
+protected:
     Shader_Manager() {}
     static Shader_Manager* instance_;
 
-    static std::map<std::string, Shader> shaders_;
-
-    static Shader load_shader_from_file(const char* s_vertex,
+    Shader* load_shader_from_file(const char* s_vertex,
         const char* s_fragment,
         const char* s_geometry = nullptr);
 
-    void open_files(std::string path,
-        std::vector<std::filesystem::path>& vertex,
-        std::vector<std::filesystem::path>& fragment);
+    void open_files(std::string path) override;
+    
+    std::vector<std::filesystem::path> vertexs_;
+    std::vector<std::filesystem::path> fragments_;
 
 public:
-    static Shader_Manager* Get_Instance();
+    static inline Shader_Manager* Get_Instance()
+    {
+        if (instance_ == nullptr)
+            instance_ = new Shader_Manager();
 
-    void Initialize();
+        return instance_;
+    }
 
-    static Shader Load_Shader(const char* s_vertex,
-        const char* s_fragment,
-        const char* s_geometry,
-        std::string name);
+    void Initialize(std::string path) override;
 
-    static Shader Get_Shader(std::string name);
-
-    static void Clear();
+    void Clear() override;
 };
 
 #endif // !SHADER_MANAGER_CLASS_H

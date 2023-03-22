@@ -46,6 +46,8 @@ void Scene::Load()
 
     rapidjson::Value::ValueIterator itr;
 
+    if (serialize->document_[scene_name.c_str()].Begin() == nullptr) return;
+
     for (itr = itr = serialize->document_[scene_name.c_str()].Begin();
         itr != serialize->document_[scene_name.c_str()].End(); itr++)
     {
@@ -54,12 +56,13 @@ void Scene::Load()
         std::string entity_name = writer["name"].GetString();
         std::filesystem::path entity_path(writer["prefab"].GetString());
 
-        Entity* entity = new Entity(*Prefab_Manager::Get_Instance()->Get_Prefab(entity_path.stem().string()));
+        Entity* entity = new Entity(*Prefab_Manager::Get_Instance()->Get_Resource(entity_path.stem().string()));
         entity->Set_Name(entity_name);
 
         Transform* transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
         
-        transform->Read_From(writer);
+        if (transform->Get_Scale() == glm::vec2(-1.0f, -1.0f))
+            transform->Read_From(writer);
 
         Entity_Manager::Get_Instance()->Add_Entity(entity);
     }

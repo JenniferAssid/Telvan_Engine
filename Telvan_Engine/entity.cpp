@@ -114,6 +114,7 @@ void Entity::Write_To(bool overwrite_prefab,
         Transform* transform = Get_Component<Transform>(Component_Type::ct_Transform);
         if (transform != nullptr)
         {
+            transform->Set_Print_Full_Transform(true);
             transform->Write_To(*scene);
         }
 

@@ -3,12 +3,9 @@
 
 #include <sstream>
 
-
-
-std::map<std::string, Shader> Shader_Manager::shaders_;
 Shader_Manager* Shader_Manager::instance_;
 
-Shader Shader_Manager::load_shader_from_file(const char* s_vertex,
+Shader* Shader_Manager::load_shader_from_file(const char* s_vertex,
     const char* s_fragment,
     const char* s_geometry)
 {
@@ -56,73 +53,45 @@ Shader Shader_Manager::load_shader_from_file(const char* s_vertex,
     const char* code_fragment = fragment.c_str();
     const char* code_geometry = geometry.c_str();
 
-    Shader shader;
-    shader.Compile(code_vertex, code_fragment, (s_geometry != nullptr) ? code_geometry : nullptr);
+    Shader* shader = new Shader();
+    shader->Compile(code_vertex, code_fragment, (s_geometry != nullptr) ? code_geometry : nullptr);
     return shader;
 }
 
-void Shader_Manager::open_files(std::string path, 
-    std::vector<std::filesystem::path>& vertex,
-    std::vector<std::filesystem::path>& fragment)
+void Shader_Manager::open_files(std::string path)
 {
     for (const auto& entry : std::filesystem::directory_iterator(path))
     {
-        if (entry.is_directory() == true) open_files(entry.path().string() + "/", vertex, fragment);
+        if (entry.is_directory() == true) open_files(entry.path().string() + "/");
         else
         {
-            if (entry.path().extension() == ".vert") vertex.push_back(entry.path());
-            else if (entry.path().extension() == ".frag") fragment.push_back(entry.path());
+            if (entry.path().extension() == ".vert") vertexs_.push_back(entry.path());
+            else if (entry.path().extension() == ".frag") fragments_.push_back(entry.path());
         }
     }
 }
 
-Shader_Manager* Shader_Manager::Get_Instance()
+void Shader_Manager::Initialize(std::string path)
 {
-    if (instance_ == nullptr)
+    open_files(path);
+
+    for (int i = 0; i < vertexs_.size(); i++)
     {
-        instance_ = new Shader_Manager();
+        Shader* tmp = load_shader_from_file(vertexs_[i].string().c_str(),
+            fragments_[i].string().c_str(),
+            nullptr);
+        tmp->Name = vertexs_[i].stem().string();
+        resources_[tmp->Name] = tmp;
     }
-    return instance_;
-}
 
-void Shader_Manager::Initialize()
-{
-    std::vector<std::filesystem::path> vertex_shaders;
-    std::vector<std::filesystem::path> fragment_shaders;
-
-    std::string path = "Assets/Shaders/";
-    open_files(path, vertex_shaders, fragment_shaders);
-
-    unsigned int vertex_step = 0;
-    unsigned int fragment_step = 0;
-
-    for (unsigned int i = 0; i < vertex_shaders.size(); i++)
-    {
-        Load_Shader(vertex_shaders[i].string().c_str(),
-            fragment_shaders[i].string().c_str(),
-            nullptr,
-            vertex_shaders[i].stem().string().c_str());
-    }
-}
-
-Shader Shader_Manager::Load_Shader(const char* s_vertex,
-    const char* s_fragment,
-    const char* s_geometry,
-    std::string name)
-{
-    Shader tmp = load_shader_from_file(s_vertex, s_fragment, s_geometry);
-    tmp.Name = name;
-    shaders_[name] = tmp;
-    return shaders_[name];
-}
-
-Shader Shader_Manager::Get_Shader(std::string name)
-{
-    return shaders_[name];
+    vertexs_.clear();
+    fragments_.clear();
 }
 
 void Shader_Manager::Clear()
 {
-    for (auto iter : shaders_)
-        glDeleteTextures(1, &iter.second.ID);
+    for (auto iter : resources_)
+        glDeleteTextures(1, &iter.second->ID);
+
+    resources_.clear();
 }

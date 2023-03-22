@@ -69,11 +69,17 @@
     <ClInclude Include="scene.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="entity_manager.h">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClInclude>
     <ClInclude Include="input_controller.h">
       <Filter>Base Architecture\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_manager.h">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_manager.h">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClInclude>
+    <ClInclude Include="entity_manager.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -130,14 +136,17 @@
     <ClCompile Include="prefab_manager.cpp">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
-    <ClCompile Include="entity_manager.cpp">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClCompile>
     <ClCompile Include="scene.cpp">
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="input_controller.cpp">
       <Filter>Base Architecture\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="entity_manager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="scene_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

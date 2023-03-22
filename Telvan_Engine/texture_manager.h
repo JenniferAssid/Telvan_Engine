@@ -7,32 +7,24 @@
 #include <string>
 
 #include "texture.h"
+#include "resource_manager.h"
 
-class Texture_Manager
+class Texture_Manager : public Resource_Manager<Texture>
 {
 private:
     Texture_Manager() {}
     static Texture_Manager* instance_;
 
-    static std::map<std::string, Texture> textures_;
-
-    static Texture load_texture_from_file(const char* file,
-        bool alpha);
-
-    void open_files(std::string path);
-
 public:
-    static Texture_Manager* Get_Instance();
+    static inline Texture_Manager* Get_Instance()
+    {
+        if (instance_ == nullptr)
+            instance_ = new Texture_Manager();
 
-    void Initialize();
+        return instance_;
+    }
 
-    static Texture Load_Texture(const char* file,
-        bool alpha,
-        std::string name);
-
-    static Texture Get_Texture(std::string name);
-
-    static void Clear();
+    void Clear() override;
 };
 
 #endif // !SHADER_MANAGER_CLASS_H

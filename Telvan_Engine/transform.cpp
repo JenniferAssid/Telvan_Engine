@@ -1,16 +1,6 @@
 #include "transform.h"
 
-Component* Transform::Clone()
-{
-    Transform* transform = new Transform();
-    transform->translation_ = translation_;
-    transform->scale_ = scale_;
-    transform->rotation_ = rotation_;
-
-    return (Component*)transform;
-}
-
-void Transform::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+void Transform::write_to(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
 {
     writer.Key("transform");
     writer.StartObject();
@@ -30,6 +20,46 @@ void Transform::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& write
 
     writer.Key("rotation");
     writer.Double(rotation_);
+
+    writer.EndObject();
+}
+
+Component* Transform::Clone()
+{
+    Transform* transform = new Transform();
+    transform->translation_ = translation_;
+    transform->scale_ = scale_;
+    transform->rotation_ = rotation_;
+
+    return (Component*)transform;
+}
+
+void Transform::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+{
+    if (print_full_transform_ == true)
+    {
+        write_to(writer);
+        return;
+    }
+
+    writer.Key("transform");
+    writer.StartObject();
+
+    writer.Key("translation");
+    writer.StartArray();
+    writer.Double(translation_.x);
+    writer.Double(translation_.y);
+    writer.Double(translation_.z);
+    writer.EndArray();
+
+    writer.Key("scale");
+    writer.StartArray();
+    writer.Double(-1.0);
+    writer.Double(-1.0);
+    writer.EndArray();
+
+    writer.Key("rotation");
+    writer.Double(0.0);
 
     writer.EndObject();
 }

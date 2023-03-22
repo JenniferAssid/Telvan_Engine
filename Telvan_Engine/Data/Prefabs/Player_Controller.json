@@ -1,0 +1,20 @@
+{
+    "name": "Entity - Test",
+    "transform": {
+        "translation": [
+            200.0,
+            200.0,
+            0.0
+        ],
+        "scale": [
+            -1.0,
+            -1.0
+        ],
+        "rotation": 0.0
+    },
+    "sprite_renderer": {
+        "shader": "default",
+        "texture": "tree"
+    },
+    "input_controller": {}
+}

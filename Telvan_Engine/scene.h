@@ -4,6 +4,7 @@
 #define SCENE_CLASS_H
 
 #include <string>
+#include <filesystem>
 
 class Scene
 {
@@ -11,7 +12,7 @@ private:
     std::string name_;
 
 public:
-    Scene(std::string name) : name_(name) {}
+    Scene(std::filesystem::path path) : name_(path.stem().string()) {}
     void Load();
     void Save() {}
 

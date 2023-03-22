@@ -27,7 +27,9 @@
     <ClInclude Include="engine.h" />
     <ClInclude Include="input_controller.h" />
     <ClInclude Include="prefab_manager.h" />
+    <ClInclude Include="resource_manager.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="scene_manager.h" />
     <ClInclude Include="serialize.h" />
     <ClInclude Include="shader_manager.h" />
     <ClInclude Include="sprite_renderer.h" />
@@ -51,6 +53,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="prefab_manager.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="scene_manager.cpp" />
     <ClCompile Include="serialize.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shader.h" />

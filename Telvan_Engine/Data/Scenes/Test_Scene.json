@@ -1,8 +1,8 @@
 {
     "Test_Scene": [
         {
-            "name": "Entity - Test",
-            "prefab": "Data/Prefabs/Entity - Test.json",
+            "name": "Player_Controller",
+            "prefab": "Data/Prefabs/Player_Controller.json",
             "transform": {
                 "translation": [
                     200.0,
@@ -10,15 +10,15 @@
                     0.0
                 ],
                 "scale": [
-                    500.0,
-                    400.0
+                    100.0,
+                    100.0
                 ],
-                "rotation": 45.0
+                "rotation": 0.0
             }
         },
         {
-            "name": "Clone",
-            "prefab": "Data/Prefabs/Entity - Test.json",
+            "name": "Prop",
+            "prefab": "Data/Prefabs/Prop.json",
             "transform": {
                 "translation": [
                     200.0,
@@ -26,10 +26,10 @@
                     0.0
                 ],
                 "scale": [
-                    300.0,
-                    400.0
+                    100.0,
+                    100.0
                 ],
-                "rotation": 45.0
+                "rotation": 0.0
             }
         }
     ]

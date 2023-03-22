@@ -15,13 +15,19 @@ private:
     glm::vec2 scale_;
     float rotation_;
 
+    bool print_full_transform_;
+
+private:
+    void write_to(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+
 public:
     Transform(glm::vec3 translation = glm::vec3(0.0f),
         glm::vec3 scale = glm::vec3(1.0f),
         float rotation = 0.0f) : Component(Component_Type::ct_Transform),
-                                    translation_(translation),
-                                    scale_(scale),
-                                    rotation_(rotation)
+        translation_(translation),
+        scale_(scale),
+        rotation_(rotation),
+        print_full_transform_(false)
     {}
     // TODO: Make copy constructor
     ~Transform() {}
@@ -35,6 +41,7 @@ public:
     inline float Get_Z_Sorting_Value() const { return translation_.z; }
     inline glm::vec2 Get_Scale() const { return scale_; }
     inline float Get_Rotation() const { return rotation_; }
+    inline bool Get_Print_Full_Transform() const { return print_full_transform_; }
 
     inline void Set_Translation(glm::vec3 translation) { translation_ = glm::vec3(translation.x,
                                                                                     translation.y,
@@ -47,6 +54,7 @@ public:
     inline void Set_Scale_X(float x) { scale_.x = x; }
     inline void Set_Scale_Y(float y) { scale_.y = y; }
     inline void Set_Rotation(float deg) { rotation_ = deg; }
+    inline void Set_Print_Full_Transform(bool print_full_transform) { print_full_transform_ = print_full_transform; }
 };
 
 #endif // !TRANSFORM_CLASS_H

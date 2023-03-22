@@ -47,9 +47,9 @@ Component* Sprite_Renderer::Clone()
 {
     Sprite_Renderer* sprite_renderer = new Sprite_Renderer();
 
-    Shader shader = Shader_Manager::Get_Instance()->Get_Shader(shader_.Name);
+    Shader shader = *Shader_Manager::Get_Instance()->Get_Resource(shader_.Name);
     sprite_renderer->Set_Shader(shader);
-    Texture texture = Texture_Manager::Get_Instance()->Get_Texture(texture_.Name);
+    Texture texture = *Texture_Manager::Get_Instance()->Get_Resource(texture_.Name);
     sprite_renderer->Set_Texture(texture);
     
     return (Component*)sprite_renderer;
@@ -128,7 +128,7 @@ void Sprite_Renderer::Read_From(rapidjson::GenericObject<false, rapidjson::Value
     {
         const rapidjson::Value& shader = writer["sprite_renderer"]["shader"];
 
-        shader_ = Shader_Manager::Get_Instance()->Get_Shader(shader.GetString());
+        shader_ = *Shader_Manager::Get_Instance()->Get_Resource(shader.GetString());
     }
 
     if (writer["sprite_renderer"].GetObject().HasMember("texture") &&
@@ -136,6 +136,6 @@ void Sprite_Renderer::Read_From(rapidjson::GenericObject<false, rapidjson::Value
     {
         const rapidjson::Value& texture = writer["sprite_renderer"]["texture"];
 
-        texture_ = Texture_Manager::Get_Instance()->Get_Texture(texture.GetString());
+        texture_ = *Texture_Manager::Get_Instance()->Get_Resource(texture.GetString());
     }
 }

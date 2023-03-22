@@ -1,13 +1,18 @@
 #include "engine.h"
+#include "error_logging.h"
+
 #include "shader_manager.h"
-#include "sprite_renderer.h"
+#include "texture_manager.h"
+#include "scene_manager.h"
 #include "prefab_manager.h"
 #include "entity_manager.h"
-#include "error_logging.h"
-#include "scene.h"
+
+
+
 #include "entity.h"
 #include "transform.h"
 #include "input_controller.h"
+#include "sprite_renderer.h"
 
 #include <iostream>
 
@@ -68,93 +73,40 @@ Engine::~Engine()
     glfwTerminate();
 }
 
-Sprite_Renderer* renderer;
+Input* input;
+Entity_Manager* entity_manager;
+Shader_Manager* shader_manager;
+Texture_Manager* texture_manager;
+Prefab_Manager* prefab_manager;
+Scene_Manager* scene_manager;
+
 Entity* entity;
 Entity* test;
-Transform* transform;
-Input* input;
 
-void Move_Up(float dT)
-{
-    glm::vec2 pos = transform->Get_Translation();
-    pos.y -= 5.0f;
-    transform->Set_Translation(pos);
-}
-void Move_Down(float dT)
-{
-    glm::vec2 pos = transform->Get_Translation();
-    pos.y += 5.0f;
-    transform->Set_Translation(pos);
-}
-void Move_Left(float dT)
-{
-    glm::vec2 pos = transform->Get_Translation();
-    pos.x -= 5.0f;
-    transform->Set_Translation(pos);
-}
-void Move_Right(float dT)
-{
-    glm::vec2 pos = transform->Get_Translation();
-    pos.x += 5.0f;
-    transform->Set_Translation(pos);
-}
 
 void Engine::Initialize()
 {
     deltaTime = last_frame = 0.0f;
-    /*entity = new Entity("Entity - Test");*/
     
     input = Input::Get_Instance();
-    /*input->Add_Binding(GLFW_KEY_W, Move_Up, Input::Callback_Type::cb_Down);
-    input->Add_Binding(GLFW_KEY_S, Move_Down, Input::Callback_Type::cb_Down);
-    input->Add_Binding(GLFW_KEY_A, Move_Left, Input::Callback_Type::cb_Down);
-    input->Add_Binding(GLFW_KEY_D, Move_Right, Input::Callback_Type::cb_Down);*/
+    shader_manager = Shader_Manager::Get_Instance();
+    texture_manager = Texture_Manager::Get_Instance();
+    prefab_manager = Prefab_Manager::Get_Instance();
+    scene_manager = Scene_Manager::Get_Instance();
 
-    Shader_Manager* shader_manager = Shader_Manager::Get_Instance();
+    shader_manager->Initialize("./Assets/Shaders/");
+    texture_manager->Initialize("./Assets/Textures/");
+    scene_manager->Initialize("./Data/Scenes/");
+    prefab_manager->Initialize("./Data/Prefabs/");
 
-    Shader shader = shader_manager->Load_Shader("Assets/Shaders/default.vert", "Assets/Shaders/default.frag", nullptr, "sprite");
+    Scene* scene = scene_manager->Get_Resource("Test_Scene");
+    scene->Load();
+
+    Shader shader = *shader_manager->Get_Resource("default");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),
         static_cast<float>(this->height_), 0.0f, -1.0f, 1.0f);
     shader.Use().Set_Integer("tex", 0);
     shader.Set_Matrix_4("projection", projection);
-    /*Texture texture = Texture_Manager::Get_Instance()->Load_Texture("Assets/Textures/awesomeface.png", true, "face");*/
-    Texture_Manager::Get_Instance()->Initialize();
-
-    Prefab_Manager::Get_Instance()->Initialize();
-
-    /*Scene* scene = new Scene("Test_Scene");
-    scene->Load();*/
-
-    entity = Prefab_Manager::Get_Instance()->Get_Prefab("Entity - Test");
-
-    test = new Entity(*entity);
-    test->Set_Name("Clone");
-    test->Remove_Component(Component_Type::ct_Input_Controller);
-
-    Entity_Manager::Get_Instance()->Add_Entity(entity);
-    Entity_Manager::Get_Instance()->Add_Entity(test);
-
-    /*transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
-    renderer = entity->Get_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer);
-
-    std::ofstream ofs("./Data/Scenes/Test_Scene.json");
-
-    rapidjson::StringBuffer sb;
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-
-    writer.StartObject();
-    writer.Key("Test_Scene");
-    writer.StartArray();
-
-    entity->Write_To(false, &writer);
-    test->Write_To(false, &writer);
-
-    writer.EndArray();
-    writer.EndObject();
-
-    ofs.clear();
-    ofs << sb.GetString();
-    ofs.close();*/
 
     Entity_Manager::Get_Instance()->Start();
 }
@@ -179,7 +131,5 @@ void Engine::Update()
 
 void Engine::Render()
 {
-    /*renderer->Draw_Sprite(tmp,
-        transform->Get_Translation(), transform->Get_Scale(), transform->Get_Rotation(), glm::vec3(0.0f, 1.0f, 0.0f));*/
     Entity_Manager::Get_Instance()->Render();
 }

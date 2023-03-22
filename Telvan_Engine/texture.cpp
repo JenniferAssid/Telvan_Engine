@@ -1,4 +1,5 @@
 #include "texture.h"
+#include "stb_image.h"
 
 #include <iostream>
 
@@ -6,6 +7,21 @@ Texture::Texture() : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(
 Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR)
 {
     glGenTextures(1, &ID);
+}
+
+Texture::Texture(std::filesystem::path path) : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB),
+Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR)
+{
+    glGenTextures(1, &ID);
+
+    Name = path.stem().string();
+
+    Internal_Format = Image_Format = GL_RGBA;
+
+    int width, height, nr_channels;
+    unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &nr_channels, 0);
+    Generate(width, height, data);
+    stbi_image_free(data);
 }
 
 void Texture::Generate(unsigned int width,

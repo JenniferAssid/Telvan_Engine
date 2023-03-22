@@ -8,25 +8,22 @@
 #include <filesystem>
 
 #include "entity.h"
+#include "resource_manager.h"
 
-class Prefab_Manager
+class Prefab_Manager : public Resource_Manager<Entity>
 {
-private:
+protected:
     Prefab_Manager() {}
     static Prefab_Manager* instance_;
 
-    static std::map<std::string, Entity*> prefabs_;
-
-    void open_files(std::string path);
-
 public:
-    static Prefab_Manager* Get_Instance();
+    inline static Prefab_Manager* Get_Instance() 
+    {
+        if (instance_ == nullptr) instance_ = new Prefab_Manager();
+        return instance_;
+    }
 
-    void Initialize();
-
-    static Entity* Get_Prefab(std::string name);
-
-    static void Clear();
+    void Clear() override;
 };
 
 #endif // !PREFAB_MANAGER_CLASS_H

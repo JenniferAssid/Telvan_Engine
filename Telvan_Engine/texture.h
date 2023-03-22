@@ -5,6 +5,7 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <filesystem>
 
 class Texture
 {
@@ -24,6 +25,7 @@ public:
 
 public:
     Texture();
+    Texture(std::filesystem::path path);
 
     void Generate(unsigned int width,
         unsigned int height,

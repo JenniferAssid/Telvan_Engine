@@ -2,6 +2,8 @@
 #include "error_logging.h"
 #include "stb_image.h"
 
+#include "texture.h"
+
 #include <filesystem>
 
 Texture_Manager* Texture_Manager::instance_;

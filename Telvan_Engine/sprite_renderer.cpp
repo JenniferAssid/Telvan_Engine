@@ -4,12 +4,16 @@
 #include "transform.h"
 #include "error_logging.h"
 
+#include "texture_manager.h"
+
+
+
 #include <glad/glad.h>
 
 void Sprite_Renderer::initialize_render_data()
 {
     unsigned int VBO;
-    float vertices[] = {
+    /*float vertices[] = {
         // position     // tex coord
         0.0f, 1.0f,     0.0f, 1.0f,     // top-left
         1.0f, 0.0f,     1.0f, 0.0f,     // bottom-right
@@ -18,6 +22,16 @@ void Sprite_Renderer::initialize_render_data()
         0.0f, 1.0f,     0.0f, 1.0f,     // top-left
         1.0f, 1.0f,     1.0f, 1.0f,     // top-right
         1.0f, 0.0f,     1.0f, 0.0f      // bottom-left
+    };*/
+    float vertices[] = {
+        // position     // tex coord
+        -0.5f, 0.5f,     0.0f, 1.0f,     // top-left
+        0.5f, -0.5f,     1.0f, 0.0f,     // bottom-right
+        -0.5f, -0.5f,     0.0f, 0.0f,     // bottom-left
+
+        -0.5f, 0.5f,     0.0f, 1.0f,     // top-left
+        0.5f, 0.5f,     1.0f, 1.0f,     // top-right
+        0.5f, -0.5f,     1.0f, 0.0f      // bottom-right
     };
 
     glGenVertexArrays(1, &this->quad_VAO_);
@@ -89,19 +103,23 @@ void Sprite_Renderer::Render()
         if (parent_transform != nullptr)
         {
             position += parent_transform->Get_Translation();
-            size += parent_transform->Get_Scale();
+            size *= parent_transform->Get_Scale();
             rotate += parent_transform->Get_Rotation();
         }
     }
+
+    position.y *= -1.0f;
 
     // prepare transformations
     shader_.Use();
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));
 
-    model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+    /*model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));*/
+
+    model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
 
     model = glm::scale(model, glm::vec3(size, 1.0f));
 
@@ -116,7 +134,7 @@ void Sprite_Renderer::Render()
     glBindVertexArray(0);
 }
 
-void Sprite_Renderer::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+void Sprite_Renderer::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)
 {
     writer.Key("sprite_renderer");
     writer.StartObject();

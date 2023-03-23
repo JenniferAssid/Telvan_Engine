@@ -6,8 +6,9 @@
 #include <map>
 #include <string>
 
-#include "texture.h"
 #include "resource_manager.h"
+
+class Texture;
 
 class Texture_Manager : public Resource_Manager<Texture>
 {

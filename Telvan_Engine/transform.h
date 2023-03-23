@@ -27,22 +27,20 @@ public:
         float rotation = 0.0f) : Component(Component_Type::ct_Transform),
         translation_(translation),
         scale_(scale),
-        rotation_(rotation),
-        print_full_transform_(false)
+        rotation_(rotation)
     {}
     // TODO: Make copy constructor
     ~Transform() {}
 
     Component* Clone() override;
 
-    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;
+    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values = true) override;
     void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader) override;
 
     inline glm::vec2 Get_Translation() const { return glm::vec2(translation_.x, translation_.y); }
     inline float Get_Z_Sorting_Value() const { return translation_.z; }
     inline glm::vec2 Get_Scale() const { return scale_; }
     inline float Get_Rotation() const { return rotation_; }
-    inline bool Get_Print_Full_Transform() const { return print_full_transform_; }
 
     inline void Set_Translation(glm::vec3 translation) 
     { 
@@ -53,7 +51,7 @@ public:
     inline void Set_Translation(glm::vec2 translation) 
     { 
         translation_ = glm::vec3(translation.x, 
-            translation.y, 
+            translation.y,
             translation_.z); 
     }
     inline void Set_Z_Sorting_Value(float z) 
@@ -76,7 +74,6 @@ public:
     { 
         rotation_ = deg; 
     }
-    inline void Set_Print_Full_Transform(bool print_full_transform) { print_full_transform_ = print_full_transform; }
 };
 
 #endif // !TRANSFORM_CLASS_H

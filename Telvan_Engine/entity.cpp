@@ -57,11 +57,7 @@ void Entity::write_out_instance(rapidjson::PrettyWriter<rapidjson::StringBuffer>
     writer.Key("name");
     writer.String(name_.c_str());
 
-    Transform* tranform = Get_Component<Transform>(Component_Type::ct_Transform);
-    if (tranform != nullptr)
-        tranform->Set_Print_Full_Transform(true);
-
-    for (unsigned i = 0; i < components_.size(); i++)
+    for (unsigned i = 1; i < components_.size(); i++)
         components_[i]->Write_To(writer);
 
     if (children_.empty() == true)
@@ -81,6 +77,13 @@ void Entity::write_out_instance(rapidjson::PrettyWriter<rapidjson::StringBuffer>
             writer.StartObject();
             writer.Key("prefab");
             writer.String(children_[i]->prefab_.c_str());
+            
+            Transform* child_transform = children_[i]->Get_Component<Transform>(Component_Type::ct_Transform);
+            if (child_transform != nullptr)
+            {
+                child_transform->Write_To(writer);
+            }
+
             writer.EndObject();
         }
         else
@@ -103,10 +106,7 @@ void Entity::write_out_prefab(rapidjson::PrettyWriter<rapidjson::StringBuffer>& 
 
     Transform* transform = Get_Component<Transform>(Component_Type::ct_Transform);
     if (transform != nullptr)
-    {
-        transform->Set_Print_Full_Transform(true);
-        transform->Write_To(writer);
-    }
+        transform->Write_To(writer, false);
 
     if (children_.empty() == true)
     {
@@ -330,50 +330,6 @@ void Entity::Set_Parent(Entity* parent)
     parent->Add_Child(this);
     parent_ = parent;
 }
-
-// Component Functions
-//template <class T>
-//T* Entity::Add_Component()
-//{
-//    Component* component = (Component*)Get_Component<T>();
-//
-//    if (component == nullptr)
-//    {
-//        component = (Component*)new T();
-//
-//        component->Set_Parent(this);
-//
-//        components_.push_back(component);
-//
-//        if (instantiated_)
-//            component->Start();
-//    }
-//
-//    return (T*)component;
-//}
-
-//template <class T>
-//T* Entity::Get_Component() const
-//{
-//    for (int i = 0; i < components_.size(); i++)
-//    {
-//        if ((T*)components_[i] != nullptr) return (T*)components_[i];
-//    }
-//
-//    return nullptr;
-//}
-
-//template <class T>
-//void Entity::Remove_Component(T* component)
-//{
-//    auto result = std::find(components_.begin(), components_.end(), component);
-//
-//    if (result == components_.end()) return;
-//
-//    int index = result - components_.begin();
-//
-//    (*result)->Stop();
-//}
 
 // Children Functions
 void Entity::Add_Child(Entity* child)

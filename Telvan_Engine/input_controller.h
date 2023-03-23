@@ -37,7 +37,7 @@ public:
     void Start() override;
     void Stop() override;
 
-    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)  override;
+    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values = true)  override;
     void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& writer) override;
 };
 

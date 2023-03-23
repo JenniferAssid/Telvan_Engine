@@ -1,6 +1,8 @@
 #include "shader_manager.h"
 #include "error_logging.h"
 
+#include "shader.h"
+
 #include <sstream>
 
 Shader_Manager* Shader_Manager::instance_;

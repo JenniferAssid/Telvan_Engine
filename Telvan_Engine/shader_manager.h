@@ -8,8 +8,9 @@
 #include <vector>
 #include <filesystem>
 
-#include "shader.h"
 #include "resource_manager.h"
+
+class Shader;
 
 class Shader_Manager : public Resource_Manager<Shader>
 {

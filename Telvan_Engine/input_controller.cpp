@@ -28,7 +28,7 @@ void move_up(float dT, Input_Controller& ic)
     }
 
     glm::vec2 pos = transform->Get_Translation();
-    pos.y -= 5.0f;
+    pos.y += 5.0f;
     transform->Set_Translation(pos);
 }
 
@@ -57,7 +57,7 @@ void move_down(float dT, Input_Controller& ic)
     }
 
     glm::vec2 pos = transform->Get_Translation();
-    pos.y += 5.0f;
+    pos.y -= 5.0f;
     transform->Set_Translation(pos);
 }
 
@@ -182,7 +182,7 @@ void Input_Controller::Stop()
     Input::Get_Instance()->Remove_Binding(action_bindings_[(int)Input_Actions::ia_Right], Input::Callback_Type::cb_Down);
 }
 
-void Input_Controller::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+void Input_Controller::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)
 {
     writer.Key("input_controller");
     writer.StartObject();

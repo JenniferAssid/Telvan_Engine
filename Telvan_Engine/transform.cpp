@@ -34,9 +34,9 @@ Component* Transform::Clone()
     return (Component*)transform;
 }
 
-void Transform::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+void Transform::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)
 {
-    if (print_full_transform_ == true)
+    if (preserve_values == true)
     {
         write_to(writer);
         return;

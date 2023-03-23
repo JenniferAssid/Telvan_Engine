@@ -7,8 +7,6 @@
 #include "prefab_manager.h"
 #include "entity_manager.h"
 
-
-
 #include "entity.h"
 #include "transform.h"
 #include "input_controller.h"
@@ -108,13 +106,19 @@ void Engine::Initialize()
     scene->Load();*/
 
     entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
-    entity->Add_Child(prefab_manager->Get_Resource("Write_Out_Test"));
+    entity->Add_Child(new Entity(*prefab_manager->Get_Resource("Write_Out_Test")));
+    entity->Get_Children()[0]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Scale(glm::vec2(0.5f, 0.5f));
+    entity->Get_Children()[0]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Rotation(0.0f);
     entity->Set_Name("Entity_With_Children_Test");
+    entity->Add_Child(new Entity(*prefab_manager->Get_Resource("Write_Out_Test")));
+    entity->Get_Children()[1]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(300.0f, 400.0f));
+    entity->Get_Children()[1]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Scale(glm::vec2(0.75f, 0.5f));
+    entity->Get_Children()[1]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Rotation(45.0f);
     test = new Entity(*prefab_manager->Get_Resource("Write_Out_Test"));
 
     //Input_Controller* input_controller = entity->Add_Component<Input_Controller>(Component_Type::ct_Input_Controller);
 
-    entity->Write_To();
+    //entity->Write_To();
 
     entity_manager->Add_Entity(entity);
     entity_manager->Add_Entity(test);

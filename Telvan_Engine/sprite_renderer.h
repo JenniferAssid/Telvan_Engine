@@ -7,8 +7,9 @@
 #include <rapidjson/prettywriter.h>
 
 #include "components.h"
-#include "texture_manager.h"
-#include "shader_manager.h"
+
+#include "texture.h"
+#include "shader.h"
 
 class Sprite_Renderer : Component
 {
@@ -28,7 +29,7 @@ public:
 
     void Render() override;
 
-    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) override;
+    void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values) override;
     void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& writer) override;
 
     inline Shader& Get_Shader() { return shader_; }

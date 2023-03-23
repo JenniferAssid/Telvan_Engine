@@ -85,7 +85,7 @@ void Sprite_Renderer::Render()
 
     if (parent_->Get_Parent() != nullptr)
     {
-        Transform* parent_transform = parent_->Get_Component<Transform>(Component_Type::ct_Transform);
+        Transform* parent_transform = parent_->Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
         if (parent_transform != nullptr)
         {
             position += parent_transform->Get_Translation();

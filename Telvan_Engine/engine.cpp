@@ -107,13 +107,17 @@ void Engine::Initialize()
     /*Scene* scene = scene_manager->Get_Resource("Test_Scene");
     scene->Load();*/
 
-    entity = new Entity(*prefab_manager->Get_Resource("Entity - Test"));
+    entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
+    entity->Add_Child(prefab_manager->Get_Resource("Write_Out_Test"));
+    entity->Set_Name("Entity_With_Children_Test");
+    test = new Entity(*prefab_manager->Get_Resource("Write_Out_Test"));
 
     //Input_Controller* input_controller = entity->Add_Component<Input_Controller>(Component_Type::ct_Input_Controller);
 
-    entity->Write_To(true);
+    entity->Write_To();
 
     entity_manager->Add_Entity(entity);
+    entity_manager->Add_Entity(test);
 
     Shader shader = *shader_manager->Get_Resource("default");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),

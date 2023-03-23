@@ -1,5 +1,5 @@
 {
-    "name": "Entity - Test",
+    "name": "Entity_With_Children_Test",
     "transform": {
         "translation": [
             200.0,
@@ -16,5 +16,10 @@
         "shader": "default",
         "texture": "tree"
     },
-    "input_controller": {}
+    "input_controller": {},
+    "children": [
+        {
+            "prefab": "Write_Out_Test"
+        }
+    ]
 }

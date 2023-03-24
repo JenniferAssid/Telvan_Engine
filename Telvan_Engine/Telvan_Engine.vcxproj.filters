@@ -27,135 +27,95 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="input.h">
-      <Filter>Base Architecture\Input</Filter>
+    <ClInclude Include="Source\components.h" />
+    <ClInclude Include="Source\engine.h" />
+    <ClInclude Include="Source\entity.h" />
+    <ClInclude Include="Source\error_logging.h" />
+    <ClInclude Include="Source\input.h" />
+    <ClInclude Include="Source\scene.h" />
+    <ClInclude Include="Source\serialize.h" />
+    <ClInclude Include="Source\stb_image.h" />
+    <ClInclude Include="Source\system.h" />
+    <ClInclude Include="Source\transform.h">
+      <Filter>Base Architecture\Components</Filter>
     </ClInclude>
-    <ClInclude Include="engine.h">
-      <Filter>Base Architecture\General</Filter>
+    <ClInclude Include="Source\sprite_renderer.h">
+      <Filter>Base Architecture\Components</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
+    <ClInclude Include="Source\input_controller.h">
+      <Filter>Base Architecture\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\texture.h">
       <Filter>Base Architecture\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Base Architecture\General</Filter>
+    <ClInclude Include="Source\shader.h">
+      <Filter>Base Architecture\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Base Architecture\Components</Filter>
+    <ClInclude Include="Source\graphics.h">
+      <Filter>Base Architecture\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="serialize.h">
-      <Filter>Base Architecture\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="sprite_renderer.h">
-      <Filter>Base Architecture\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="shader_manager.h">
+    <ClInclude Include="Source\entity_manager.h">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
-    <ClInclude Include="texture_manager.h">
+    <ClInclude Include="Source\texture_manager.h">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
-    <ClInclude Include="entity.h">
-      <Filter>Base Architecture\General</Filter>
-    </ClInclude>
-    <ClInclude Include="components.h">
-      <Filter>Base Architecture\General</Filter>
-    </ClInclude>
-    <ClInclude Include="prefab_manager.h">
+    <ClInclude Include="Source\shader_manager.h">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="input_controller.h">
-      <Filter>Base Architecture\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="scene_manager.h">
+    <ClInclude Include="Source\scene_manager.h">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
-    <ClInclude Include="entity_manager.h">
-      <Filter>Game</Filter>
+    <ClInclude Include="Source\prefab_manager.h">
+      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>Base Architecture\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="resource_manager.h">
-      <Filter>Base Architecture\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="error_logging.h">
-      <Filter>Base Architecture\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics.h">
-      <Filter>Base Architecture\Systems</Filter>
+    <ClInclude Include="Source\resource_manager.h">
+      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag">
-      <Filter>Base Architecture\Graphics</Filter>
-    </None>
-    <None Include="default.vert">
-      <Filter>Base Architecture\Graphics</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="shader.h">
-      <Filter>Base Architecture\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Base Architecture\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Base Architecture\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="engine.cpp">
-      <Filter>Base Architecture\General</Filter>
-    </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>Base Architecture\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Base Architecture\General</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Base Architecture\General</Filter>
-    </ClCompile>
-    <ClCompile Include="serialize.cpp">
-      <Filter>Base Architecture\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="transform.cpp">
+    <ClCompile Include="Source\engine.cpp" />
+    <ClCompile Include="Source\entity.cpp" />
+    <ClCompile Include="Source\error_logging.cpp" />
+    <ClCompile Include="Source\input.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\scene.cpp" />
+    <ClCompile Include="Source\serialize.cpp" />
+    <ClCompile Include="Source\transform.cpp">
       <Filter>Base Architecture\Components</Filter>
     </ClCompile>
-    <ClCompile Include="sprite_renderer.cpp">
+    <ClCompile Include="Source\sprite_renderer.cpp">
       <Filter>Base Architecture\Components</Filter>
     </ClCompile>
-    <ClCompile Include="shader_manager.cpp">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClCompile>
-    <ClCompile Include="texture_manager.cpp">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClCompile>
-    <ClCompile Include="entity.cpp">
-      <Filter>Base Architecture\General</Filter>
-    </ClCompile>
-    <ClCompile Include="prefab_manager.cpp">
-      <Filter>Base Architecture\Resource_Managment</Filter>
-    </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="input_controller.cpp">
+    <ClCompile Include="Source\input_controller.cpp">
       <Filter>Base Architecture\Components</Filter>
     </ClCompile>
-    <ClCompile Include="entity_manager.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="Source\texture.cpp">
+      <Filter>Base Architecture\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="scene_manager.cpp">
+    <ClCompile Include="Source\shader.cpp">
+      <Filter>Base Architecture\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics.cpp">
+      <Filter>Base Architecture\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\glad.c">
+      <Filter>Base Architecture\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\entity_manager.cpp">
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
-    <ClCompile Include="error_logging.cpp">
-      <Filter>Base Architecture\Systems</Filter>
+    <ClCompile Include="Source\texture_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
-    <ClCompile Include="graphics.cpp">
-      <Filter>Base Architecture\Systems</Filter>
+    <ClCompile Include="Source\shader_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\prefab_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

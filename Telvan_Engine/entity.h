@@ -24,9 +24,11 @@ private:
     std::vector<Entity*> children_;
 
 private:
-    void overwrite_prefab();
-    void write_out_instance(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
-    void write_out_prefab(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+    void overwrite_prefab(bool preserve_transform);
+    void write_out_instance(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer,
+        bool preserve_transform);
+    void write_out_prefab(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer,
+        bool preserve_transform);
 
     void read_from_object(rapidjson::GenericObject<false, rapidjson::Value>& reader);
 public:
@@ -35,6 +37,7 @@ public:
     Entity(std::string name);
     Entity(std::filesystem::path path);
     Entity(const Entity& other);
+    Entity(std::string name, std::string prefab);
     ~Entity();
 
     // Logic Functions
@@ -46,6 +49,7 @@ public:
 
     // Write To Functions
     void Write_To(bool overwrite = false,
+        bool preserve_transform = false,
         rapidjson::PrettyWriter<rapidjson::StringBuffer>* scene = nullptr);
 
     // Read From Functions
@@ -56,11 +60,13 @@ public:
     inline Entity* Get_Parent() const { return parent_; }
     inline std::string Get_Name() const { return name_; }
     inline bool Is_Destroyed() const { return destroy_; }
+    inline std::string Get_Prefab() const { return prefab_; }
 
     // General Setter Functions
     void Set_Parent(Entity* parent);
     inline void Set_Name(std::string name) { name_ = name; }
     inline void Destroy() { destroy_ = true; }
+    inline void Set_Prefab(std::string prefab) { prefab_ = prefab; }
 
     // Component Functions
     template <class T>

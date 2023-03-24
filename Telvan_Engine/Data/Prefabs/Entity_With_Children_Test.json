@@ -1,5 +1,17 @@
 {
     "name": "Entity_With_Children_Test",
+    "transform": {
+        "translation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            400.0,
+            400.0
+        ],
+        "rotation": 0.0
+    },
     "sprite_renderer": {
         "shader": "default",
         "texture": "tree"
@@ -7,33 +19,35 @@
     "input_controller": {},
     "children": [
         {
+            "name": "Child_1",
             "prefab": "Write_Out_Test",
             "transform": {
                 "translation": [
-                    100.0,
-                    300.0,
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "scale": [
-                    0.5,
+                    1.0,
                     0.5
                 ],
                 "rotation": 0.0
             }
         },
         {
+            "name": "Child_2",
             "prefab": "Write_Out_Test",
             "transform": {
                 "translation": [
-                    300.0,
-                    400.0,
+                    50.0,
+                    -20.0,
                     0.0
                 ],
                 "scale": [
-                    0.75,
+                    0.5,
                     0.5
                 ],
-                "rotation": 45.0
+                "rotation": 20.0
             }
         }
     ]

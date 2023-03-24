@@ -87,6 +87,7 @@ void Engine::Initialize()
     scene->Load();*/
 
     entity = new Entity(*prefab_manager->Get_Resource("Entity_With_Instance_Children"));
+    current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
     /*entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
     entity->Set_Name("Entity_With_Instance_Children");
     entity->Add_Child(new Entity("Child_Instance_1", ""));
@@ -98,14 +99,14 @@ void Engine::Initialize()
     entity->Get_Children()[0]->Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Set_Texture(
         *texture_manager->Get_Resource("awesomeface")
     );*/
-    //test = new Entity(*prefab_manager->Get_Resource("Write_Out_Test"));
+    test = new Entity(*prefab_manager->Get_Resource("Prop"));
 
     //Input_Controller* input_controller = entity->Add_Component<Input_Controller>(Component_Type::ct_Input_Controller);
 
     //entity->Write_To(false, false);
 
     entity_manager->Add_Entity(entity);
-    //entity_manager->Add_Entity(test);
+    entity_manager->Add_Entity(test);
 
     Shader shader = *shader_manager->Get_Resource("default");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),
@@ -118,6 +119,13 @@ void Engine::Initialize()
 
 void Engine::Update()
 {
+    Projection = glm::ortho(0.0f,
+        (float)width_,
+        (float)height_,
+        0.0f,
+        -1.0f,
+        1.0f);
+
     calculate_delta_time();
     glfwPollEvents();
 

@@ -5,11 +5,13 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <vector>
 
 #include "input.h"
 #include "scene.h"
 #include "system.h"
+#include "camera.h"
 
 class Engine
 {
@@ -24,12 +26,15 @@ private:
 
     Scene* current_scene_;
     std::vector<System*> systems_;
+
+    Camera* current_camera_;
 private:
     Engine(unsigned int width, unsigned int height);
     void calculate_delta_time();
 
 public:
     float deltaTime;
+    glm::mat4 Projection;
 
 public:
     Engine(const Engine& other) = delete;
@@ -68,11 +73,13 @@ public:
     inline void Set_Height(int height) { height_ = height; }
     inline void Set_Window_Title(std::string window_title) { window_title_ = window_title; }
     inline void Set_Window(GLFWwindow* window) { window_ = window; }
+    inline void Set_Current_Camera(Camera* camera) { current_camera_ = camera; }
 
     inline int Get_Width() { return width_; }
     inline int Get_Height() { return height_; }
     inline std::string Get_Window_Title() { return window_title_; }
     inline GLFWwindow* Get_Window() { return window_; }
+    inline Camera* Get_Current_Camera() { return current_camera_; }
 
 };
 

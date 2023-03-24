@@ -90,6 +90,9 @@
     <ClInclude Include="Source\serialize.h">
       <Filter>Base Architecture\General</Filter>
     </ClInclude>
+    <ClInclude Include="Source\camera.h">
+      <Filter>Base Architecture\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\transform.cpp">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="Source\serialize.cpp">
       <Filter>Base Architecture\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\camera.cpp">
+      <Filter>Base Architecture\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

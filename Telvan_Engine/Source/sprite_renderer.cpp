@@ -113,12 +113,8 @@ void Sprite_Renderer::Render()
     // prepare transformations
     shader_.Use();
     shader_.Set_Matrix_4("projection",
-        glm::ortho(0.0f,
-            (float)Engine::Get_Instance()->Get_Width(),
-            (float)Engine::Get_Instance()->Get_Height(),
-            0.0f,
-            -1.0f,
-            1.0f));
+        Engine::Get_Instance()->Projection);
+    shader_.Set_Matrix_4("view", Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix());
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));

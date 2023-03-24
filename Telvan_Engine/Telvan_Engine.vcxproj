@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\camera.h" />
     <ClInclude Include="Source\components.h" />
     <ClInclude Include="Source\engine.h" />
     <ClInclude Include="Source\entity.h" />
@@ -42,6 +43,7 @@
     <ClInclude Include="Source\transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\camera.cpp" />
     <ClCompile Include="Source\engine.cpp" />
     <ClCompile Include="Source\entity.cpp" />
     <ClCompile Include="Source\entity_manager.cpp" />

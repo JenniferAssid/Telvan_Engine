@@ -16,7 +16,7 @@ class Engine
 private:
     static Engine* instance_;
 
-    unsigned int width_, height_;
+    int width_, height_;
     std::string window_title_;
     GLFWwindow* window_;
 
@@ -26,6 +26,7 @@ private:
     std::vector<System*> systems_;
 private:
     Engine(unsigned int width, unsigned int height);
+    void calculate_delta_time();
 
 public:
     float deltaTime;
@@ -63,13 +64,13 @@ public:
         else return *itr;
     }
 
-    inline void Set_Width(float width) { width_ = width; }
-    inline void Set_Height(float height) { height_ = height; }
+    inline void Set_Width(int width) { width_ = width; }
+    inline void Set_Height(int height) { height_ = height; }
     inline void Set_Window_Title(std::string window_title) { window_title_ = window_title; }
     inline void Set_Window(GLFWwindow* window) { window_ = window; }
 
-    inline unsigned int Get_Width() { return width_; }
-    inline unsigned int Get_Height() { return height_; }
+    inline int Get_Width() { return width_; }
+    inline int Get_Height() { return height_; }
     inline std::string Get_Window_Title() { return window_title_; }
     inline GLFWwindow* Get_Window() { return window_; }
 

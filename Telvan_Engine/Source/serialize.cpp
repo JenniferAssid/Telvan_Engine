@@ -80,38 +80,3 @@ Serialize::Serialize(std::string filepath) : filepath_(filepath), parsed_(false)
 
     ifs.close();
 }
-
-//void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::string key, std::string value)
-//{
-//
-//}
-//
-//void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::string key, bool value)
-//{
-//
-//}
-//
-//void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::string key, int value)
-//{
-//
-//}
-//
-//void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::string key, float value)
-//{
-//
-//}
-//
-//void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::string key, double value)
-//{
-//
-//}
-//
-//void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::string key, glm::vec2 value)
-//{
-//
-//}
-//
-//void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::string key, glm::vec3 value)
-//{
-//
-//}

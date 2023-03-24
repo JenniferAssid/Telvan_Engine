@@ -6,7 +6,7 @@
 
 #include "texture_manager.h"
 
-
+#include "engine.h"
 
 #include <glad/glad.h>
 
@@ -112,15 +112,17 @@ void Sprite_Renderer::Render()
 
     // prepare transformations
     shader_.Use();
+    shader_.Set_Matrix_4("projection",
+        glm::ortho(0.0f,
+            (float)Engine::Get_Instance()->Get_Width(),
+            (float)Engine::Get_Instance()->Get_Height(),
+            0.0f,
+            -1.0f,
+            1.0f));
+
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));
-
-    /*model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));*/
-
-    model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-
     model = glm::scale(model, glm::vec3(size, 1.0f));
 
     this->shader_.Set_Matrix_4("model", model);
@@ -132,6 +134,8 @@ void Sprite_Renderer::Render()
     glBindVertexArray(this->quad_VAO_);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glUseProgram(0);
 }
 
 void Sprite_Renderer::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)

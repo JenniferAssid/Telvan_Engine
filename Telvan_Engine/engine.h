@@ -17,6 +17,7 @@ private:
     static Engine* instance_;
 
     unsigned int width_, height_;
+    std::string window_title_;
     GLFWwindow* window_;
 
     float last_frame;
@@ -37,9 +38,17 @@ public:
     void Initialize();
     void Update();
     void Render();
+    void Shutdown();
 
     inline bool Should_Engine_Shutdown() { return glfwWindowShouldClose(window_); }
-    inline void Register_System(System* system) { if (system != nullptr) systems_.push_back(system); }
+    inline void Register_System(System* system) 
+    { 
+        if (system != nullptr)
+        {
+            systems_.push_back(system);
+            system->Set_Engine(this);
+        }
+    }
     inline System* Find_System(std::string name) 
     { 
         std::vector<System*>::iterator itr = std::find_if(systems_.begin(), systems_.end(),
@@ -53,6 +62,17 @@ public:
         if (itr == systems_.end()) return nullptr;
         else return *itr;
     }
+
+    inline void Set_Width(float width) { width_ = width; }
+    inline void Set_Height(float height) { height_ = height; }
+    inline void Set_Window_Title(std::string window_title) { window_title_ = window_title; }
+    inline void Set_Window(GLFWwindow* window) { window_ = window; }
+
+    inline unsigned int Get_Width() { return width_; }
+    inline unsigned int Get_Height() { return height_; }
+    inline std::string Get_Window_Title() { return window_title_; }
+    inline GLFWwindow* Get_Window() { return window_; }
+
 };
 
 inline void Frame_Buffer_Size_Callback(GLFWwindow* window, int width, int height)

@@ -10,11 +10,9 @@
 int main(int argc, char* argv[])
 {
     Engine* engine = Engine::Get_Instance();
-    Error_Logging* error_logging = Error_Logging::Get_Instance();
 
-    Serialize* test = new Serialize("Data/Test.json");
+    if (engine == nullptr) abort();
 
-    error_logging->Initialize();
     engine->Initialize();
 
     while (engine->Should_Engine_Shutdown() == false)
@@ -22,5 +20,5 @@ int main(int argc, char* argv[])
         engine->Update();
     }
 
-    error_logging->Shutdown();
+    engine->Shutdown();
 }

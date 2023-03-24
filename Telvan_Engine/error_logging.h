@@ -24,14 +24,15 @@ private:
     Message_Level level_;
 
 private:
+    Error_Logging() : System("Error_Logging", ""),
+        name_("Error Logging"), level_(Message_Level::ot_Information) {}
     void Output_To_Console(const std::string& message,
         Message_Level type,
         std::string class_nume = "",
         std::string function_name = "");
 
 public:
-    Error_Logging() : System("Error_Logging", ""),
-        name_("Error Logging"), level_(Message_Level::ot_Information) {}
+    
     static Error_Logging* Get_Instance();
     ~Error_Logging() {}
 

@@ -1,1 +1,6 @@
 [info] Initialize::Error Logging: Successfully opened "default.log"
+[info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Entity_With_Children_Test.json"
+[info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Entity_With_Instance_Children.json"
+[info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Player_Controller.json"
+[info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Prop.json"
+[info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Write_Out_Test.json"

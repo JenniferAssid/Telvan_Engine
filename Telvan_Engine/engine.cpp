@@ -1,6 +1,7 @@
 #include "engine.h"
-#include "error_logging.h"
 
+#include "error_logging.h"
+#include "graphics.h"
 #include "shader_manager.h"
 #include "texture_manager.h"
 #include "scene_manager.h"
@@ -23,37 +24,8 @@ Engine::Engine(unsigned int width,
     height_ = height;
     deltaTime = last_frame = 0.0f;
 
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    glfwWindowHint(GLFW_RESIZABLE, true);
-
-    window_ = glfwCreateWindow(width_,
-        height_,
-        "Telvan's Engine",
-        nullptr,
-        nullptr);
-    glfwMakeContextCurrent(window_);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        Error_Logging::Get_Instance()->Record_Message("Failed to initialize GLAD",
-            Error_Logging::Message_Level::ot_Error,
-            "Engine",
-            "Engine");
-        abort();
-    }
-
-    glfwSetKeyCallback(window_, Keyboard_Callback);
-    glfwSetFramebufferSizeCallback(window_, Frame_Buffer_Size_Callback);
-
-    glViewport(0, 0, width_, height_);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     Register_System((System*)Error_Logging::Get_Instance());
+    Register_System((System*)Graphics::Get_Instance());
     Register_System((System*)Shader_Manager::Get_Instance());
     Register_System((System*)Texture_Manager::Get_Instance());
     Register_System((System*)Prefab_Manager::Get_Instance());
@@ -71,9 +43,6 @@ Engine* Engine::Get_Instance()
 
 Engine::~Engine()
 {
-    Texture_Manager::Get_Instance()->Clear();
-    Shader_Manager::Get_Instance()->Clear();
-
     glfwTerminate();
 }
 
@@ -91,6 +60,7 @@ Entity* test;
 void Engine::Initialize()
 {
     deltaTime = last_frame = 0.0f;
+    window_title_ = "Telvan Engine";
     
     input = Input::Get_Instance();
     shader_manager = (Shader_Manager*)Find_System("Shader_Manager");
@@ -156,4 +126,10 @@ void Engine::Update()
 void Engine::Render()
 {
     Entity_Manager::Get_Instance()->Render();
+}
+
+void Engine::Shutdown()
+{
+    for (System* system : systems_)
+        system->Shutdown();
 }

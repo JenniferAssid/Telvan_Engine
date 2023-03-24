@@ -84,6 +84,9 @@
     <ClInclude Include="error_logging.h">
       <Filter>Base Architecture\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="graphics.h">
+      <Filter>Base Architecture\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag">
@@ -149,6 +152,9 @@
       <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
     <ClCompile Include="error_logging.cpp">
+      <Filter>Base Architecture\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics.cpp">
       <Filter>Base Architecture\Systems</Filter>
     </ClCompile>
   </ItemGroup>

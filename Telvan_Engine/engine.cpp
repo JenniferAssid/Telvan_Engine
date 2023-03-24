@@ -105,15 +105,18 @@ void Engine::Initialize()
     /*Scene* scene = scene_manager->Get_Resource("Test_Scene");
     scene->Load();*/
 
-    entity = new Entity(*prefab_manager->Get_Resource("Entity_With_Children_Test"));
-    /*entity->Add_Child(new Entity(*prefab_manager->Get_Resource("Write_Out_Test")));
-    entity->Get_Children()[0]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Scale(glm::vec2(0.5f, 0.5f));
-    entity->Get_Children()[0]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Rotation(0.0f);
-    entity->Set_Name("Entity_With_Children_Test");
-    entity->Add_Child(new Entity(*prefab_manager->Get_Resource("Write_Out_Test")));
-    entity->Get_Children()[1]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(300.0f, 400.0f));
-    entity->Get_Children()[1]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Scale(glm::vec2(0.75f, 0.5f));
-    entity->Get_Children()[1]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Rotation(45.0f);*/
+    entity = new Entity(*prefab_manager->Get_Resource("Entity_With_Instance_Children"));
+    /*entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
+    entity->Set_Name("Entity_With_Instance_Children");
+    entity->Add_Child(new Entity("Child_Instance_1", ""));
+    entity->Get_Children()[0]->Add_Component<Transform>(Component_Type::ct_Transform)->Set_Scale(glm::vec2(0.5f, 0.5f));
+    entity->Get_Children()[0]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Rotation(-20.0f);
+    entity->Get_Children()[0]->Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Set_Shader(
+        *shader_manager->Get_Resource("default")
+    );
+    entity->Get_Children()[0]->Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Set_Texture(
+        *texture_manager->Get_Resource("awesomeface")
+    );*/
     //test = new Entity(*prefab_manager->Get_Resource("Write_Out_Test"));
 
     //Input_Controller* input_controller = entity->Add_Component<Input_Controller>(Component_Type::ct_Input_Controller);

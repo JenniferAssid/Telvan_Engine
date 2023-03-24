@@ -174,7 +174,10 @@ void Entity::read_from_object(rapidjson::GenericObject<false, rapidjson::Value>&
             }
             else
             {
-                read_from_object(child_reader);
+                Entity* child_entity = new Entity();
+                child_entity->read_from_object(child_reader);
+
+                Add_Child(child_entity);
             }
         }
     }

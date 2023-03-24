@@ -17,25 +17,27 @@ void Prefab_Manager::Initialize()
             Entity* entity = key.second->Get_Children().front();
             std::string prefab = entity->Get_Prefab();
             
-            std::string name = entity->Get_Name();
-            Transform transform = *entity->Get_Component<Transform>(Component_Type::ct_Transform);
-
-            key.second->Remove_Child(entity);
-            delete entity;
-
-            entity = new Entity(*Get_Resource(prefab));
-            entity->Set_Name(name);
-            entity->Set_Prefab(prefab);
-
-            Transform* entity_transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
-            entity_transform->Set_Translation(transform.Get_Translation());
-
-            if (entity_transform->Get_Scale() == glm::vec2(-1.0f, -1.0f))
+            if (prefab != "")
             {
-                entity_transform->Set_Scale(transform.Get_Scale());
-                entity_transform->Set_Rotation(transform.Get_Rotation());
-            }
+                std::string name = entity->Get_Name();
+                Transform transform = *entity->Get_Component<Transform>(Component_Type::ct_Transform);
 
+                key.second->Remove_Child(entity);
+                delete entity;
+
+                entity = new Entity(*Get_Resource(prefab));
+                entity->Set_Name(name);
+                entity->Set_Prefab(prefab);
+
+                Transform* entity_transform = entity->Get_Component<Transform>(Component_Type::ct_Transform);
+                entity_transform->Set_Translation(transform.Get_Translation());
+
+                if (entity_transform->Get_Scale() == glm::vec2(-1.0f, -1.0f))
+                {
+                    entity_transform->Set_Scale(transform.Get_Scale());
+                    entity_transform->Set_Rotation(transform.Get_Rotation());
+                }
+            }
 
             key.second->Add_Child(entity);
         }

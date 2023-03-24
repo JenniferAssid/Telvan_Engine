@@ -1,4 +1,5 @@
 #include "input.h"
+#include "error_logging.h"
 
 Input* Input::instance_ = nullptr;
 
@@ -6,6 +7,11 @@ Input* Input::Get_Instance()
 {
     if (instance_ == nullptr)
     {
+        Error_Logging::Get_Instance()->Record_Message(
+            "Instance Created",
+            Error_Logging::Message_Level::ot_Information,
+            "Input",
+            "Get_Instance");
         instance_ = new Input();
     }
     return instance_;

@@ -20,7 +20,15 @@ public:
     static inline Texture_Manager* Get_Instance()
     {
         if (instance_ == nullptr)
+        {
+            Error_Logging::Get_Instance()->Record_Message(
+                "Instance Created",
+                Error_Logging::Message_Level::ot_Information,
+                "Texture_Manager",
+                "Get_Instance"
+            );
             instance_ = new Texture_Manager();
+        }
 
         return instance_;
     }

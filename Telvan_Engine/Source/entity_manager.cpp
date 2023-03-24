@@ -1,5 +1,6 @@
 #include "entity_manager.h"
 #include "entity.h"
+#include "error_logging.h"
 
 Entity_Manager* Entity_Manager::instance_;
 
@@ -7,6 +8,12 @@ Entity_Manager* Entity_Manager::Get_Instance()
 {
 	if (instance_ == nullptr)
 	{
+		Error_Logging::Get_Instance()->Record_Message(
+			"Instance Created",
+			Error_Logging::Message_Level::ot_Information,
+			"Entity_Manager",
+			"Get_Instance"
+		);
 		instance_ = new Entity_Manager();
 	}
 	return instance_;

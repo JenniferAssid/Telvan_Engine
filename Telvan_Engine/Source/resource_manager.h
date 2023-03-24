@@ -8,6 +8,7 @@
 #include <filesystem>
 
 #include "system.h"
+#include "error_logging.h"
 
 template <class Resource>
 class Resource_Manager : public System
@@ -23,6 +24,29 @@ protected:
             else
             {
                 Resource* tmp = new Resource(entry.path());
+
+                if (tmp == nullptr)
+                {
+                    Error_Logging::Get_Instance()->Record_Message(
+                        Error_Logging::Format_Output(
+                            "Failed to create asset: %s",
+                            entry.path().stem().string().c_str()),
+                        Error_Logging::Message_Level::ot_Error,
+                        name_,
+                        "open_files");
+                    continue;
+                }
+                else
+                {
+                    Error_Logging::Get_Instance()->Record_Message(
+                        Error_Logging::Format_Output(
+                            "Successfully created asset: %s",
+                            entry.path().stem().string().c_str()),
+                        Error_Logging::Message_Level::ot_Information,
+                        name_,
+                        "open_files");
+                }
+
                 resources_[entry.path().stem().string()] = tmp;
             }
         }
@@ -34,7 +58,15 @@ public:
 
     void virtual Initialize() override
     {
-        if (std::filesystem::exists(master_path_) == false) return;
+        if (std::filesystem::exists(master_path_) == false)
+        {
+            Error_Logging::Get_Instance()->Record_Message(
+                "Master path is not valid",
+                Error_Logging::Message_Level::ot_Warning,
+                name_,
+                "Initialize"
+            );
+        }
         open_files(master_path_);
     }
 

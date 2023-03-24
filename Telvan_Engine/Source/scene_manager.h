@@ -19,7 +19,15 @@ public:
     static inline Scene_Manager* Get_Instance()
     {
         if (instance_ == nullptr)
+        {
+            Error_Logging::Get_Instance()->Record_Message(
+                "Instance Created",
+                Error_Logging::Message_Level::ot_Information,
+                "Resource_Manager",
+                "Get_Instance"
+            );
             instance_ = new Scene_Manager();
+        }
 
         return instance_;
     }

@@ -79,7 +79,15 @@ void Engine::Initialize()
 
     // Initialize the systems in the order they were registered
     for (System* system : systems_)
+    {
+        Error_Logging::Get_Instance()->Record_Message(
+            "Initializing System",
+            Error_Logging::Message_Level::ot_Information,
+            system->Get_Name(),
+            "Initialize"
+        );
         system->Initialize();
+    }
 
     /************************ TESTING CODE BELOW ********************************/
 
@@ -148,8 +156,16 @@ void Engine::Render()
 void Engine::Shutdown()
 {
     // Shutdown registered systems in REVERSE order
-    for (int i = systems_.size() - 1; 
+    for (int i = systems_.size() - 1;
         i >= 0;
         i--)
+    {
+        Error_Logging::Get_Instance()->Record_Message(
+            "Shutting system down",
+            Error_Logging::Message_Level::ot_Information,
+            systems_[i]->Get_Name(),
+            "Shutdown"
+        );
         systems_[i]->Shutdown();
+    }
 }

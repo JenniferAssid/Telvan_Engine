@@ -67,7 +67,8 @@ void Shader_Manager::open_files(std::string path)
         if (entry.is_directory() == true) open_files(entry.path().string() + "/");
         else
         {
-            if (entry.path().extension() == ".vert") vertexs_.push_back(entry.path());
+            if (entry.path().extension() == ".vert")
+                vertexs_.push_back(entry.path());
             else if (entry.path().extension() == ".frag") fragments_.push_back(entry.path());
         }
     }
@@ -83,6 +84,29 @@ void Shader_Manager::Initialize()
             fragments_[i].string().c_str(),
             nullptr);
         tmp->Name = vertexs_[i].stem().string();
+
+        if (tmp == nullptr)
+        {
+            Error_Logging::Get_Instance()->Record_Message(
+                Error_Logging::Format_Output(
+                    "Failed to create asset: %s",
+                    vertexs_[i].stem().string().c_str()),
+                Error_Logging::Message_Level::ot_Error,
+                name_,
+                "open_files");
+            continue;
+        }
+        else
+        {
+            Error_Logging::Get_Instance()->Record_Message(
+                Error_Logging::Format_Output(
+                    "Successfully created asset: %s",
+                    vertexs_[i].stem().string().c_str()),
+                Error_Logging::Message_Level::ot_Information,
+                name_,
+                "open_files");
+        }
+
         resources_[tmp->Name] = tmp;
     }
 

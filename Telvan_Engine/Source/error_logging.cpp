@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include <chrono>
 
 Error_Logging* Error_Logging::instance_ = nullptr;
 
@@ -15,21 +16,21 @@ void Error_Logging::Output_To_Console(const std::string& message,
     switch (type)
     {
     case Message_Level::ot_Error:
-        std::cout << "[" << dye::red("error");
+        std::cout << "[" << dye::red("error") << "] " << dye::red(class_name);
         break;
     case Message_Level::ot_Warning:
         if (level_ == Message_Level::ot_Error) return;
-        std::cout << "[" << dye::yellow("warning");
+        std::cout << "[" << dye::yellow("warning") << "] " << dye::yellow(class_name);
         break;
     case Message_Level::ot_Information:
         if (level_ != Message_Level::ot_Information) return;
-        std::cout << "[" << dye::green("info");
+        std::cout << "[" << dye::green("info") << "] " << dye::green(class_name);
         break;
     default:
         break;
     }
 
-    std::cout << "] " << class_name << "::" << function_name << ": " << message << std::endl;
+    std::cout << "::" << dye::grey(function_name) << ": " << message << std::endl;
 }
 
 Error_Logging* Error_Logging::Get_Instance()
@@ -37,6 +38,12 @@ Error_Logging* Error_Logging::Get_Instance()
     if (instance_ == nullptr)
     {
         instance_ = new Error_Logging();
+        Error_Logging::Get_Instance()->Record_Message(
+            "Instance Created",
+            Error_Logging::Message_Level::ot_Information,
+            "Error_Logging",
+            "Get_Instance"
+        );
     }
     return instance_;
 }
@@ -54,6 +61,10 @@ void Error_Logging::Initialize()
     {
         Record_Message("Successfully opened \"default.log\"", Message_Level::ot_Information, name_, "Initialize");
     }
+
+    Record_Message("Testing error print-out capabilities", Message_Level::ot_Error, name_, "Initialize");
+    Record_Message("Testing warning print-out capabilities", Message_Level::ot_Warning, name_, "Initialize");
+    Record_Message("Testing information print-out capabilities", Message_Level::ot_Information, name_, "Initialize");
 }
 
 void Error_Logging::Shutdown()

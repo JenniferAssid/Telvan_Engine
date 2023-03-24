@@ -6,9 +6,23 @@ Prefab_Manager* Prefab_Manager::instance_;
 
 void Prefab_Manager::Initialize()
 {
-    if (std::filesystem::exists(master_path_) == false) return;
+    if (std::filesystem::exists(master_path_) == false)
+    {
+        Error_Logging::Get_Instance()->Record_Message(
+            "Master path not valid",
+            Error_Logging::Message_Level::ot_Warning,
+            "Prefab_Manager",
+            "Initialize"
+        );
+    }
     open_files(master_path_);
 
+    Error_Logging::Get_Instance()->Record_Message(
+        "Attaching children objects to loaded in prefabs",
+        Error_Logging::Message_Level::ot_Information,
+        "Prefab_Manager",
+        "Initialize"
+    );
     for (auto key : resources_)
     {
         unsigned children_size = key.second->Get_Children().size();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.h"
+#include "error_logging.h"
 #include "transform.h"
 #include "engine.h"
 
@@ -9,10 +10,28 @@
 
 void Camera::Start()
 {
-	if (parent_ == nullptr) return;
+	if (parent_ == nullptr)
+	{
+		Error_Logging::Get_Instance()->Record_Message(
+			"Missing parent pointer",
+			Error_Logging::Message_Level::ot_Warning,
+			"Camera",
+			"Start"
+		);
+		return;
+	}
 
 	Transform* transform = parent_->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (transform == nullptr) return;
+	if (transform == nullptr)
+	{
+		Error_Logging::Get_Instance()->Record_Message(
+			"Parent missing transform component",
+			Error_Logging::Message_Level::ot_Warning,
+			"Camera",
+			"Start"
+		);
+		return;
+	}
 
 	camera_position_ = transform->Get_Translation();
 }
@@ -20,7 +39,16 @@ void Camera::Start()
 void Camera::Update(float dT)
 {
 	Transform* desired_position = parent_->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (desired_position == nullptr) return;
+	if (desired_position == nullptr)
+	{
+		Error_Logging::Get_Instance()->Record_Message(
+			"Parent missing transform component",
+			Error_Logging::Message_Level::ot_Warning,
+			"Camera",
+			"Update"
+		);
+		return;
+	}
 
 	glm::vec2 direction = desired_position->Get_Translation() - camera_position_;
 	glm::normalize(direction);

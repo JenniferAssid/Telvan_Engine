@@ -14,7 +14,7 @@
     },
     "sprite_renderer": {
         "shader": "default",
-        "texture": "tree"
+        "texture": "default"
     },
     "input_controller": {},
     "children": [

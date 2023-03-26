@@ -90,37 +90,25 @@ void Engine::Initialize()
     }
 
     /************************ TESTING CODE BELOW ********************************/
+    
+    // Faux tileset placement
+    float margin = 25.0f;
+    glm::vec2 tmp_position(0.0f);
+    for (unsigned int i = 0; i < 5; i++)
+    {
+        tmp_position = glm::vec2(margin * i, -margin * i / 2);
+        for (unsigned int j = 0; j < 5; j++)
+        {
+            entity = new Entity(*prefab_manager->Get_Resource("Floor"));
+            entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin * j,
+                tmp_position.y + margin * j / 2));
+            entity_manager->Add_Entity(entity);
+        }
+    }
 
-    /*Scene* scene = scene_manager->Get_Resource("Test_Scene");
-    scene->Load();*/
-
-    entity = new Entity(*prefab_manager->Get_Resource("Entity_With_Instance_Children"));
+    entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
     current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
-    /*entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
-    entity->Set_Name("Entity_With_Instance_Children");
-    entity->Add_Child(new Entity("Child_Instance_1", ""));
-    entity->Get_Children()[0]->Add_Component<Transform>(Component_Type::ct_Transform)->Set_Scale(glm::vec2(0.5f, 0.5f));
-    entity->Get_Children()[0]->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Rotation(-20.0f);
-    entity->Get_Children()[0]->Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Set_Shader(
-        *shader_manager->Get_Resource("default")
-    );
-    entity->Get_Children()[0]->Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer)->Set_Texture(
-        *texture_manager->Get_Resource("awesomeface")
-    );*/
-    test = new Entity(*prefab_manager->Get_Resource("Prop"));
-
-    //Input_Controller* input_controller = entity->Add_Component<Input_Controller>(Component_Type::ct_Input_Controller);
-
-    //entity->Write_To(false, false);
-
     entity_manager->Add_Entity(entity);
-    entity_manager->Add_Entity(test);
-
-    Shader shader = *shader_manager->Get_Resource("default");
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->width_),
-        static_cast<float>(this->height_), 0.0f, -1.0f, 1.0f);
-    shader.Use().Set_Integer("tex", 0);
-    shader.Set_Matrix_4("projection", projection);
 
     Entity_Manager::Get_Instance()->Start();
 }

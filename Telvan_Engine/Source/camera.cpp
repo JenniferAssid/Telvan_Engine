@@ -63,6 +63,8 @@ void Camera::Update(float dT)
 	view_matrix_ = glm::lookAt(position,
 		position + glm::vec3(0.0f, 0.0f, -zoom_),
 		glm::vec3(0.0f, 1.0f, 0.0f));
+	/*view_matrix_ = glm::rotate(view_matrix_, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	view_matrix_ = glm::rotate(view_matrix_, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));*/
 }
 
 void Camera::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)

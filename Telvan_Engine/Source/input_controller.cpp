@@ -2,6 +2,7 @@
 #include "transform.h"
 #include "error_logging.h"
 #include "entity.h"
+#include "engine.h"
 
 void move_up(float dT, Input_Controller& ic)
 {
@@ -117,6 +118,11 @@ void move_right(float dT, Input_Controller& ic)
     glm::vec2 pos = transform->Get_Translation();
     pos.x += 5.0f;
     transform->Set_Translation(pos);
+}
+
+void toggle_debug_draw(float dT, Input_Controller& ic)
+{
+    Engine::Get_Instance()->Set_Debug_Draw(!Engine::Get_Instance()->Get_Debug_Draw());
 }
 
 Input_Controller::Input_Controller() : Component(Component_Type::ct_Input_Controller) 

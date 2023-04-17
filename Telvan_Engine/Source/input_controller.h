@@ -15,6 +15,8 @@ protected:
 
     friend void save_to_scene(float dT, Input_Controller& ic);
 
+    friend void toggle_debug_draw(float dT, Input_Controller& ic);
+
     int* action_bindings_;
 public:
     enum class Input_Actions
@@ -23,6 +25,8 @@ public:
         ia_Down,
         ia_Left,
         ia_Right,
+
+        ia_Toggle_Debug,
 
         TOTAL_NUMBER_OF_ACTIONS
     };

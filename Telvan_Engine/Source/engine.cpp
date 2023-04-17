@@ -10,6 +10,7 @@
 
 #include "entity.h"
 #include "transform.h"
+#include "collider.h"
 #include "input_controller.h"
 #include "sprite_renderer.h"
 
@@ -24,6 +25,7 @@ Engine::Engine(unsigned int width,
     width_ = width;
     height_ = height;
     deltaTime = last_frame = 0.0f;
+    debug_draw_ = true;
 
     // Register the system in the order the need to be INITIALIZED
     // in top-to-bottom order
@@ -107,6 +109,8 @@ void Engine::Initialize()
     }
 
     entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
+    //entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    entity->Add_Component<AABB>(Component_Type::ct_Collider);
     current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
     entity_manager->Add_Entity(entity);
 

@@ -5,6 +5,7 @@
 [info] Initialize::Graphics: Initializing System
 [info] Initialize::Shader_Manager: Initializing System
 [info] open_files::Shader_Manager: Successfully created asset: default
+[info] open_files::Shader_Manager: Successfully created asset: line
 [info] Initialize::Texture_Manager: Initializing System
 [info] open_files::Texture_Manager: Successfully created asset: default
 [info] open_files::Texture_Manager: Successfully created asset: awesomeface
@@ -30,3 +31,9 @@
 [info] Initialize::Prefab_Manager: Attaching children objects to loaded in prefabs
 [info] Initialize::Scene_Manager: Initializing System
 [info] open_files::Scene_Manager: Successfully created asset: Test_Scene
+[info] Shutdown::Scene_Manager: Shutting system down
+[info] Shutdown::Prefab_Manager: Shutting system down
+[info] Shutdown::Texture_Manager: Shutting system down
+[info] Shutdown::Shader_Manager: Shutting system down
+[info] Shutdown::Graphics: Shutting system down
+[info] Shutdown::Error_Logging: Shutting system down

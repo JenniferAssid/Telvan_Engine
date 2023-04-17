@@ -28,6 +28,8 @@ private:
     std::vector<System*> systems_;
 
     Camera* current_camera_;
+
+    bool debug_draw_;
 private:
     Engine(unsigned int width, unsigned int height);
     void calculate_delta_time();
@@ -74,12 +76,14 @@ public:
     inline void Set_Window_Title(std::string window_title) { window_title_ = window_title; }
     inline void Set_Window(GLFWwindow* window) { window_ = window; }
     inline void Set_Current_Camera(Camera* camera) { current_camera_ = camera; }
+    inline void Set_Debug_Draw(bool debug_draw) { debug_draw_ = debug_draw; }
 
     inline int Get_Width() { return width_; }
     inline int Get_Height() { return height_; }
     inline std::string Get_Window_Title() { return window_title_; }
     inline GLFWwindow* Get_Window() { return window_; }
     inline Camera* Get_Current_Camera() { return current_camera_; }
+    inline bool Get_Debug_Draw() const { return debug_draw_; }
 
 };
 

@@ -13,7 +13,8 @@ enum class Component_Type
     ct_Transform = 0,
     ct_Sprite_Renderer,
     ct_Input_Controller,
-    ct_Camera
+    ct_Camera,
+    ct_Collider
 };
 
 class Component

@@ -67,6 +67,21 @@ Scene_Manager* scene_manager;
 Entity* entity;
 Entity* test;
 
+bool on_enter_test(Collider& a, Collider& b)
+{
+    return true;
+}
+
+bool on_exit_test(Collider& a, Collider& b)
+{
+    return false;
+}
+
+bool while_triggered_test(Collider& a, Collider& b)
+{
+    return true;
+}
+
 void Engine::Initialize()
 {
     // Initialize the class members
@@ -100,7 +115,10 @@ void Engine::Initialize()
     entity = new Entity(*prefab_manager->Get_Resource("Floor"));
     entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin,
         tmp_position.y + margin));
-    entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    Circle* circle = entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    circle->Set_On_Enter(on_enter_test);
+    circle->Set_On_Exit(on_exit_test);
+    circle->Set_Is_Trigger(true);
     entity_manager->Add_Entity(entity);
 
     entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));

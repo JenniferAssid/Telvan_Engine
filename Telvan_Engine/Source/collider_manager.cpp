@@ -35,11 +35,16 @@ void Collider_Manager::Update(float dT)
 			{
 				active_colliders_[i]->Set_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 				active_colliders_[j]->Set_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
+
+				active_colliders_[i]->Set_Triggered(true, *active_colliders_[j]);
 			}
 			else
 			{
 				active_colliders_[i]->Set_Color(glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 				active_colliders_[j]->Set_Color(glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+
+				if (active_colliders_[i]->Get_Triggered() == true)
+					active_colliders_[i]->Set_Triggered(false, *active_colliders_[j]);
 			}
 		}
 	}

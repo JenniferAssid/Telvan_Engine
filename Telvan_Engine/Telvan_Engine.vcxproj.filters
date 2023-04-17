@@ -96,6 +96,9 @@
     <ClInclude Include="Source\collider.h">
       <Filter>Base Architecture\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\collider_manager.h">
+      <Filter>Base Architecture\Resource_Managment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\transform.cpp">
@@ -160,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="Source\collider.cpp">
       <Filter>Base Architecture\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\collider_manager.cpp">
+      <Filter>Base Architecture\Resource_Managment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

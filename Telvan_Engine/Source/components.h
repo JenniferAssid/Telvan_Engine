@@ -29,6 +29,8 @@ public:
     virtual Component* Clone() { return nullptr; }
 
     inline void Set_Parent(Entity* parent) { parent_ = parent; }
+    inline Entity* Get_Parent() const { return parent_; }
+
     inline virtual void Start() {}
     inline virtual void Pre_Update(float dT) {}
     inline virtual void Update(float dT) {}

@@ -38,6 +38,8 @@ void Entity_Manager::Update(float dT)
 
 		active_entity_[i]->Pre_Update(dT);
 	}
+
+	Collider_Manager::Get_Instance()->Update(dT);
 		
 	for (Entity* entity : active_entity_)
 		entity->Update(dT);

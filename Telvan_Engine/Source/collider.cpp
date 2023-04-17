@@ -6,6 +6,93 @@
 #include "engine.h"
 #include "transform.h"
 
+bool Collider::circle_circle_check(Circle& a, Circle& b)
+{
+	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (a_trans == nullptr) return false;
+
+	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (b_trans == nullptr) return false;
+
+	glm::vec2 distance = a_trans->Get_Translation() - b_trans->Get_Translation();
+
+	float length = glm::length(distance);
+
+	if (length <= a.Get_Radius() + b.Get_Radius())
+		return true;
+
+	return false;
+}
+
+bool Collider::circle_AABB_check(Circle& a, AABB& b)
+{
+	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (a_trans == nullptr) return false;
+
+	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (b_trans == nullptr) return false;
+
+	glm::vec2 b_pos = b_trans->Get_Translation();
+	glm::vec2 b_halfs = b.Get_Half_Length();
+
+	glm::vec2 min = b_pos - b_halfs;
+	glm::vec2 max = b_pos + b_halfs;
+
+	glm::vec2 distance = a_trans->Get_Translation() - min;
+	if (glm::length(distance) <= a.Get_Radius()) return true;
+
+	distance = a_trans->Get_Translation() - glm::vec2(min.x, max.y);
+	if (glm::length(distance) <= a.Get_Radius()) return true;
+
+	distance = a_trans->Get_Translation() - glm::vec2(max.x, min.y);
+	if (glm::length(distance) <= a.Get_Radius()) return true;
+
+	distance = a_trans->Get_Translation() - max;
+	if (glm::length(distance) <= a.Get_Radius()) return true;
+
+	distance = a_trans->Get_Translation() - b_trans->Get_Translation();
+	if (glm::length(distance) <= a.Get_Radius()) return true;
+
+	return false;
+}
+
+bool Collider::AABB_AABB_check(AABB& a, AABB& b)
+{
+	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (a_trans == nullptr) return false;
+
+	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (b_trans == nullptr) return false;
+
+	glm::vec2 a_pos = a_trans->Get_Translation();
+	glm::vec2 a_halfs = a.Get_Half_Length();
+
+	glm::vec2 b_pos = b_trans->Get_Translation();
+	glm::vec2 b_halfs = b.Get_Half_Length();
+
+	// A above B
+	if (a_pos.y + a_halfs.y > b_pos.y + b_halfs.y &&
+		a_pos.y - a_halfs.y > b_pos.y + b_halfs.y)
+		return false;
+
+	// A below B
+	if (a_pos.y + a_halfs.y < b_pos.y - b_halfs.y &&
+		a_pos.y - a_halfs.y < b_pos.y - b_halfs.y)
+		return false;
+
+	// A right B
+	if (a_pos.x + a_halfs.x > b_pos.x + b_halfs.x &&
+		a_pos.x - a_halfs.x > b_pos.x + b_halfs.x)
+		return false;
+
+	// A left B
+	if (a_pos.x + a_halfs.x < b_pos.x - b_halfs.x &&
+		a_pos.x - a_halfs.x < b_pos.x - b_halfs.x)
+		return false;
+
+	return true;
+}
+
 void Circle::initialize_circle_outline()
 {
 	unsigned int VBO;
@@ -46,8 +133,6 @@ void Circle::Start()
 
 void Circle::Render()
 {
-	if (Engine::Get_Instance()->Get_Debug_Draw() == false) return;
-
 	if (parent_ == nullptr)
 	{
 		Error_Logging::Get_Instance()->Record_Message("Parent not found",
@@ -96,7 +181,7 @@ void Circle::Render()
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(position, 0.0f));
 	model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(radius_, radius_, 1.0f));
+	model = glm::scale(model, glm::vec3(radius_ * 2.0f, radius_ * 2.0f, 1.0f));
 
 	position = Engine::Get_Instance()->Projection *
 		Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix() *
@@ -110,6 +195,26 @@ void Circle::Render()
 	glDrawArrays(GL_LINES, 0, segments_ * 4);
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+bool Circle::Collision_Detection(Collider& other)
+{
+	switch (other.Get_Collider_Type())
+	{
+	case Collider_Type::col_Undefined:
+		return false;
+		break;
+	case Collider_Type::col_Circle:
+		return circle_circle_check(*this, (Circle&)other);
+		break;
+	case Collider_Type::col_AABB:
+		return circle_AABB_check(*this, (AABB&)other);
+		break;
+	default:
+		break;
+	}
+
+	return false;
 }
 
 void AABB::initialize_square_outline()
@@ -152,8 +257,6 @@ void AABB::Start()
 
 void AABB::Render()
 {
-	if (Engine::Get_Instance()->Get_Debug_Draw() == false) return;
-
 	if (parent_ == nullptr)
 	{
 		Error_Logging::Get_Instance()->Record_Message("Parent not found",
@@ -202,7 +305,7 @@ void AABB::Render()
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(position, 0.0f));
 	model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(half_length_.x, half_length_.y, 1.0f));
+	model = glm::scale(model, glm::vec3(half_length_.x * 2.0f, half_length_.y * 2.0f, 1.0f));
 
 	position = Engine::Get_Instance()->Projection *
 		Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix() *
@@ -216,4 +319,24 @@ void AABB::Render()
 	glDrawArrays(GL_LINES, 0, 4 * 4);
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+bool AABB::Collision_Detection(Collider& other)
+{
+	switch (other.Get_Collider_Type())
+	{
+	case Collider_Type::col_Undefined:
+		return false;
+		break;
+	case Collider_Type::col_Circle:
+		return circle_AABB_check((Circle&)other, *this);
+		break;
+	case Collider_Type::col_AABB:
+		return AABB_AABB_check(*this, (AABB&)other);
+		break;
+	default:
+		break;
+	}
+
+	return false;
 }

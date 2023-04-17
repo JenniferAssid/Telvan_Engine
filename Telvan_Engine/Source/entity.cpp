@@ -287,7 +287,11 @@ void Entity::Post_Update(float dT)
 void Entity::Render()
 {
     for (unsigned i = 0; i < components_.size(); i++)
+    {
+        if (components_[i]->Get_Type() == Component_Type::ct_Collider) continue;
+
         components_[i]->Render();
+    }
 
     for (unsigned i = 0; i < children_.size(); i++)
         children_[i]->Render();

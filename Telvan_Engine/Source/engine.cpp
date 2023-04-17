@@ -7,6 +7,7 @@
 #include "scene_manager.h"
 #include "prefab_manager.h"
 #include "entity_manager.h"
+#include "collider_manager.h"
 
 #include "entity.h"
 #include "transform.h"
@@ -96,25 +97,20 @@ void Engine::Initialize()
     // Faux tileset placement
     float margin = 25.0f;
     glm::vec2 tmp_position(0.0f);
-    for (unsigned int i = 0; i < 5; i++)
-    {
-        tmp_position = glm::vec2(margin * i, -margin * i / 2);
-        for (unsigned int j = 0; j < 5; j++)
-        {
-            entity = new Entity(*prefab_manager->Get_Resource("Floor"));
-            entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin * j,
-                tmp_position.y + margin * j / 2));
-            entity_manager->Add_Entity(entity);
-        }
-    }
+    entity = new Entity(*prefab_manager->Get_Resource("Floor"));
+    entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin,
+        tmp_position.y + margin));
+    entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    entity_manager->Add_Entity(entity);
 
     entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
     //entity->Add_Component<Circle>(Component_Type::ct_Collider);
-    entity->Add_Component<AABB>(Component_Type::ct_Collider);
+    entity->Add_Component<Circle>(Component_Type::ct_Collider);
     current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
     entity_manager->Add_Entity(entity);
 
     Entity_Manager::Get_Instance()->Start();
+    Collider_Manager::Get_Instance()->Start();
 }
 
 void Engine::Update()
@@ -141,6 +137,9 @@ void Engine::Render()
     glfwGetWindowSize(window_, &width_, &height_);
 
     Entity_Manager::Get_Instance()->Render();
+    
+    if (debug_draw_ == true)
+        Collider_Manager::Get_Instance()->Render();
 
     glfwSwapBuffers(window_);
 }

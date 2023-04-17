@@ -10,6 +10,7 @@
 
 #include "components.h"
 #include "serialize.h"
+#include "collider_manager.h"
 
 class Entity
 {
@@ -84,6 +85,9 @@ public:
 
             if (instantiated_)
                 component->Start();
+
+            if (component->Get_Type() == Component_Type::ct_Collider)
+                Collider_Manager::Get_Instance()->Add_Collider((Collider*)component);
         }
 
         return (T*)component;
@@ -111,6 +115,9 @@ public:
         }
 
         if (index >= components_.size()) return;
+
+        if (components_[index]->Get_Type() == Component_Type::ct_Collider)
+            Collider_Manager::Get_Instance()->Remove_Collider((Collider*)components_[index]);
 
         components_[index]->Stop();
 

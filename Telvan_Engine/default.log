@@ -31,6 +31,7 @@
 [info] Initialize::Prefab_Manager: Attaching children objects to loaded in prefabs
 [info] Initialize::Scene_Manager: Initializing System
 [info] open_files::Scene_Manager: Successfully created asset: Test_Scene
+[info] Get_Instance::Collider_Manager: Instance Created
 [info] Shutdown::Scene_Manager: Shutting system down
 [info] Shutdown::Prefab_Manager: Shutting system down
 [info] Shutdown::Texture_Manager: Shutting system down

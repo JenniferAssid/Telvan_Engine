@@ -6,6 +6,9 @@
 
 #include "shader.h"
 
+class Circle;
+class AABB;
+
 class Collider : public Component
 {
 public:
@@ -29,6 +32,9 @@ protected:
 protected:
 	void initialize_square_outline();
 	
+	bool circle_circle_check(Circle& a, Circle& b);
+	bool circle_AABB_check(Circle& a, AABB& b);
+	bool AABB_AABB_check(AABB& a, AABB& b);
 
 public:
 	Collider() : Component(Component_Type::ct_Collider),
@@ -56,7 +62,7 @@ public:
 	inline glm::vec4 Get_Color() const { return color_; }
 
 	inline void Set_Offset(glm::vec2 offset) { offset_ = offset; }
-	inline void Get_Color(glm::vec4 color) { color_ = color; }
+	inline void Set_Color(glm::vec4 color) { color_ = color; }
 };
 
 class Circle : public Collider
@@ -80,7 +86,7 @@ public:
 
 	void Render() override;
 
-	//bool Collision_Detection(Collider& other) override;
+	bool Collision_Detection(Collider& other) override;
 
 	inline float Get_Radius() const { return radius_; }
 
@@ -106,7 +112,7 @@ public:
 
 	void Render() override;
 
-	//bool Collision_Detection(Collider& other) override;
+	bool Collision_Detection(Collider& other) override;
 
 	inline glm::vec2 Get_Half_Length() const { return half_length_; }
 

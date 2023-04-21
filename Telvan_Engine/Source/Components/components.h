@@ -9,7 +9,6 @@
 #ifndef COMPONENT_CLASS_H
 #define COMPONENT_CLASS_H
 
-//#include "entity.h"
 #include "serialize.h"
 
 class Entity;
@@ -20,7 +19,8 @@ enum class Component_Type
     ct_Sprite_Renderer,
     ct_Input_Controller,
     ct_Camera,
-    ct_Collider
+    ct_Collider,
+    ct_Rigid_Body
 };
 
 class Component

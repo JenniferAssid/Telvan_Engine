@@ -17,6 +17,7 @@
 
 #include "entity.h"
 #include "transform.h"
+#include "rigid_body.h"
 #include "collider.h"
 #include "input_controller.h"
 #include "sprite_renderer.h"
@@ -107,11 +108,13 @@ void Engine::Initialize()
     entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin,
         tmp_position.y + margin));
     Circle* circle = entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    circle->Set_Radius(20.0f);
     entity_manager->Add_Entity(entity);
 
     entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
     //entity->Add_Component<Circle>(Component_Type::ct_Collider);
     entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
     current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
     entity_manager->Add_Entity(entity);
 

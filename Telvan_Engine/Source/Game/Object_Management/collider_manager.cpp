@@ -42,7 +42,10 @@ void Collider_Manager::Update(float dT)
 				active_colliders_[i]->Set_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 				active_colliders_[j]->Set_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 
-				active_colliders_[i]->Set_Triggered(true, *active_colliders_[j]);
+				if (active_colliders_[i]->Get_Is_Trigger())
+					active_colliders_[i]->Set_Triggered(true, *active_colliders_[j]);
+				else
+					active_colliders_[i]->Collision_Response(*active_colliders_[j]);
 			}
 			else
 			{

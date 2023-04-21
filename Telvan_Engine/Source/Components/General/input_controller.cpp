@@ -5,7 +5,7 @@
 *
 **************************************************************************************************************************************/
 #include "input_controller.h"
-#include "transform.h"
+#include "rigid_body.h"
 #include "error_logging.h"
 #include "entity.h"
 #include "engine.h"
@@ -21,9 +21,9 @@ void move_up(float dT, Input_Controller& ic)
         return;
     }
 
-    Transform* transform = ic.parent_->Get_Component<Transform>(Component_Type::ct_Transform);
+    Rigid_Body* rigid_body = ic.parent_->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
 
-    if (transform == nullptr)
+    if (rigid_body == nullptr)
     {
         Error_Logging::Get_Instance()->Record_Message(
             Error_Logging::Get_Instance()->Format_Output("Transform not found for entity \"%s\"",
@@ -34,9 +34,10 @@ void move_up(float dT, Input_Controller& ic)
         return;
     }
 
-    glm::vec2 pos = transform->Get_Translation();
+    /*glm::vec2 pos = rigid_body->Get_Translation();
     pos.y += 5.0f;
-    transform->Set_Translation(pos);
+    rigid_body->Set_Translation(pos);*/
+    rigid_body->Add_Force(glm::vec2(0.0f, 1.0f) * 5.0f);
 }
 
 void move_down(float dT, Input_Controller& ic)
@@ -50,9 +51,10 @@ void move_down(float dT, Input_Controller& ic)
         return;
     }
 
-    Transform* transform = ic.parent_->Get_Component<Transform>(Component_Type::ct_Transform);
+    Rigid_Body* rigid_body = ic.parent_->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
 
-    if (transform == nullptr)
+
+    if (rigid_body == nullptr)
     {
         Error_Logging::Get_Instance()->Record_Message(
             Error_Logging::Get_Instance()->Format_Output("Transform not found for entity \"%s\"",
@@ -63,9 +65,10 @@ void move_down(float dT, Input_Controller& ic)
         return;
     }
 
-    glm::vec2 pos = transform->Get_Translation();
+    /*glm::vec2 pos = rigid_body->Get_Translation();
     pos.y -= 5.0f;
-    transform->Set_Translation(pos);
+    rigid_body->Set_Translation(pos);*/
+    rigid_body->Add_Force(glm::vec2(0.0f, -1.0f) * 5.0f);
 }
 
 void move_left(float dT, Input_Controller& ic)
@@ -79,9 +82,9 @@ void move_left(float dT, Input_Controller& ic)
         return;
     }
 
-    Transform* transform = ic.parent_->Get_Component<Transform>(Component_Type::ct_Transform);
+    Rigid_Body* rigid_body = ic.parent_->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
 
-    if (transform == nullptr)
+    if (rigid_body == nullptr)
     {
         Error_Logging::Get_Instance()->Record_Message(
             Error_Logging::Get_Instance()->Format_Output("Transform not found for entity \"%s\"",
@@ -92,9 +95,10 @@ void move_left(float dT, Input_Controller& ic)
         return;
     }
 
-    glm::vec2 pos = transform->Get_Translation();
+    /*glm::vec2 pos = rigid_body->Get_Translation();
     pos.x -= 5.0f;
-    transform->Set_Translation(pos);
+    rigid_body->Set_Translation(pos);*/
+    rigid_body->Add_Force(glm::vec2(-1.0f, 0.0f) * 5.0f);
 }
 
 void move_right(float dT, Input_Controller& ic)
@@ -108,9 +112,9 @@ void move_right(float dT, Input_Controller& ic)
         return;
     }
 
-    Transform* transform = ic.parent_->Get_Component<Transform>(Component_Type::ct_Transform);
+    Rigid_Body* rigid_body = ic.parent_->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
 
-    if (transform == nullptr)
+    if (rigid_body == nullptr)
     {
         Error_Logging::Get_Instance()->Record_Message(
             Error_Logging::Get_Instance()->Format_Output("Transform not found for entity \"%s\"",
@@ -121,9 +125,10 @@ void move_right(float dT, Input_Controller& ic)
         return;
     }
 
-    glm::vec2 pos = transform->Get_Translation();
+    /*glm::vec2 pos = rigid_body->Get_Translation();
     pos.x += 5.0f;
-    transform->Set_Translation(pos);
+    rigid_body->Set_Translation(pos);*/
+    rigid_body->Add_Force(glm::vec2(1.0f, 0.0f) * 5.0f);
 }
 
 void toggle_debug_draw(float dT, Input_Controller& ic)

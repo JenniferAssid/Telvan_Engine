@@ -58,12 +58,28 @@ public:
 
 /************************************************************ FUNCTIONS **************************************************************/
 private:
+	void static_circle_circle_response(Circle& static_a, Circle& static_b);
+	void dynamic_static_circle_circle_response(Circle& dynamic, Circle& static_circ);
+	void dynamic_circle_circle_response(Circle& dynamic_a, Circle& dynamic_b);
+
+	//void rigid_circle_kinetic_AABB_resolution(Circle& rigid, AABB& kinetic);
+	//void kinetic_circle_rigid_AABB_resolution(Circle& kinetic, AABB& rigid);
+
 protected:
 	void initialize_square_outline();
 	
+	// Collision Detection
 	bool circle_circle_check(Circle& a, Circle& b);
 	bool circle_AABB_check(Circle& a, AABB& b);
 	bool AABB_AABB_check(AABB& a, AABB& b);
+
+	bool static_circle_circle_check(Circle& static_a, Circle& static_b);
+	bool static_dynamic_circle_circle_check(Circle& dynamic, Circle& static_circ);
+
+	// Collision Resolutuion
+	void circle_circle_response(Circle& a, Circle& b);
+	//void circle_AABB_resolution(Circle& a, AABB& b);
+	//void AABB_AABB_resolution(AABB& a, AABB& b);
 
 public:
 	// Base Component Functions
@@ -96,6 +112,7 @@ public:
 
 	// Collision Functions
 	virtual bool Collision_Detection(Collider& other) { return false; }
+	virtual void Collision_Response(Collider& other) {}
 
 	inline Collider_Type Get_Collider_Type() const { return collider_type_; }
 	inline glm::vec2 Get_Offset() const { return offset_; }
@@ -154,6 +171,7 @@ public:
 	void Render() override;
 
 	bool Collision_Detection(Collider& other) override;
+	void Collision_Response(Collider& other) override;
 
 	inline float Get_Radius() const { return radius_; }
 

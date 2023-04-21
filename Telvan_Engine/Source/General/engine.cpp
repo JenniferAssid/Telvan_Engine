@@ -108,6 +108,7 @@ void Engine::Initialize()
     entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin,
         tmp_position.y + margin));
     Circle* circle = entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
     circle->Set_Radius(20.0f);
     entity_manager->Add_Entity(entity);
 

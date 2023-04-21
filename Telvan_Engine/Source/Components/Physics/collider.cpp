@@ -23,19 +23,10 @@ bool Collider::circle_circle_check(Circle& a, Circle& b)
 	if (a_rb == nullptr && b_rb == nullptr)
 		return static_circle_circle_check(a, b);
 	else if (a_rb == nullptr)
-	{
-		if (b_rb->Get_Current_Velocity() > 0.0f)
-			return static_dynamic_circle_circle_check(b, a);
-		else
-			return static_circle_circle_check(a, b);
-	}
-	else
-	{
-		if (a_rb->Get_Current_Velocity() > 0.0f)
-			return static_dynamic_circle_circle_check(a, b);
-		else
-			return static_circle_circle_check(a, b);
-	}
+		return static_dynamic_circle_circle_check(b, a);
+	else if (b_rb == nullptr)
+		return static_dynamic_circle_circle_check(a, b);
+	else return (static_dynamic_circle_circle_check(b, a) || static_dynamic_circle_circle_check(a, b));
 }
 
 bool Collider::static_circle_circle_check(Circle& static_a, Circle& static_b)
@@ -209,7 +200,36 @@ void Collider::dynamic_static_circle_circle_response(Circle& dynamic, Circle& st
 
 void Collider::dynamic_circle_circle_response(Circle& dynamic_a, Circle& dynamic_b)
 {
+	Transform* a_trans = dynamic_a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (a_trans == nullptr) return;
 
+	Transform* b_trans = dynamic_b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (b_trans == nullptr) return;
+
+	Rigid_Body* a_rb = dynamic_a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (a_rb == nullptr) return;
+
+	Rigid_Body* b_rb = dynamic_b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (b_rb == nullptr) return;
+
+	glm::vec2 distance = b_trans->Get_Translation() - a_trans->Get_Translation();
+	distance = glm::normalize(distance);
+
+	glm::vec2 a_v = a_rb->Get_Current_Velocity() * a_rb->Get_Direction();
+	glm::vec2 b_v = b_rb->Get_Current_Velocity() * b_rb->Get_Direction();
+
+	float p = (2.0f * (glm::dot(a_v, distance) - glm::dot(b_v, distance))) / (a_rb->Get_Mass() + b_rb->Get_Mass());
+
+	glm::vec2 intersection = (b_trans->Get_Translation() - a_trans->Get_Translation());
+	float intersect_length = std::max((dynamic_a.Get_Radius() + dynamic_b.Get_Radius()) - glm::length(intersection),
+		0.0f);
+	intersect_length = 0.0f;
+
+	glm::vec2 a_w = a_v - p * a_rb->Get_Mass() * distance;
+	glm::vec2 b_w = b_v + p * b_rb->Get_Mass() * distance;
+
+	a_rb->Set_Current_Velocity(a_w - intersection);
+	b_rb->Set_Current_Velocity(b_w + intersection);
 }
 
 void Circle::initialize_circle_outline()

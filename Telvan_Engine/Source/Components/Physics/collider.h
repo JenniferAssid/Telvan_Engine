@@ -85,15 +85,21 @@ private:
 	void dynamic_circle_static_aabb_response(Circle& dynamic_circ, AABB& static_aabb);
 	void dynamic_circle_aabb_response(Circle& dynamic_circ, AABB& dynamic_aabb);
 
+	// AABB-AABB
+	void static_aabb_aabb_response(AABB& a, AABB& b);
+	void dynamic_static_aabb_aabb_response(AABB& dynamic_aabb, AABB& static_aabb);
+	void dynamic_aabb_aabb_response(AABB& a, AABB& b);
+
 protected:
 	// Collision Detection
 	bool circle_circle_check(Circle& a, Circle& b);
-	bool circle_AABB_check(Circle& a, AABB& b);
-	bool AABB_AABB_check(AABB& a, AABB& b);
+	bool circle_aabb_check(Circle& a, AABB& b);
+	bool aabb_aabb_check(AABB& a, AABB& b);
 
 	// Collision Resolutuion
 	void circle_circle_response(Circle& a, Circle& b);
-	void circle_AABB_response(Circle& a, AABB& b);
+	void circle_aabb_response(Circle& a, AABB& b);
+	void aabb_aabb_response(AABB& a, AABB& b);
 
 public:
 	// Base Component Functions

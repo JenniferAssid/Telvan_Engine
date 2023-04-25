@@ -107,8 +107,8 @@ void Engine::Initialize()
     entity = new Entity(*prefab_manager->Get_Resource("Prop"));
     entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin,
         tmp_position.y + margin));
-    /*Circle* circle =*/ entity->Add_Component<AABB>(Component_Type::ct_Collider);
-    entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+    /*Circle* circle =*/ entity->Add_Component<AABB>(Component_Type::ct_Collider)->Set_Half_Length(glm::vec2(50.f,50.f));
+    //entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
     //circle->Set_Radius(20.0f);
     //circle->Set_Offset(glm::vec2(0.0f, 10.0f));
     entity_manager->Add_Entity(entity);

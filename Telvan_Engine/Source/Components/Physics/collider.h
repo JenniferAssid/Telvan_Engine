@@ -69,6 +69,10 @@ private:
 	bool static_circle_dynamic_aabb_check(Circle& static_circ, AABB& dynamic_aabb);
 	bool dynamic_circle_static_aabb_check(Circle& dynamic_circ, AABB& static_aabb);
 
+	// AABB-AABB
+	bool static_aabb_aabb_check(AABB& a, AABB& b);
+	bool static_dynamic_aabb_aabb_check(AABB& dynamic_aabb, AABB& static_aabb);
+
 	// Focused Collision Resolution
 	// Circle-Circle
 	void static_circle_circle_response(Circle& static_a, Circle& static_b);

@@ -115,7 +115,7 @@ void Engine::Initialize()
 
     entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
     //entity->Add_Component<Circle>(Component_Type::ct_Collider);
-    entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    entity->Add_Component<AABB>(Component_Type::ct_Collider);
     entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
     current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
     entity_manager->Add_Entity(entity);

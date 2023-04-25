@@ -18,6 +18,7 @@
 /************************************************* COLLIDER: Private Functions *******************************************************/
 
 // Focused Collision Detection
+
 // Circle-Circle
 bool Collider::static_circle_circle_check(Circle& static_a, Circle& static_b)
 {
@@ -153,7 +154,74 @@ bool Collider::dynamic_circle_static_aabb_check(Circle& dynamic_circ, AABB& stat
 	return false;
 }
 
+// AABB-AABB
+bool Collider::static_aabb_aabb_check(AABB& a, AABB& b)
+{
+	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (a_trans == nullptr) return false;
+
+	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (b_trans == nullptr) return false;
+
+	glm::vec2 a_pos = a_trans->Get_Translation() + a.Get_Offset();
+	glm::vec2 a_halfs = a.Get_Half_Length();
+
+	glm::vec2 b_pos = b_trans->Get_Translation() + b.Get_Offset();
+	glm::vec2 b_halfs = b.Get_Half_Length();
+
+	// A above B
+	if (a_pos.y + a_halfs.y > b_pos.y + b_halfs.y &&
+		a_pos.y - a_halfs.y > b_pos.y + b_halfs.y)
+		return false;
+
+	// A below B
+	if (a_pos.y + a_halfs.y < b_pos.y - b_halfs.y &&
+		a_pos.y - a_halfs.y < b_pos.y - b_halfs.y)
+		return false;
+
+	// A right B
+	if (a_pos.x + a_halfs.x > b_pos.x + b_halfs.x &&
+		a_pos.x - a_halfs.x > b_pos.x + b_halfs.x)
+		return false;
+
+	// A left B
+	if (a_pos.x + a_halfs.x < b_pos.x - b_halfs.x &&
+		a_pos.x - a_halfs.x < b_pos.x - b_halfs.x)
+		return false;
+
+	return true;
+}
+
+bool Collider::static_dynamic_aabb_aabb_check(AABB& dynamic_aabb, AABB& static_aabb)
+{
+	Rigid_Body* dynamic_rb = dynamic_aabb.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (dynamic_rb == nullptr) return false;
+
+	Transform* static_trans = static_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (static_trans == nullptr) return false;
+
+	Transform* dynamic_trans = dynamic_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (dynamic_trans == nullptr) return false;
+
+	glm::vec2 direction = dynamic_rb->Get_Direction();
+
+	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_aabb.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+
+	glm::vec2 distance = static_trans->Get_Translation() + static_aabb.Get_Offset() - closest_point;
+
+	glm::vec2 static_length = glm::normalize(distance) * static_aabb.Get_Half_Length();
+	glm::vec2 dynamic_length = glm::normalize(distance) * dynamic_aabb.Get_Half_Length();
+
+	if (glm::length(distance) < glm::length(static_length) + glm::length(dynamic_length))
+		return true;
+
+	return false;
+}
+
 // Focused Collision Resolution
+
 // Circle-Circle
 void Collider::static_circle_circle_response(Circle& static_a, Circle& static_b)
 {
@@ -398,39 +466,17 @@ bool Collider::circle_AABB_check(Circle& a, AABB& b)
 
 bool Collider::AABB_AABB_check(AABB& a, AABB& b)
 {
-	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (a_trans == nullptr) return false;
+	Rigid_Body* a_rb = a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	Rigid_Body* b_rb = b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
 
-	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (b_trans == nullptr) return false;
-
-	glm::vec2 a_pos = a_trans->Get_Translation();
-	glm::vec2 a_halfs = a.Get_Half_Length();
-
-	glm::vec2 b_pos = b_trans->Get_Translation();
-	glm::vec2 b_halfs = b.Get_Half_Length();
-
-	// A above B
-	if (a_pos.y + a_halfs.y > b_pos.y + b_halfs.y &&
-		a_pos.y - a_halfs.y > b_pos.y + b_halfs.y)
-		return false;
-
-	// A below B
-	if (a_pos.y + a_halfs.y < b_pos.y - b_halfs.y &&
-		a_pos.y - a_halfs.y < b_pos.y - b_halfs.y)
-		return false;
-
-	// A right B
-	if (a_pos.x + a_halfs.x > b_pos.x + b_halfs.x &&
-		a_pos.x - a_halfs.x > b_pos.x + b_halfs.x)
-		return false;
-
-	// A left B
-	if (a_pos.x + a_halfs.x < b_pos.x - b_halfs.x &&
-		a_pos.x - a_halfs.x < b_pos.x - b_halfs.x)
-		return false;
-
-	return true;
+	if (a_rb == nullptr && b_rb == nullptr)
+		return static_aabb_aabb_check(a, b);
+	else if (a_rb == nullptr)
+		return static_dynamic_aabb_aabb_check(b, a);
+	else if (b_rb == nullptr)
+		return static_dynamic_aabb_aabb_check(a, b);
+	else
+		return (static_dynamic_aabb_aabb_check(b, a) || static_dynamic_aabb_aabb_check(a, b));
 }
 
 // Collision Resolution

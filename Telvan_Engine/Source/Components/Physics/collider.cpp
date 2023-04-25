@@ -15,20 +15,10 @@
 #include "transform.h"
 #include "rigid_body.h"
 
-bool Collider::circle_circle_check(Circle& a, Circle& b)
-{
-	Rigid_Body* a_rb = a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
-	Rigid_Body* b_rb = b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+/************************************************* COLLIDER: Private Functions *******************************************************/
 
-	if (a_rb == nullptr && b_rb == nullptr)
-		return static_circle_circle_check(a, b);
-	else if (a_rb == nullptr)
-		return static_dynamic_circle_circle_check(b, a);
-	else if (b_rb == nullptr)
-		return static_dynamic_circle_circle_check(a, b);
-	else return (static_dynamic_circle_circle_check(b, a) || static_dynamic_circle_circle_check(a, b));
-}
-
+// Focused Collision Detection
+// Circle-Circle
 bool Collider::static_circle_circle_check(Circle& static_a, Circle& static_b)
 {
 	Transform* a_trans = static_a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
@@ -70,90 +60,100 @@ bool Collider::static_dynamic_circle_circle_check(Circle& dynamic, Circle& stati
 	return false;
 }
 
-bool Collider::circle_AABB_check(Circle& a, AABB& b)
+// Circle-AABB
+bool Collider::static_circle_aabb_check(Circle& static_circ, AABB& static_aabb)
 {
-	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (a_trans == nullptr) return false;
+	Transform* circ_trans = static_circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (circ_trans == nullptr) return false;
 
-	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (b_trans == nullptr) return false;
+	Transform* aabb_trans = static_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (aabb_trans == nullptr) return false;
 
-	glm::vec2 b_pos = b_trans->Get_Translation();
-	glm::vec2 b_halfs = b.Get_Half_Length();
+	glm::vec2 aabb_pos = aabb_trans->Get_Translation();
+	glm::vec2 aabb_half_lengths = static_aabb.Get_Half_Length();
 
-	glm::vec2 min = b_pos - b_halfs;
-	glm::vec2 max = b_pos + b_halfs;
+	glm::vec2 min = aabb_pos - aabb_half_lengths;
+	glm::vec2 max = aabb_pos + aabb_half_lengths;
 
-	glm::vec2 distance = a_trans->Get_Translation() - min;
-	if (glm::length(distance) <= a.Get_Radius()) return true;
+	float circ_radius = static_circ.Get_Radius();
 
-	distance = a_trans->Get_Translation() - glm::vec2(min.x, max.y);
-	if (glm::length(distance) <= a.Get_Radius()) return true;
+	glm::vec2 distance = circ_trans->Get_Translation() - min;
+	if (glm::length(distance) <= circ_radius) return true;
 
-	distance = a_trans->Get_Translation() - glm::vec2(max.x, min.y);
-	if (glm::length(distance) <= a.Get_Radius()) return true;
+	distance = circ_trans->Get_Translation() - glm::vec2(min.x, max.y);
+	if (glm::length(distance) <= circ_radius) return true;
 
-	distance = a_trans->Get_Translation() - max;
-	if (glm::length(distance) <= a.Get_Radius()) return true;
+	distance = circ_trans->Get_Translation() - glm::vec2(max.x, min.y);
+	if (glm::length(distance) <= circ_radius) return true;
 
-	distance = a_trans->Get_Translation() - b_trans->Get_Translation();
-	if (glm::length(distance) <= a.Get_Radius()) return true;
+	distance = circ_trans->Get_Translation() - max;
+	if (glm::length(distance) <= circ_radius) return true;
+
+	distance = circ_trans->Get_Translation() - aabb_trans->Get_Translation();
+	if (glm::length(distance) <= circ_radius) return true;
 
 	return false;
 }
 
-bool Collider::AABB_AABB_check(AABB& a, AABB& b)
+bool Collider::static_circle_dynamic_aabb_check(Circle& static_circ, AABB& dynamic_aabb)
 {
-	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (a_trans == nullptr) return false;
+	Rigid_Body* dynamic_rb = dynamic_aabb.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (dynamic_rb == nullptr) return false;
 
-	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (b_trans == nullptr) return false;
+	Transform* static_trans = static_circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (static_trans == nullptr) return false;
 
-	glm::vec2 a_pos = a_trans->Get_Translation();
-	glm::vec2 a_halfs = a.Get_Half_Length();
+	Transform* dynamic_trans = dynamic_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (dynamic_trans == nullptr) return false;
 
-	glm::vec2 b_pos = b_trans->Get_Translation();
-	glm::vec2 b_halfs = b.Get_Half_Length();
+	glm::vec2 direction = dynamic_rb->Get_Direction();
 
-	// A above B
-	if (a_pos.y + a_halfs.y > b_pos.y + b_halfs.y &&
-		a_pos.y - a_halfs.y > b_pos.y + b_halfs.y)
-		return false;
+	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation(),
+		dynamic_trans->Get_Translation(),
+		dynamic_trans->Get_Translation() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
 
-	// A below B
-	if (a_pos.y + a_halfs.y < b_pos.y - b_halfs.y &&
-		a_pos.y - a_halfs.y < b_pos.y - b_halfs.y)
-		return false;
+	glm::vec2 distance = static_trans->Get_Translation() - closest_point;
 
-	// A right B
-	if (a_pos.x + a_halfs.x > b_pos.x + b_halfs.x &&
-		a_pos.x - a_halfs.x > b_pos.x + b_halfs.x)
-		return false;
+	glm::vec2 norm = glm::normalize(distance);
 
-	// A left B
-	if (a_pos.x + a_halfs.x < b_pos.x - b_halfs.x &&
-		a_pos.x - a_halfs.x < b_pos.x - b_halfs.x)
-		return false;
+	norm *= dynamic_aabb.Get_Half_Length();
 
-	return true;
+	if (glm::length(distance) < static_circ.Get_Radius() + glm::length(norm))
+		return true;
+
+	return false;
 }
 
-void Collider::circle_circle_response(Circle& a, Circle& b)
+bool Collider::dynamic_circle_static_aabb_check(Circle& dynamic_circ, AABB& static_aabb)
 {
-	Rigid_Body* a_rb = a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
-	Rigid_Body* b_rb = b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	Rigid_Body* dynamic_rb = dynamic_circ.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (dynamic_rb == nullptr) return false;
 
-	if (a_rb == nullptr && b_rb == nullptr)
-		static_circle_circle_response(a, b);
-	else if (a_rb == nullptr)
-		dynamic_static_circle_circle_response(b, a);
-	else if (b_rb == nullptr)
-		dynamic_static_circle_circle_response(a, b);
-	else
-		dynamic_circle_circle_response(a, b);
+	Transform* static_trans = static_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (static_trans == nullptr) return false;
+
+	Transform* dynamic_trans = dynamic_circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (dynamic_trans == nullptr) return false;
+
+	glm::vec2 direction = dynamic_rb->Get_Direction();
+
+	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation(),
+		dynamic_trans->Get_Translation(),
+		dynamic_trans->Get_Translation() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+
+	glm::vec2 distance = static_trans->Get_Translation() - closest_point;
+
+	glm::vec2 norm = glm::normalize(distance);
+
+	norm *= static_aabb.Get_Half_Length();
+
+	if (glm::length(distance) < dynamic_circ.Get_Radius() + glm::length(norm))
+		return true;
+
+	return false;
 }
 
+// Different Circle-Circle Collision Responses
 void Collider::static_circle_circle_response(Circle& static_a, Circle& static_b)
 {
 	Transform* a_trans = static_a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
@@ -182,14 +182,14 @@ void Collider::dynamic_static_circle_circle_response(Circle& dynamic, Circle& st
 	glm::vec2 n = dynamic_trans->Get_Translation() - static_trans->Get_Translation();
 	n = glm::normalize(n);
 
-	float p = (2.0f * glm::dot(dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction(), n)) 
+	float p = (2.0f * glm::dot(dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction(), n))
 		/ (dynamic_rb->Get_Mass() + dynamic_rb->Get_Mass());
 
 	glm::vec2 w = dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction()
 		- p * (dynamic_rb->Get_Mass() * n - dynamic_rb->Get_Mass() * n);
 
 	glm::vec2 intersection = (static_trans->Get_Translation() - dynamic_trans->Get_Translation());
-	float intersect_length = std::max((dynamic.Get_Radius() + static_circ.Get_Radius()) - glm::length(intersection), 
+	float intersect_length = std::max((dynamic.Get_Radius() + static_circ.Get_Radius()) - glm::length(intersection),
 		0.0f);
 	intersect_length += 5.0f;
 
@@ -232,6 +232,94 @@ void Collider::dynamic_circle_circle_response(Circle& dynamic_a, Circle& dynamic
 	b_rb->Set_Current_Velocity(b_w + intersection);
 }
 
+/************************************************* COLLIDER: Protected Functions *****************************************************/
+
+// Collision Detection
+bool Collider::circle_circle_check(Circle& a, Circle& b)
+{
+	Rigid_Body* a_rb = a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	Rigid_Body* b_rb = b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+
+	if (a_rb == nullptr && b_rb == nullptr)
+		return static_circle_circle_check(a, b);
+	else if (a_rb == nullptr)
+		return static_dynamic_circle_circle_check(b, a);
+	else if (b_rb == nullptr)
+		return static_dynamic_circle_circle_check(a, b);
+	else 
+		return (static_dynamic_circle_circle_check(b, a) || static_dynamic_circle_circle_check(a, b));
+}
+
+bool Collider::circle_AABB_check(Circle& a, AABB& b)
+{
+	Rigid_Body* a_rb = a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	Rigid_Body* b_rb = b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+
+	if (a_rb == nullptr && b_rb == nullptr)
+		return static_circle_aabb_check(a, b);
+	else if (a_rb == nullptr)
+		return static_circle_dynamic_aabb_check(a, b);
+	else if (b_rb == nullptr)
+		return dynamic_circle_static_aabb_check(a, b);
+	else
+		return (static_circle_dynamic_aabb_check(a, b) || dynamic_circle_static_aabb_check(a, b));
+}
+
+bool Collider::AABB_AABB_check(AABB& a, AABB& b)
+{
+	Transform* a_trans = a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (a_trans == nullptr) return false;
+
+	Transform* b_trans = b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (b_trans == nullptr) return false;
+
+	glm::vec2 a_pos = a_trans->Get_Translation();
+	glm::vec2 a_halfs = a.Get_Half_Length();
+
+	glm::vec2 b_pos = b_trans->Get_Translation();
+	glm::vec2 b_halfs = b.Get_Half_Length();
+
+	// A above B
+	if (a_pos.y + a_halfs.y > b_pos.y + b_halfs.y &&
+		a_pos.y - a_halfs.y > b_pos.y + b_halfs.y)
+		return false;
+
+	// A below B
+	if (a_pos.y + a_halfs.y < b_pos.y - b_halfs.y &&
+		a_pos.y - a_halfs.y < b_pos.y - b_halfs.y)
+		return false;
+
+	// A right B
+	if (a_pos.x + a_halfs.x > b_pos.x + b_halfs.x &&
+		a_pos.x - a_halfs.x > b_pos.x + b_halfs.x)
+		return false;
+
+	// A left B
+	if (a_pos.x + a_halfs.x < b_pos.x - b_halfs.x &&
+		a_pos.x - a_halfs.x < b_pos.x - b_halfs.x)
+		return false;
+
+	return true;
+}
+
+// Collision Resolution
+void Collider::circle_circle_response(Circle& a, Circle& b)
+{
+	Rigid_Body* a_rb = a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	Rigid_Body* b_rb = b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+
+	if (a_rb == nullptr && b_rb == nullptr)
+		static_circle_circle_response(a, b);
+	else if (a_rb == nullptr)
+		dynamic_static_circle_circle_response(b, a);
+	else if (b_rb == nullptr)
+		dynamic_static_circle_circle_response(a, b);
+	else
+		dynamic_circle_circle_response(a, b);
+}
+
+/**************************************************** CIRCLE: Private Functions ******************************************************/
+
 void Circle::initialize_circle_outline()
 {
 	unsigned int VBO;
@@ -262,6 +350,8 @@ void Circle::initialize_circle_outline()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
+
+/***************************************************** CIRCLE: Public Functions ******************************************************/
 
 void Circle::Start()
 {
@@ -372,6 +462,8 @@ void Circle::Collision_Response(Collider& other)
 	}
 }
 
+/******************************************************* AABB: Private Functions *****************************************************/
+
 void AABB::initialize_square_outline()
 {
 	unsigned int VBO;
@@ -402,6 +494,8 @@ void AABB::initialize_square_outline()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
+
+/******************************************************** AABB: Public Functions *****************************************************/
 
 void AABB::Start()
 {

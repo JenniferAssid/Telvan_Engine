@@ -48,11 +48,11 @@ bool Collider::static_dynamic_circle_circle_check(Circle& dynamic, Circle& stati
 
 	glm::vec2 direction = dynamic_rb->Get_Direction();
 
-	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation(),
-		dynamic_trans->Get_Translation(),
-		dynamic_trans->Get_Translation() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_circ.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
 
-	glm::vec2 distance = static_trans->Get_Translation() - closest_point;
+	glm::vec2 distance = static_trans->Get_Translation() + static_circ.Get_Offset() - closest_point;
 
 	if (glm::length(distance) < dynamic.Get_Radius() + static_circ.Get_Radius())
 		return true;
@@ -108,11 +108,11 @@ bool Collider::static_circle_dynamic_aabb_check(Circle& static_circ, AABB& dynam
 
 	glm::vec2 direction = dynamic_rb->Get_Direction();
 
-	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation(),
-		dynamic_trans->Get_Translation(),
-		dynamic_trans->Get_Translation() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_circ.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
 
-	glm::vec2 distance = static_trans->Get_Translation() - closest_point;
+	glm::vec2 distance = static_trans->Get_Translation() + static_circ.Get_Offset() - closest_point;
 
 	glm::vec2 norm = glm::normalize(distance);
 
@@ -137,11 +137,11 @@ bool Collider::dynamic_circle_static_aabb_check(Circle& dynamic_circ, AABB& stat
 
 	glm::vec2 direction = dynamic_rb->Get_Direction();
 
-	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation(),
-		dynamic_trans->Get_Translation(),
-		dynamic_trans->Get_Translation() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_aabb.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic_circ.Get_Offset(),
+		dynamic_trans->Get_Translation() + dynamic_circ.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
 
-	glm::vec2 distance = static_trans->Get_Translation() - closest_point;
+	glm::vec2 distance = static_trans->Get_Translation() + static_aabb.Get_Offset() - closest_point;
 
 	glm::vec2 norm = glm::normalize(distance);
 
@@ -153,7 +153,8 @@ bool Collider::dynamic_circle_static_aabb_check(Circle& dynamic_circ, AABB& stat
 	return false;
 }
 
-// Different Circle-Circle Collision Responses
+// Focused Collision Resolution
+// Circle-Circle
 void Collider::static_circle_circle_response(Circle& static_a, Circle& static_b)
 {
 	Transform* a_trans = static_a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
@@ -162,10 +163,15 @@ void Collider::static_circle_circle_response(Circle& static_a, Circle& static_b)
 	Transform* b_trans = static_b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
 	if (b_trans == nullptr) return;
 
-	glm::vec2 midpoint = (b_trans->Get_Translation() + a_trans->Get_Translation()) / 2.0f;
+	glm::vec2 midpoint = ((b_trans->Get_Translation() + static_b.Get_Offset()) 
+		+ (a_trans->Get_Translation() + static_a.Get_Offset())) / 2.0f;
 
-	a_trans->Set_Translation(midpoint + static_a.Get_Radius() * glm::normalize(a_trans->Get_Translation() - b_trans->Get_Translation()));
-	b_trans->Set_Translation(midpoint + static_b.Get_Radius() * glm::normalize(b_trans->Get_Translation() - a_trans->Get_Translation()));
+	a_trans->Set_Translation((midpoint - static_a.Get_Offset())
+		+ static_a.Get_Radius() * glm::normalize((a_trans->Get_Translation() + static_a.Get_Offset()) -
+			(b_trans->Get_Translation() + static_b.Get_Offset())));
+	b_trans->Set_Translation((midpoint - static_a.Get_Offset())
+		+ static_a.Get_Radius() * glm::normalize((b_trans->Get_Translation() + static_b.Get_Offset()) - 
+			(a_trans->Get_Translation() + static_a.Get_Offset())));
 }
 
 void Collider::dynamic_static_circle_circle_response(Circle& dynamic, Circle& static_circ)
@@ -179,7 +185,8 @@ void Collider::dynamic_static_circle_circle_response(Circle& dynamic, Circle& st
 	Rigid_Body* dynamic_rb = dynamic.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
 	if (dynamic_rb == nullptr) return;
 
-	glm::vec2 n = dynamic_trans->Get_Translation() - static_trans->Get_Translation();
+	glm::vec2 n = (dynamic_trans->Get_Translation() + dynamic.Get_Offset())
+		- (static_trans->Get_Translation() + static_circ.Get_Offset());
 	n = glm::normalize(n);
 
 	float p = (2.0f * glm::dot(dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction(), n))
@@ -188,7 +195,8 @@ void Collider::dynamic_static_circle_circle_response(Circle& dynamic, Circle& st
 	glm::vec2 w = dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction()
 		- p * (dynamic_rb->Get_Mass() * n - dynamic_rb->Get_Mass() * n);
 
-	glm::vec2 intersection = (static_trans->Get_Translation() - dynamic_trans->Get_Translation());
+	glm::vec2 intersection = ((static_trans->Get_Translation() + static_circ.Get_Offset())
+		- (dynamic_trans->Get_Translation() + dynamic.Get_Offset()));
 	float intersect_length = std::max((dynamic.Get_Radius() + static_circ.Get_Radius()) - glm::length(intersection),
 		0.0f);
 	intersect_length += 5.0f;
@@ -212,7 +220,8 @@ void Collider::dynamic_circle_circle_response(Circle& dynamic_a, Circle& dynamic
 	Rigid_Body* b_rb = dynamic_b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
 	if (b_rb == nullptr) return;
 
-	glm::vec2 distance = b_trans->Get_Translation() - a_trans->Get_Translation();
+	glm::vec2 distance = (b_trans->Get_Translation() + dynamic_b.Get_Offset())
+		- (a_trans->Get_Translation() + dynamic_a.Get_Offset());
 	distance = glm::normalize(distance);
 
 	glm::vec2 a_v = a_rb->Get_Current_Velocity() * a_rb->Get_Direction();
@@ -220,16 +229,138 @@ void Collider::dynamic_circle_circle_response(Circle& dynamic_a, Circle& dynamic
 
 	float p = (2.0f * (glm::dot(a_v, distance) - glm::dot(b_v, distance))) / (a_rb->Get_Mass() + b_rb->Get_Mass());
 
-	glm::vec2 intersection = (b_trans->Get_Translation() - a_trans->Get_Translation());
-	float intersect_length = std::max((dynamic_a.Get_Radius() + dynamic_b.Get_Radius()) - glm::length(intersection),
-		0.0f);
-	intersect_length = 0.0f;
+	glm::vec2 intersection = ((b_trans->Get_Translation() + dynamic_b.Get_Offset())
+		- (a_trans->Get_Translation() + dynamic_a.Get_Offset()));
 
 	glm::vec2 a_w = a_v - p * a_rb->Get_Mass() * distance;
 	glm::vec2 b_w = b_v + p * b_rb->Get_Mass() * distance;
 
 	a_rb->Set_Current_Velocity(a_w - intersection);
 	b_rb->Set_Current_Velocity(b_w + intersection);
+}
+
+// Circle-AABB
+void Collider::static_circle_aabb_response(Circle& static_circ, AABB& static_aabb)
+{
+	Transform* circ_trans = static_circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (circ_trans == nullptr) return;
+
+	Transform* aabb_trans = static_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (aabb_trans == nullptr) return;
+
+	// AABB->Circle
+	glm::vec2 distance = (circ_trans->Get_Translation() + static_circ.Get_Offset())
+		- (aabb_trans->Get_Translation() + static_aabb.Get_Offset());
+
+	glm::vec2 midpoint = glm::normalize(distance) * static_aabb.Get_Half_Length();
+
+	circ_trans->Set_Translation((midpoint - static_circ.Get_Offset())
+		+ static_circ.Get_Radius() * glm::normalize(distance));
+
+	aabb_trans->Set_Translation((midpoint - static_aabb.Get_Offset())
+		+ static_aabb.Get_Half_Length() * -glm::normalize(distance));
+}
+
+void Collider::static_circle_dynamic_aabb_response(Circle& static_circ, AABB& dynamic_aabb)
+{
+	Rigid_Body* dynamic_rb = dynamic_aabb.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (dynamic_rb == nullptr) return;
+
+	Transform* circ_trans = static_circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (circ_trans == nullptr) return;
+
+	Transform* aabb_trans = dynamic_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (aabb_trans == nullptr) return;
+
+	glm::vec2 n = (aabb_trans->Get_Translation() + dynamic_aabb.Get_Offset())
+		- (circ_trans->Get_Translation() + static_circ.Get_Offset());
+	n = glm::normalize(n);
+
+	float p = (2.0f * glm::dot(dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction(), n))
+		/ (dynamic_rb->Get_Mass() + dynamic_rb->Get_Mass());
+
+	glm::vec2 w = dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction()
+		- p * (dynamic_rb->Get_Mass() * n - dynamic_rb->Get_Mass() * n);
+
+	// AABB->Circle
+	glm::vec2 intersection = (circ_trans->Get_Translation() + static_circ.Get_Offset())
+		- (aabb_trans->Get_Translation() + dynamic_aabb.Get_Offset());
+
+	float intersection_length = std::max(static_circ.Get_Radius()
+		+ glm::length(glm::normalize(intersection) * dynamic_aabb.Get_Half_Length())
+		- glm::length(intersection),
+		0.0f);
+	intersection_length += 5.0f;
+
+	intersection = glm::normalize(intersection) * -intersection_length;
+
+	dynamic_rb->Set_Current_Velocity(w + intersection);
+}
+
+void Collider::dynamic_circle_static_aabb_response(Circle& dynamic_circ, AABB& static_aabb)
+{
+	Rigid_Body* dynamic_rb = dynamic_circ.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (dynamic_rb == nullptr) return;
+
+	Transform* circ_trans = dynamic_circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (circ_trans == nullptr) return;
+
+	Transform* aabb_trans = static_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (aabb_trans == nullptr) return;
+
+	glm::vec2 n = (circ_trans->Get_Translation() + dynamic_circ.Get_Offset())
+		- (aabb_trans->Get_Translation() + static_aabb.Get_Offset());
+	n = glm::normalize(n);
+
+	float p = (2.0f * glm::dot(dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction(), n))
+		/ (dynamic_rb->Get_Mass() + dynamic_rb->Get_Mass());
+
+	glm::vec2 w = dynamic_rb->Get_Current_Velocity() * dynamic_rb->Get_Direction()
+		- p * (dynamic_rb->Get_Mass() * n - dynamic_rb->Get_Mass() * n);
+
+	glm::vec2 intersection = (circ_trans->Get_Translation() + dynamic_circ.Get_Offset())
+		- (aabb_trans->Get_Translation() + static_aabb.Get_Offset());
+
+	float intersection_length = std::max(dynamic_circ.Get_Radius()
+		+ glm::length(glm::normalize(intersection) * static_aabb.Get_Half_Length())
+		- glm::length(intersection),
+		0.0f);
+	intersection_length += 5.0f;
+
+	intersection = glm::normalize(intersection) * intersection_length;
+
+	dynamic_rb->Set_Current_Velocity(w + intersection);
+}
+
+void Collider::dynamic_circle_aabb_response(Circle& circ, AABB& aabb)
+{
+	Rigid_Body* a_rb = circ.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (a_rb == nullptr) return;
+
+	Rigid_Body* b_rb = aabb.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (b_rb == nullptr) return;
+
+	Transform* circ_trans = circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (circ_trans == nullptr) return;
+
+	Transform* aabb_trans = aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (aabb_trans == nullptr) return;
+
+	// Circle->AABB
+	glm::vec2 distance = (aabb_trans->Get_Translation() + aabb.Get_Offset())
+		- (circ_trans->Get_Translation() + circ.Get_Offset());
+	glm::vec2 norm = glm::normalize(distance);
+
+	glm::vec2 a_v = a_rb->Get_Current_Velocity() * a_rb->Get_Direction();
+	glm::vec2 b_v = b_rb->Get_Current_Velocity() * b_rb->Get_Direction();
+
+	float p = (2.0f * (glm::dot(a_v, norm) - glm::dot(b_v, norm))) / (a_rb->Get_Mass() + b_rb->Get_Mass());
+
+	glm::vec2 a_w = a_v - p * a_rb->Get_Mass() * norm;
+	glm::vec2 b_w = b_v + p * b_rb->Get_Mass() * norm;
+
+	a_rb->Set_Current_Velocity(a_w - distance);
+	b_rb->Set_Current_Velocity(b_w + distance);
 }
 
 /************************************************* COLLIDER: Protected Functions *****************************************************/
@@ -316,6 +447,21 @@ void Collider::circle_circle_response(Circle& a, Circle& b)
 		dynamic_static_circle_circle_response(a, b);
 	else
 		dynamic_circle_circle_response(a, b);
+}
+
+void Collider::circle_AABB_response(Circle& a, AABB& b)
+{
+	Rigid_Body* a_rb = a.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	Rigid_Body* b_rb = b.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+
+	if (a_rb == nullptr && b_rb == nullptr)
+		static_circle_aabb_response(a, b);
+	else if (a_rb == nullptr)
+		static_circle_dynamic_aabb_response(a, b);
+	else if (b_rb == nullptr)
+		dynamic_circle_static_aabb_response(a, b);
+	else
+		dynamic_circle_aabb_response(a, b);
 }
 
 /**************************************************** CIRCLE: Private Functions ******************************************************/
@@ -456,6 +602,7 @@ void Circle::Collision_Response(Collider& other)
 		circle_circle_response(*this, (Circle&)other);
 		break;
 	case Collider_Type::col_AABB:
+		circle_AABB_response(*this, (AABB&)other);
 		break;
 	default:
 		break;
@@ -588,4 +735,20 @@ bool AABB::Collision_Detection(Collider& other)
 	}
 
 	return false;
+}
+
+void AABB::Collision_Response(Collider& other)
+{
+	switch (other.Get_Collider_Type())
+	{
+	case Collider_Type::col_Undefined:
+		break;
+	case Collider_Type::col_Circle:
+		circle_AABB_response((Circle&)other, *this);
+		break;
+	case Collider_Type::col_AABB:
+		break;
+	default:
+		break;
+	}
 }

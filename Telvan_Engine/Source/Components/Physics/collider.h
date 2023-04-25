@@ -75,6 +75,12 @@ private:
 	void dynamic_static_circle_circle_response(Circle& dynamic, Circle& static_circ);
 	void dynamic_circle_circle_response(Circle& dynamic_a, Circle& dynamic_b);
 
+	// Circle-AABB
+	void static_circle_aabb_response(Circle& static_circ, AABB& static_aabb);
+	void static_circle_dynamic_aabb_response(Circle& static_circ, AABB& dynamic_aabb);
+	void dynamic_circle_static_aabb_response(Circle& dynamic_circ, AABB& static_aabb);
+	void dynamic_circle_aabb_response(Circle& dynamic_circ, AABB& dynamic_aabb);
+
 protected:
 	// Collision Detection
 	bool circle_circle_check(Circle& a, Circle& b);
@@ -83,6 +89,7 @@ protected:
 
 	// Collision Resolutuion
 	void circle_circle_response(Circle& a, Circle& b);
+	void circle_AABB_response(Circle& a, AABB& b);
 
 public:
 	// Base Component Functions
@@ -212,6 +219,7 @@ public:
 	void Render() override;
 
 	bool Collision_Detection(Collider& other) override;
+	void Collision_Response(Collider& other) override;
 
 	inline glm::vec2 Get_Half_Length() const { return half_length_; }
 

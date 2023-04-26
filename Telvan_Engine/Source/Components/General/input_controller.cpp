@@ -34,9 +34,6 @@ void move_up(float dT, Input_Controller& ic)
         return;
     }
 
-    /*glm::vec2 pos = rigid_body->Get_Translation();
-    pos.y += 5.0f;
-    rigid_body->Set_Translation(pos);*/
     rigid_body->Add_Force(glm::vec2(0.0f, 1.0f) * 5.0f);
 }
 
@@ -65,9 +62,6 @@ void move_down(float dT, Input_Controller& ic)
         return;
     }
 
-    /*glm::vec2 pos = rigid_body->Get_Translation();
-    pos.y -= 5.0f;
-    rigid_body->Set_Translation(pos);*/
     rigid_body->Add_Force(glm::vec2(0.0f, -1.0f) * 5.0f);
 }
 
@@ -95,9 +89,6 @@ void move_left(float dT, Input_Controller& ic)
         return;
     }
 
-    /*glm::vec2 pos = rigid_body->Get_Translation();
-    pos.x -= 5.0f;
-    rigid_body->Set_Translation(pos);*/
     rigid_body->Add_Force(glm::vec2(-1.0f, 0.0f) * 5.0f);
 }
 
@@ -125,9 +116,6 @@ void move_right(float dT, Input_Controller& ic)
         return;
     }
 
-    /*glm::vec2 pos = rigid_body->Get_Translation();
-    pos.x += 5.0f;
-    rigid_body->Set_Translation(pos);*/
     rigid_body->Add_Force(glm::vec2(1.0f, 0.0f) * 5.0f);
 }
 
@@ -146,6 +134,7 @@ Input_Controller::Input_Controller() : Component(Component_Type::ct_Input_Contro
         action_bindings_[(int)Input_Actions::ia_Down] = GLFW_KEY_S;
         action_bindings_[(int)Input_Actions::ia_Left] = GLFW_KEY_A;
         action_bindings_[(int)Input_Actions::ia_Right] = GLFW_KEY_D;
+        action_bindings_[(int)Input_Actions::ia_Toggle_Debug] = GLFW_KEY_TAB;
     }
 }
 
@@ -170,14 +159,29 @@ void Input_Controller::Pre_Update(float dT)
         Input::Input_Information info = instance->Get_Info_From_Key(key);
 
         // Key has just been pressed
-        if (info.next == true && info.current == false && info.on_press != nullptr)
-            info.on_press(dT, *this);
+        if (info.next == true && info.current == false)
+        {
+            if (info.on_press != nullptr) info.on_press(dT, *this);
+            
+            events_.erase(events_.begin() + i);
+            i--;
+        }
         // Key is being held down
         else if (info.next == true && info.current == true && info.on_down != nullptr)
             info.on_down(dT, *this);
-        // Kye has been released
-        else if (info.next == false && info.current == true && info.on_release != nullptr)
-            info.on_release(dT, *this);
+        // Key has been released
+        else if (info.next == false && info.current == true)
+        {
+            if (info.on_release != nullptr)  info.on_release(dT, *this);
+
+            events_.erase(events_.begin() + i);
+            i--;
+        }
+        else if (info.next == false && info.current == false)
+        {
+            events_.erase(events_.begin() + i);
+            i--;
+        }
 
         instance->Set_Current_State_To_Next_Of_Key(key);
     }
@@ -189,6 +193,7 @@ void Input_Controller::Start()
     Input::Get_Instance()->Add_Binding(action_bindings_[(int)Input_Actions::ia_Down], move_down, Input::Callback_Type::cb_Down);
     Input::Get_Instance()->Add_Binding(action_bindings_[(int)Input_Actions::ia_Left], move_left, Input::Callback_Type::cb_Down);
     Input::Get_Instance()->Add_Binding(action_bindings_[(int)Input_Actions::ia_Right], move_right, Input::Callback_Type::cb_Down);
+    Input::Get_Instance()->Add_Binding(action_bindings_[(int)Input_Actions::ia_Toggle_Debug], toggle_debug_draw, Input::Callback_Type::cb_Press);
 }
 
 void Input_Controller::Stop()

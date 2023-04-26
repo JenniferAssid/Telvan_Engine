@@ -99,10 +99,15 @@ void Input::Internal_Keyboard_Callback(GLFWwindow* window,
     {
         bindings_[key].next = false;
 
-        auto var = std::find(events_.begin(), events_.end(), key);
-        if (var == events_.end()) return;
 
-        events_.erase(events_.begin() + (var - events_.begin()));
+        auto var = std::find(events_.begin(), events_.end(), key);
+        while (var != events_.end())
+        {
+            events_.erase(events_.begin() + (var - events_.begin()));
+            var = std::find(events_.begin(), events_.end(), key);
+        }
+
+        events_.push_back(key);
     }
 }
 

@@ -105,17 +105,19 @@ void Engine::Initialize()
     float margin = 25.0f;
     glm::vec2 tmp_position(0.0f);
     entity = new Entity(*prefab_manager->Get_Resource("Prop"));
-    entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(tmp_position.x + margin,
-        tmp_position.y + margin));
-    /*Circle* circle =*/ entity->Add_Component<AABB>(Component_Type::ct_Collider)->Set_Half_Length(glm::vec2(50.f,50.f));
-    //entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
-    //circle->Set_Radius(20.0f);
-    //circle->Set_Offset(glm::vec2(0.0f, 10.0f));
+    entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(0.0f, 100.0f));
+    /*Circle* circle = entity->Add_Component<Circle>(Component_Type::ct_Collider);
+    circle->Set_Radius(20.0f);
+    circle->Set_Offset(glm::vec2(0.0f, 10.0f));*/
+    
+    entity->Add_Component<AABB>(Component_Type::ct_Collider)->Set_Half_Length(glm::vec2(25.f, 25.f));
+    entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+    
     entity_manager->Add_Entity(entity);
 
     entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
-    //entity->Add_Component<Circle>(Component_Type::ct_Collider);
-    entity->Add_Component<AABB>(Component_Type::ct_Collider);
+    entity->Add_Component<Circle>(Component_Type::ct_Collider);
+   // entity->Add_Component<AABB>(Component_Type::ct_Collider);
     entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
     current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
     entity_manager->Add_Entity(entity);

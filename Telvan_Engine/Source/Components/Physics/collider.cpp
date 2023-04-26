@@ -109,17 +109,33 @@ bool Collider::static_circle_dynamic_aabb_check(Circle& static_circ, AABB& dynam
 
 	glm::vec2 direction = dynamic_rb->Get_Direction();
 
-	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_circ.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+	glm::vec2 destination_point = dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset()
+		+ dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity();
 
-	glm::vec2 distance = static_trans->Get_Translation() + static_circ.Get_Offset() - closest_point;
+	glm::vec2 lower_left = dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset() - dynamic_aabb.Get_Half_Length();
+	glm::vec2 upper_right = dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset() + dynamic_aabb.Get_Half_Length();
 
-	glm::vec2 norm = glm::normalize(distance);
+	glm::vec2 lower_right(upper_right.x, lower_left.y);
+	glm::vec2 upper_left(lower_left.x, upper_right.y);
 
-	norm *= dynamic_aabb.Get_Half_Length();
+	if (glm::length((static_trans->Get_Translation() + static_circ.Get_Offset()) - lower_left) <= static_circ.Get_Radius())
+		return true;
 
-	if (glm::length(distance) < static_circ.Get_Radius() + glm::length(norm))
+	if (glm::length((static_trans->Get_Translation() + static_circ.Get_Offset()) - upper_right) <= static_circ.Get_Radius())
+		return true;
+
+	if (glm::length((static_trans->Get_Translation() + static_circ.Get_Offset()) - lower_right) <= static_circ.Get_Radius())
+		return true;
+
+	if (glm::length((static_trans->Get_Translation() + static_circ.Get_Offset()) - upper_left) <= static_circ.Get_Radius())
+		return true;
+
+	glm::vec2 distance = destination_point - (static_trans->Get_Translation() + static_circ.Get_Offset());
+
+	glm::vec2 aabb_vec(glm::normalize(distance).x * dynamic_aabb.Get_Half_Length().x,
+		glm::normalize(distance).y * dynamic_aabb.Get_Half_Length().y);
+	
+	if (glm::length(distance) <= glm::length(aabb_vec) + static_circ.Get_Radius())
 		return true;
 
 	return false;
@@ -138,17 +154,35 @@ bool Collider::dynamic_circle_static_aabb_check(Circle& dynamic_circ, AABB& stat
 
 	glm::vec2 direction = dynamic_rb->Get_Direction();
 
-	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_aabb.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic_circ.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic_circ.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+	glm::vec2 destination_point = dynamic_trans->Get_Translation() + dynamic_circ.Get_Offset()
+		+ dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity();
 
-	glm::vec2 distance = static_trans->Get_Translation() + static_aabb.Get_Offset() - closest_point;
+	glm::vec2 lower_left = dynamic_trans->Get_Translation() + static_aabb.Get_Offset() - static_aabb.Get_Half_Length();
+	glm::vec2 upper_right = dynamic_trans->Get_Translation() + static_aabb.Get_Offset() + static_aabb.Get_Half_Length();
 
-	glm::vec2 norm = glm::normalize(distance);
+	glm::vec2 lower_right(upper_right.x, lower_left.y);
+	glm::vec2 upper_left(lower_left.x, upper_right.y);
 
-	norm *= static_aabb.Get_Half_Length();
+	glm::vec2 static_position = static_trans->Get_Translation() + static_aabb.Get_Offset();
 
-	if (glm::length(distance) < dynamic_circ.Get_Radius() + glm::length(norm))
+	if (glm::length(static_position - lower_left) <= dynamic_circ.Get_Radius())
+		return true;
+
+	if (glm::length(static_position - upper_right) <= dynamic_circ.Get_Radius())
+		return true;
+
+	if (glm::length(static_position - lower_right) <= dynamic_circ.Get_Radius())
+		return true;
+
+	if (glm::length(static_position - upper_left) <= dynamic_circ.Get_Radius())
+		return true;
+
+	glm::vec2 distance = destination_point - static_position;
+
+	glm::vec2 aabb_vec(glm::normalize(distance).x * static_aabb.Get_Half_Length().x,
+		glm::normalize(distance).y * static_aabb.Get_Half_Length().y);
+
+	if (glm::length(distance) <= glm::length(aabb_vec) + dynamic_circ.Get_Radius())
 		return true;
 
 	return false;
@@ -203,18 +237,40 @@ bool Collider::static_dynamic_aabb_aabb_check(AABB& dynamic_aabb, AABB& static_a
 	Transform* dynamic_trans = dynamic_aabb.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
 	if (dynamic_trans == nullptr) return false;
 
-	glm::vec2 direction = dynamic_rb->Get_Direction();
+	glm::vec2 direction = glm::normalize(dynamic_rb->Get_Direction());
 
-	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_aabb.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+	glm::vec2 destination_point = dynamic_trans->Get_Translation() + dynamic_aabb.Get_Offset()
+		+ dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity();
 
-	glm::vec2 distance = static_trans->Get_Translation() + static_aabb.Get_Offset() - closest_point;
+	glm::vec2 lower_left = static_trans->Get_Translation() + static_aabb.Get_Offset() - static_aabb.Get_Half_Length();
+	glm::vec2 upper_right = static_trans->Get_Translation() + static_aabb.Get_Offset() + static_aabb.Get_Half_Length();
 
-	glm::vec2 static_length = glm::normalize(distance) * static_aabb.Get_Half_Length();
-	glm::vec2 dynamic_length = glm::normalize(distance) * dynamic_aabb.Get_Half_Length();
+	// Upper Left Corner Intersection
+	if ((destination_point.x - dynamic_aabb.Get_Half_Length().x <= upper_right.x)
+		&& (destination_point.y + dynamic_aabb.Get_Half_Length().y <= upper_right.y)
+		&& (destination_point.x - dynamic_aabb.Get_Half_Length().x >= lower_left.x)
+		&& (destination_point.y + dynamic_aabb.Get_Half_Length().y >= lower_left.y))
+		return true;
 
-	if (glm::length(distance) < glm::length(static_length) + glm::length(dynamic_length))
+	// Upper Right Corner Intersection
+	if ((destination_point.x + dynamic_aabb.Get_Half_Length().x <= upper_right.x)
+		&& (destination_point.y + dynamic_aabb.Get_Half_Length().y <= upper_right.y)
+		&& (destination_point.x + dynamic_aabb.Get_Half_Length().x >= lower_left.x)
+		&& (destination_point.y + dynamic_aabb.Get_Half_Length().y >= lower_left.y))
+		return true;
+
+	// Lower Left Corner Intersection
+	if ((destination_point.x - dynamic_aabb.Get_Half_Length().x <= upper_right.x)
+		&& (destination_point.y - dynamic_aabb.Get_Half_Length().y <= upper_right.y)
+		&& (destination_point.x - dynamic_aabb.Get_Half_Length().x >= lower_left.x)
+		&& (destination_point.y - dynamic_aabb.Get_Half_Length().y >= lower_left.y))
+		return true;
+
+	// Lower Right Corner Intersection
+	if ((destination_point.x + dynamic_aabb.Get_Half_Length().x <= upper_right.x)
+		&& (destination_point.y - dynamic_aabb.Get_Half_Length().y <= upper_right.y)
+		&& (destination_point.x + dynamic_aabb.Get_Half_Length().x >= lower_left.x)
+		&& (destination_point.y - dynamic_aabb.Get_Half_Length().y >= lower_left.y))
 		return true;
 
 	return false;
@@ -389,8 +445,35 @@ void Collider::dynamic_circle_static_aabb_response(Circle& dynamic_circ, AABB& s
 	glm::vec2 intersection = (circ_trans->Get_Translation() + dynamic_circ.Get_Offset())
 		- (aabb_trans->Get_Translation() + static_aabb.Get_Offset());
 
+	glm::vec2 lower_left = aabb_trans->Get_Translation() + static_aabb.Get_Offset() - static_aabb.Get_Half_Length();
+	glm::vec2 upper_right = aabb_trans->Get_Translation() + static_aabb.Get_Offset() + static_aabb.Get_Half_Length();
+
+	glm::vec2 lower_right(upper_right.x, lower_left.y);
+	glm::vec2 upper_left(lower_left.x, upper_right.y);
+
+	glm::vec2 possible_intersection;
+
+	if (intersection.x >= 0.0f)
+	{
+		if (intersection.y >= 0.0f)
+			possible_intersection = circ_trans->Get_Translation() + dynamic_circ.Get_Offset() - upper_right;
+		else
+			possible_intersection = circ_trans->Get_Translation() + dynamic_circ.Get_Offset() - lower_right;
+	}
+	else
+	{
+		if (intersection.y >= 0.0f)
+			possible_intersection = circ_trans->Get_Translation() + dynamic_circ.Get_Offset() - upper_left;
+		else
+			possible_intersection = circ_trans->Get_Translation() + dynamic_circ.Get_Offset() - lower_left;
+	}
+
+	if (glm::length(intersection) > glm::length(possible_intersection))
+		intersection = possible_intersection;
+
 	float intersection_length = std::max(dynamic_circ.Get_Radius()
-		+ glm::length(glm::normalize(intersection) * static_aabb.Get_Half_Length())
+		+ glm::length(glm::vec2(glm::normalize(intersection).x * static_aabb.Get_Half_Length().x,
+			glm::normalize(intersection).y * static_aabb.Get_Half_Length().y))
 		- glm::length(intersection),
 		0.0f);
 	intersection_length += 5.0f;

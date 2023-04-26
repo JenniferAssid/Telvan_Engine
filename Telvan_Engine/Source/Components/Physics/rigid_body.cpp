@@ -18,8 +18,6 @@ void Rigid_Body::Pre_Update(float dT)
 
 	current_velocity_ = std::min(glm::length(direction_), max_velocity_) * dT;
 
-	glm::normalize(direction_);
-
 	total_force_ *= 0.8f;
 
 	// Apply the velocity to the position

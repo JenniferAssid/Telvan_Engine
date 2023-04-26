@@ -20,6 +20,7 @@ void Prefab_Manager::Initialize()
             "Prefab_Manager",
             "Initialize"
         );
+        return;
     }
     open_files(master_path_);
 

@@ -14,6 +14,7 @@
 #include <rapidjson/prettywriter.h>
 #include <filesystem>
 
+#include "engine.h"
 #include "components.h"
 #include "serialize.h"
 #include "collider_manager.h"
@@ -101,9 +102,6 @@ public:
 
             if (instantiated_)
                 component->Start();
-
-            if (component->Get_Type() == Component_Type::ct_Collider)
-                Collider_Manager::Get_Instance()->Add_Collider((Collider*)component);
         }
 
         return (T*)component;

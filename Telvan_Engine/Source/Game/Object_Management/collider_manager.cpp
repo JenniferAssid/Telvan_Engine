@@ -27,8 +27,6 @@ Collider_Manager* Collider_Manager::Get_Instance()
 
 void Collider_Manager::Start()
 {
-	for (Collider* collider : active_colliders_)
-		collider->Start();
 }
 
 void Collider_Manager::Update(float dT)
@@ -69,7 +67,6 @@ void Collider_Manager::Add_Collider(Collider* collider)
 {
 	if (collider->Get_Parent() == nullptr) return;
 
-	collider->Start();
 	active_colliders_.push_back(collider);
 }
 

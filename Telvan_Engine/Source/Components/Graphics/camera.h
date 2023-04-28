@@ -38,6 +38,8 @@ public:
 		zoom_(1.0f), speed_(2.0f), camera_position_(glm::vec2(1.0f)), view_matrix_(glm::mat4(1.0f))
 	{}
 
+	Component* Clone() override;
+
 	void Start() override;
 
 	void Update(float dT) override;

@@ -47,7 +47,12 @@ public:
 		mass_(1.0f)
 		{}
 
+	Component* Clone() override;
+
 	void Pre_Update(float dT) override;
+
+	void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values = true) override;
+	void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader) override;
 
 	inline glm::vec2 Get_Direction() const { return direction_; }
 	inline float Get_Current_Velocity() const { return current_velocity_; }

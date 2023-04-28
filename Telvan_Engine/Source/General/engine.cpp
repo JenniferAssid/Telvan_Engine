@@ -86,6 +86,7 @@ void Engine::Initialize()
     prefab_manager = (Prefab_Manager*)Find_System("Prefab_Manager");
     scene_manager = (Scene_Manager*)Find_System("Scene_Manager");
     entity_manager = Entity_Manager::Get_Instance();
+    Collider_Manager::Get_Instance();
 
     // Initialize the systems in the order they were registered
     for (System* system : systems_)
@@ -98,28 +99,40 @@ void Engine::Initialize()
         );
         system->Initialize();
     }
+    
+    Active = true;
 
     /************************ TESTING CODE BELOW ********************************/
     
-    // Faux tileset placement
-    float margin = 25.0f;
-    glm::vec2 tmp_position(0.0f);
-    entity = new Entity(*prefab_manager->Get_Resource("Prop"));
-    entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Translation(glm::vec2(0.0f, 100.0f));
-    /*Circle* circle = entity->Add_Component<Circle>(Component_Type::ct_Collider);
-    circle->Set_Radius(20.0f);
-    circle->Set_Offset(glm::vec2(0.0f, 10.0f));*/
-    
-    entity->Add_Component<AABB>(Component_Type::ct_Collider)->Set_Half_Length(glm::vec2(25.f, 25.f));
-    entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
-    
+    // Player controller with collider + rigid_body
+    entity = new Entity(*prefab_manager->Get_Resource("Player"));
+    entity->Set_Name("Active_Player");
+
+    current_camera_ = entity->Get_Component<Camera>(Component_Type::ct_Camera);
+
+    /*Transform* transform = entity->Add_Component<Transform>(Component_Type::ct_Transform);
+    transform->Set_Scale(glm::vec2(250.0f, 250.0f));
+
+    Sprite_Renderer* sprite = entity->Add_Component<Sprite_Renderer>(Component_Type::ct_Sprite_Renderer);
+    sprite->Set_Shader(*shader_manager->Get_Resource("default"));
+    sprite->Set_Texture(*texture_manager->Get_Resource("default"));
+
+    entity->Add_Component<Input_Controller>(Component_Type::ct_Input_Controller);
+
+    Rigid_Body* rigid_body = entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+
+    AABB* aabb = entity->Add_Component<AABB>(Component_Type::ct_Collider);
+    aabb->Set_Half_Length(glm::vec2(125.0f, 125.0f));
+
+    Camera* camera = entity->Add_Component<Camera>(Component_Type::ct_Camera);
+    instance_->Set_Current_Camera(camera);
+
+    entity->Write_To();*/
+
     entity_manager->Add_Entity(entity);
 
-    entity = new Entity(*prefab_manager->Get_Resource("Player_Controller"));
-    entity->Add_Component<Circle>(Component_Type::ct_Collider);
-   // entity->Add_Component<AABB>(Component_Type::ct_Collider);
-    entity->Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
-    current_camera_ = entity->Add_Component<Camera>(Component_Type::ct_Camera);
+    entity = new Entity(*prefab_manager->Get_Resource("Circle_Collider_Prop"));
+
     entity_manager->Add_Entity(entity);
 
     Entity_Manager::Get_Instance()->Start();

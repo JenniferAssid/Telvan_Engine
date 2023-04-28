@@ -45,6 +45,7 @@ protected:
 public:
     float deltaTime;
     glm::mat4 Projection;
+    bool Active;
 
 /************************************************************ FUNCTIONS **************************************************************/
 private:

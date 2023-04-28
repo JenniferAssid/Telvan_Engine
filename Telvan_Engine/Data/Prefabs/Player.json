@@ -1,0 +1,49 @@
+{
+    "name": "Player",
+    "transform": {
+        "translation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            250.0,
+            250.0
+        ],
+        "rotation": 0.0
+    },
+    "sprite_renderer": {
+        "shader": "default",
+        "texture": "default"
+    },
+    "input_controller": {},
+    "rigid_body": {
+        "direction": [
+            0.0,
+            0.0
+        ],
+        "max_velocity": 5.0,
+        "mass": 1.0
+    },
+  "aabb": {
+    "offset": [
+      0.0,
+      0.0
+    ],
+    "is_trigger": false,
+    "color": [
+      0.0,
+      1.0,
+      0.0,
+      0.5
+    ],
+    "half_length": [
+      25.0,
+      25.0
+    ]
+  },
+    "camera": {
+        "zoom": 1.0,
+        "speed": 2.0
+    }
+}

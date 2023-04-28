@@ -14,6 +14,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
+Component* Camera::Clone()
+{
+	Camera* camera = new Camera();
+	camera->zoom_ = zoom_;
+	camera->speed_ = speed_;
+
+	return (Component*)camera;
+}
+
 void Camera::Start()
 {
 	if (parent_ == nullptr)

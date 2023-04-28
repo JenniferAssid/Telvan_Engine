@@ -8,6 +8,9 @@
 #include "transform.h"
 #include "sprite_renderer.h"
 #include "input_controller.h"
+#include "collider.h"
+#include "rigid_body.h"
+#include "camera.h"
 #include "error_logging.h"
 
 #include "prefab_manager.h"
@@ -144,6 +147,22 @@ void Entity::read_from_object(rapidjson::GenericObject<false, rapidjson::Value>&
     if (reader.HasMember("input_controller"))
     {
         Add_Component<Input_Controller>(Component_Type::ct_Input_Controller)->Read_From(reader);
+    }
+    if (reader.HasMember("rigid_body"))
+    {
+        Add_Component<Rigid_Body>(Component_Type::ct_Rigid_Body)->Read_From(reader);
+    }
+    if (reader.HasMember("circle"))
+    {
+        Add_Component<Circle>(Component_Type::ct_Collider)->Read_From(reader);
+    }
+    if (reader.HasMember("aabb"))
+    {
+        Add_Component<AABB>(Component_Type::ct_Collider)->Read_From(reader);
+    }
+    if (reader.HasMember("camera"))
+    {
+        Add_Component<Camera>(Component_Type::ct_Camera)->Read_From(reader);
     }
 
     if (reader.HasMember("children") &&

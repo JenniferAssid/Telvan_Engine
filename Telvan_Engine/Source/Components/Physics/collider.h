@@ -127,8 +127,14 @@ public:
 	{}
 
 	virtual ~Collider() {}
+
+	virtual Component* Clone() override { return nullptr; };
+
 	virtual void Start() override {}
 	virtual void Render() override {}
+
+	virtual void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values = true) override {}
+	virtual void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader) override {}
 
 	// Collision Functions
 	virtual bool Collision_Detection(Collider& other) { return false; }
@@ -188,9 +194,14 @@ public:
 
 	~Circle() override {}
 
+	Component* Clone() override;
+
 	void Start() override;
 
 	void Render() override;
+
+	void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values = true) override;
+	void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader) override;
 
 	bool Collision_Detection(Collider& other) override;
 	void Collision_Response(Collider& other) override;
@@ -224,9 +235,14 @@ public:
 
 	~AABB() override {};
 
+	Component* Clone() override;
+
 	void Start() override;
 
 	void Render() override;
+
+	void Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values = true) override;
+	void Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader) override;
 
 	bool Collision_Detection(Collider& other) override;
 	void Collision_Response(Collider& other) override;

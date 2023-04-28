@@ -25,7 +25,6 @@
     <ClCompile Include="Source\Systems\graphics.cpp" />
     <ClCompile Include="Source\template.cpp" />
     <ClCompile Include="Source\Components\Physics\rigid_body.cpp" />
-    <ClCompile Include="Source\General\multithread_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Components\General\input_controller.h" />
@@ -54,6 +53,5 @@
     <ClInclude Include="Source\Systems\system.h" />
     <ClInclude Include="Source\template.h" />
     <ClInclude Include="Source\Components\Physics\rigid_body.h" />
-    <ClInclude Include="Source\General\multithread_handler.h" />
   </ItemGroup>
 </Project>

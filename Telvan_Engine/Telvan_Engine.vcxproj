@@ -30,7 +30,6 @@
     <ClCompile Include="Source\Game\Object_Management\entity_manager.cpp" />
     <ClCompile Include="Source\General\engine.cpp" />
     <ClCompile Include="Source\General\main.cpp" />
-    <ClCompile Include="Source\General\multithread_handler.cpp" />
     <ClCompile Include="Source\General\scene.cpp" />
     <ClCompile Include="Source\General\serialize.cpp" />
     <ClCompile Include="Source\Graphics\glad.c" />
@@ -57,7 +56,6 @@
     <ClInclude Include="Source\Game\Object_Management\collider_manager.h" />
     <ClInclude Include="Source\Game\Object_Management\entity_manager.h" />
     <ClInclude Include="Source\General\engine.h" />
-    <ClInclude Include="Source\General\multithread_handler.h" />
     <ClInclude Include="Source\General\scene.h" />
     <ClInclude Include="Source\General\serialize.h" />
     <ClInclude Include="Source\Graphics\shader.h" />

@@ -15,6 +15,8 @@
 #include "transform.h"
 #include "rigid_body.h"
 
+#include "collider_manager.h"
+
 /************************************************* COLLIDER: Private Functions *******************************************************/
 
 // Focused Collision Detection
@@ -729,11 +731,32 @@ void Circle::initialize_circle_outline()
 
 /***************************************************** CIRCLE: Public Functions ******************************************************/
 
+Component* Circle::Clone()
+{
+	Circle* circle = new Circle();
+	circle->offset_ = offset_;
+
+	circle->is_trigger_ = is_trigger_;
+	circle->on_enter_ = on_enter_;
+	circle->on_exit_ = on_exit_;
+	circle->while_triggered_ = while_triggered_;
+
+	circle->color_ = color_;
+
+	circle->radius_ = radius_;
+
+	circle->segments_ = segments_;
+
+	return (Component*)circle;
+}
+
 void Circle::Start()
 {
 	shader_ = *Shader_Manager::Get_Instance()->Get_Resource("line");
 	color_ = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
 	initialize_circle_outline();
+
+	Collider_Manager::Get_Instance()->Add_Collider(this);
 }
 
 void Circle::Render()
@@ -800,6 +823,79 @@ void Circle::Render()
 	glDrawArrays(GL_LINES, 0, segments_ * 4);
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void Circle::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)
+{
+	writer.Key("circle");
+	writer.StartObject();
+
+	writer.Key("offset");
+	writer.StartArray();
+	writer.Double(offset_.x);
+	writer.Double(offset_.y);
+	writer.EndArray();
+
+	writer.Key("is_trigger");
+	writer.Bool(is_trigger_);
+	// Something to track the trigger functions
+
+	writer.Key("color");
+	writer.StartArray();
+	writer.Double(color_.r);
+	writer.Double(color_.g);
+	writer.Double(color_.b);
+	writer.Double(color_.a);
+	writer.EndArray();
+
+	// I don't think the shader name is needed since it will be overwritten in the start
+
+	writer.Key("radius");
+	writer.Double(radius_);
+
+	writer.Key("segments");
+	writer.Int(segments_);
+
+	writer.EndObject();
+}
+
+void Circle::Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader)
+{
+	if (reader.HasMember("circle") == false) return;
+
+	collider_type_ = Collider_Type::col_Circle;
+
+	if (reader["circle"].GetObject().HasMember("offset") &&
+		reader["circle"]["offset"].IsArray())
+	{
+		const rapidjson::Value& offset = reader["circle"]["offset"];
+
+		offset_ = glm::vec2((float)offset[0].GetDouble(), 
+			(float)offset[1].GetDouble());
+	}
+
+	if (reader["circle"].GetObject().HasMember("is_trigger") &&
+		reader["circle"]["is_trigger"].IsBool())
+		is_trigger_ = reader["circle"]["is_trigger"].GetBool();
+
+	if (reader["circle"].GetObject().HasMember("color") &&
+		reader["circle"]["color"].IsArray())
+	{
+		const rapidjson::Value& color = reader["circle"]["color"];
+
+		color_ = glm::vec4((float)color[0].GetDouble(),
+			(float)color[1].GetDouble(),
+			(float)color[2].GetDouble(),
+			(float)color[3].GetDouble());
+	}
+
+	if (reader["circle"].GetObject().HasMember("radius") &&
+		reader["circle"]["radius"].IsDouble())
+		radius_ = reader["circle"]["radius"].GetDouble();
+
+	if (reader["circle"].GetObject().HasMember("segments") &&
+		reader["circle"]["segments"].IsInt())
+		segments_ = reader["circle"]["segments"].GetInt();
 }
 
 bool Circle::Collision_Detection(Collider& other)
@@ -874,11 +970,30 @@ void AABB::initialize_square_outline()
 
 /******************************************************** AABB: Public Functions *****************************************************/
 
+Component* AABB::Clone()
+{
+	AABB* aabb = new AABB();
+	aabb->offset_ = offset_;
+
+	aabb->is_trigger_ = is_trigger_;
+	aabb->on_enter_ = on_enter_;
+	aabb->on_exit_ = on_exit_;
+	aabb->while_triggered_ = while_triggered_;
+
+	aabb->color_ = color_;
+
+	aabb->half_length_ = half_length_;
+
+	return (Component*)aabb;
+}
+
 void AABB::Start()
 {
 	shader_ = *Shader_Manager::Get_Instance()->Get_Resource("line");
 	color_ = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
 	initialize_square_outline();
+
+	Collider_Manager::Get_Instance()->Add_Collider(this);
 }
 
 void AABB::Render()
@@ -945,6 +1060,80 @@ void AABB::Render()
 	glDrawArrays(GL_LINES, 0, 4 * 4);
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void AABB::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)
+{
+	writer.Key("aabb");
+	writer.StartObject();
+
+	writer.Key("offset");
+	writer.StartArray();
+	writer.Double(offset_.x);
+	writer.Double(offset_.y);
+	writer.EndArray();
+
+	writer.Key("is_trigger");
+	writer.Bool(is_trigger_);
+	// Something to track the trigger functions
+
+	writer.Key("color");
+	writer.StartArray();
+	writer.Double(color_.r);
+	writer.Double(color_.g);
+	writer.Double(color_.b);
+	writer.Double(color_.a);
+	writer.EndArray();
+
+	// I don't think the shader name is needed since it will be overwritten in the start
+
+	writer.Key("half_length");
+	writer.StartArray();
+	writer.Double(half_length_.x);
+	writer.Double(half_length_.y);
+	writer.EndArray();
+
+	writer.EndObject();
+}
+
+void AABB::Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader)
+{
+	if (reader.HasMember("aabb") == false) return;
+
+	collider_type_ = Collider_Type::col_AABB;
+
+	if (reader["aabb"].GetObject().HasMember("offset") &&
+		reader["aabb"]["offset"].IsArray())
+	{
+		const rapidjson::Value& offset = reader["aabb"]["offset"];
+
+		offset_ = glm::vec2((float)offset[0].GetDouble(),
+			(float)offset[1].GetDouble());
+	}
+
+	if (reader["aabb"].GetObject().HasMember("is_trigger") &&
+		reader["aabb"]["is_trigger"].IsBool())
+		is_trigger_ = reader["aabb"]["is_trigger"].GetBool();
+
+	if (reader["aabb"].GetObject().HasMember("color") &&
+		reader["aabb"]["color"].IsArray())
+	{
+		const rapidjson::Value& color = reader["aabb"]["color"];
+
+		color_ = glm::vec4((float)color[0].GetDouble(),
+			(float)color[1].GetDouble(),
+			(float)color[2].GetDouble(),
+			(float)color[3].GetDouble());
+	}
+
+	if (reader["aabb"].GetObject().HasMember("half_length") &&
+		reader["aabb"]["half_length"].IsArray())
+	{
+		const rapidjson::Value& half_length = reader["aabb"]["half_length"];
+
+		half_length_ = glm::vec2((float)half_length[0].GetDouble(),
+			(float)half_length[1].GetDouble());
+	}
 }
 
 bool AABB::Collision_Detection(Collider& other)

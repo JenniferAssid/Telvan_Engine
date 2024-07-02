@@ -18,13 +18,13 @@
 [info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Circle_Collider_Prop.json"
 [info] open_files::Prefab_Manager: Successfully created asset: Circle_Collider_Prop
 [info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Entity_With_Children_Test.json"
-[info] Get_Instance::Input: Instance Created
 [info] open_files::Prefab_Manager: Successfully created asset: Entity_With_Children_Test
 [info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Entity_With_Instance_Children.json"
 [info] open_files::Prefab_Manager: Successfully created asset: Entity_With_Instance_Children
 [info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Floor.json"
 [info] open_files::Prefab_Manager: Successfully created asset: Floor
 [info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Player.json"
+[info] Get_Instance::Input: Instance Created
 [info] open_files::Prefab_Manager: Successfully created asset: Player
 [info] Serialize::Serialize: Successfully parsed file "./Data/Prefabs/Player_Controller.json"
 [info] open_files::Prefab_Manager: Successfully created asset: Player_Controller
@@ -35,6 +35,7 @@
 [info] Initialize::Prefab_Manager: Attaching children objects to loaded in prefabs
 [info] Initialize::Scene_Manager: Initializing System
 [info] open_files::Scene_Manager: Successfully created asset: Test_Scene
+[info] Get_Instance::Sprite_Renderer_Manager: Instance Created
 [info] Shutdown::Scene_Manager: Shutting system down
 [info] Shutdown::Prefab_Manager: Shutting system down
 [info] Shutdown::Texture_Manager: Shutting system down

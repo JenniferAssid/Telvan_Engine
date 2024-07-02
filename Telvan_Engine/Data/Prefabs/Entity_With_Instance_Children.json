@@ -16,7 +16,6 @@
         "shader": "default",
         "texture": "default"
     },
-    "input_controller": {},
     "children": [
         {
             "name": "Child_Instance_1",

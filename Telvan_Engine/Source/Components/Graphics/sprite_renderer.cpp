@@ -11,6 +11,7 @@
 #include "error_logging.h"
 
 #include "texture_manager.h"
+#include "sprite_renderer_manager.h"
 
 #include "engine.h"
 
@@ -63,6 +64,11 @@ Component* Sprite_Renderer::Clone()
     sprite_renderer->Set_Texture(texture);
     
     return (Component*)sprite_renderer;
+}
+
+void Sprite_Renderer::Start()
+{
+    Sprite_Renderer_Manager::Get_Instance()->Add_Sprite_Renderer(this);
 }
 
 void Sprite_Renderer::Render()

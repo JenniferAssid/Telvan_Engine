@@ -17,7 +17,7 @@
 #include "texture.h"
 #include "shader.h"
 
-class Sprite_Renderer : Component
+class Sprite_Renderer : public Component
 {
 /**************************************************** ENUMS & VARIABLE CREATION ******************************************************/
 public:
@@ -41,6 +41,8 @@ public:
     ~Sprite_Renderer();
 
     Component* Clone() override;
+
+    void Start() override;
 
     void Render() override;
 

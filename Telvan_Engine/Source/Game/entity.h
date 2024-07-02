@@ -18,6 +18,7 @@
 #include "components.h"
 #include "serialize.h"
 #include "collider_manager.h"
+#include "sprite_renderer_manager.h"
 
 class Entity
 {
@@ -132,6 +133,8 @@ public:
 
         if (components_[index]->Get_Type() == Component_Type::ct_Collider)
             Collider_Manager::Get_Instance()->Remove_Collider((Collider*)components_[index]);
+        if (components_[index]->Get_Type() == Component_Type::ct_Sprite_Renderer)
+            Sprite_Renderer_Manager::Get_Instance()->Remove_Sprite_Renderer((Sprite_Renderer*)components_[index]);
 
         components_[index]->Stop();
 

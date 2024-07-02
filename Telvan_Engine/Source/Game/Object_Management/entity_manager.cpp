@@ -8,6 +8,9 @@
 #include "entity.h"
 #include "error_logging.h"
 
+#include "sprite_renderer.h"
+#include "transform.h"
+
 Entity_Manager* Entity_Manager::instance_;
 
 Entity_Manager* Entity_Manager::Get_Instance()
@@ -62,7 +65,7 @@ void Entity_Manager::Render()
 
 void Entity_Manager::Add_Entity(Entity* entity)
 {
-	entity->Start();
+	entity->Start();	
 	active_entity_.push_back(entity);
 }
 

@@ -6,6 +6,7 @@
 **************************************************************************************************************************************/
 #include "engine.h"
 
+// Systems
 #include "error_logging.h"
 #include "graphics.h"
 #include "shader_manager.h"
@@ -14,7 +15,9 @@
 #include "prefab_manager.h"
 #include "entity_manager.h"
 #include "collider_manager.h"
+#include "sprite_renderer_manager.h"
 
+// Components
 #include "entity.h"
 #include "transform.h"
 #include "rigid_body.h"
@@ -135,8 +138,14 @@ void Engine::Initialize()
 
     entity_manager->Add_Entity(entity);
 
+    entity = new Entity(*prefab_manager->Get_Resource("Entity_With_Children_Test"));
+    entity->Get_Component<Transform>(Component_Type::ct_Transform)->Set_Z_Sorting_Value(-1.0f);
+
+    entity_manager->Add_Entity(entity);
+
     Entity_Manager::Get_Instance()->Start();
     Collider_Manager::Get_Instance()->Start();
+    Sprite_Renderer_Manager::Get_Instance()->Start();
 }
 
 void Engine::Update()
@@ -162,7 +171,8 @@ void Engine::Render()
     glClear(GL_COLOR_BUFFER_BIT);
     glfwGetWindowSize(window_, &width_, &height_);
 
-    Entity_Manager::Get_Instance()->Render();
+    //Entity_Manager::Get_Instance()->Render();
+    Sprite_Renderer_Manager::Get_Instance()->Render();
     
     if (debug_draw_ == true)
         Collider_Manager::Get_Instance()->Render();

@@ -25,6 +25,7 @@
     <ClCompile Include="Source\Systems\graphics.cpp" />
     <ClCompile Include="Source\template.cpp" />
     <ClCompile Include="Source\Components\Physics\rigid_body.cpp" />
+    <ClCompile Include="Source\Game\Object_Management\sprite_renderer_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Components\General\input_controller.h" />
@@ -53,5 +54,6 @@
     <ClInclude Include="Source\Systems\system.h" />
     <ClInclude Include="Source\template.h" />
     <ClInclude Include="Source\Components\Physics\rigid_body.h" />
+    <ClInclude Include="Source\Game\Object_Management\sprite_renderer_manager.h" />
   </ItemGroup>
 </Project>

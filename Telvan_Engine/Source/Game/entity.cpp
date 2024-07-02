@@ -266,6 +266,11 @@ void Entity::Start()
     {
         components_[i]->Start();
     }
+
+    for (unsigned int i = 0; i < children_.size(); i++)
+    {
+        children_[i]->Start();
+    }
 }
 
 void Entity::Pre_Update(float dT)

@@ -37,8 +37,8 @@ void Collider_Manager::Update(float dT)
 		{
 			if (active_colliders_[i]->Collision_Detection(*active_colliders_[j]))
 			{
-				active_colliders_[i]->Set_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
-				active_colliders_[j]->Set_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
+				active_colliders_[i]->Set_Outline_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
+				active_colliders_[j]->Set_Outline_Color(glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 
 				if (active_colliders_[i]->Get_Is_Trigger())
 					active_colliders_[i]->Set_Triggered(true, *active_colliders_[j]);
@@ -47,8 +47,8 @@ void Collider_Manager::Update(float dT)
 			}
 			else
 			{
-				active_colliders_[i]->Set_Color(glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
-				active_colliders_[j]->Set_Color(glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+				active_colliders_[i]->Set_Outline_Color(glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+				active_colliders_[j]->Set_Outline_Color(glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 
 				if (active_colliders_[i]->Get_Triggered() == true)
 					active_colliders_[i]->Set_Triggered(false, *active_colliders_[j]);

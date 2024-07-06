@@ -19,48 +19,239 @@
 
 /************************************************* COLLIDER: Private Functions *******************************************************/
 
-// Focused Collision Detection
-
-// Circle-Circle
-bool Collider::static_circle_circle_check(Circle& static_a, Circle& static_b)
+bool Collider::circle_circle_overlap(glm::vec2 a_pos,
+	float a_rad,
+	glm::vec2 b_pos,
+	float b_rad)
 {
-	Transform* a_trans = static_a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (a_trans == nullptr) return false;
+	glm::vec2 dist = a_pos - b_pos;
 
-	Transform* b_trans = static_b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (b_trans == nullptr) return false;
-
-	glm::vec2 distance = b_trans->Get_Translation() - a_trans->Get_Translation();
-
-	if (glm::length(distance) < static_a.Get_Radius() + static_b.Get_Radius())
-		return true;
+	if (glm::length(dist) <= a_rad + b_rad) return true;
 
 	return false;
 }
 
-bool Collider::static_dynamic_circle_circle_check(Circle& dynamic, Circle& static_circ)
+bool Collider::aabb_circle_overlap(glm::vec2 aabb_pos,
+	glm::vec2 aabb_halfs,
+	glm::vec2 circ_pos,
+	float radius)
+{
+	glm::vec2 min = aabb_pos - aabb_halfs;
+	glm::vec2 max = aabb_pos + aabb_halfs;
+
+	glm::vec2 nearest(std::max(min.x, std::min(circ_pos.x, max.x)),
+		std::max(min.y, std::min(circ_pos.y, max.y)));
+
+	glm::vec2 dist(nearest.x - circ_pos.x,
+		nearest.y - circ_pos.y);
+
+	return (dist.x * dist.x + dist.y * dist.y) <= (radius * radius);
+}
+
+bool Collider::aabb_aabb_overlap(glm::vec2 a_pos,
+	glm::vec2 a_halfs,
+	glm::vec2 b_pos,
+	glm::vec2 b_halfs)
+{
+	glm::vec2 l1(a_pos.x - a_halfs.x, a_pos.y + a_halfs.y);
+	glm::vec2 r1(a_pos.x + a_halfs.x, a_pos.y - a_halfs.y);
+
+	glm::vec2 l2(b_pos.x - b_halfs.x, b_pos.y + b_halfs.y);
+	glm::vec2 r2(b_pos.x + b_halfs.x, b_pos.y - b_halfs.y);
+
+	if (l1.x == r1.x || l1.y == r1.y || r2.x == l2.x || l2.y == r2.y)
+		return false;
+
+	if (l1.x > r2.x || l2.x > r1.x)
+		return false;
+
+	if (r1.y > l2.y || r2.y > l1.y)
+		return false;
+
+	return true;
+}
+
+void Collider::render_collision_points()
+{
+	if (collision_points_.empty()) return;
+
+	while (collision_points_.empty() == false)
+	{
+		glm::vec2 pos = collision_points_.back();
+		collision_points_.pop_back();
+
+		line_shader_.Use();
+
+		line_shader_.Set_Matrix_4("projection", Engine::Get_Instance()->Projection);
+
+		line_shader_.Set_Matrix_4("view", Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix());
+
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(pos, 0.0f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 1.0f));
+
+		line_shader_.Set_Matrix_4("model", model);
+
+		line_shader_.Set_Vector_4f("in_color", point_color_);
+
+		glBindVertexArray(this->point_VAO_);
+		glDrawArrays(GL_LINES, 0, 10.0f * 2.0f);
+		glBindVertexArray(0);
+		glUseProgram(0);
+	}
+}
+
+void Collider::render_vectors()
+{
+	Rigid_Body* rb = Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
+	if (rb == nullptr)
+	{
+		return;
+	}
+	Transform* trans = Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (trans == nullptr)
+	{
+		
+		return;
+	}
+
+	glm::vec2 pos = trans->Get_Translation();
+	glm::vec2 scale = rb->Get_Direction() * rb->Get_Current_Velocity() * trans->Get_Scale();
+
+	line_shader_.Use();
+
+	line_shader_.Set_Matrix_4("projection", Engine::Get_Instance()->Projection);
+
+	line_shader_.Set_Matrix_4("view", Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix());
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(pos, 0.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(scale.x / 2.0f, scale.y / 2.0f, 1.0f));
+
+	line_shader_.Set_Matrix_4("model", model);
+
+	line_shader_.Set_Vector_4f("in_color", vec_color_);
+
+	glBindVertexArray(this->vec_VAO_);
+	glDrawArrays(GL_LINES, 0, 4.0f);
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
+void Collider::init_point()
+{
+	unsigned int VBO;
+
+	float angle = 360.0f / 10.0f;
+
+	float* vertices = new float[10 * 4];
+
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		angle = 2.0f * 3.1415926f / float(10);
+		vertices[i * 4] = 0.5f * cosf(i * angle);
+		vertices[i * 4 + 1] = 0.5f * sinf(i * angle);
+
+		vertices[i * 4 + 2] = 0.5f * cosf(i * angle + angle);
+		vertices[i * 4 + 3] = 0.5f * sinf(i * angle + angle);
+	}
+
+	glGenVertexArrays(1, &this->point_VAO_);
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 10 * 4, vertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(this->point_VAO_);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void Collider::init_vec()
+{
+	unsigned int VBO;
+
+	float vertices[] = {
+		0.0f, 0.0f,
+		1.0f, 1.0f
+	};
+
+	glGenVertexArrays(1, &this->vec_VAO_);
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(this->vec_VAO_);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+// Focused Collision Detection
+
+// Circle-Circle
+bool Collider::static_circle_circle_check(Circle& static_a, Circle& static_b, float dT)
+{
+	Transform* a_trans = static_a.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (a_trans == nullptr)
+	{
+		// TODO: Error Logging
+		return false;
+	}
+
+	Transform* b_trans = static_b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
+	if (b_trans == nullptr)
+	{
+		// TODO: Error Logging
+		return false;
+	}
+
+	return circle_circle_overlap(a_trans->Get_Translation() + static_a.Get_Offset(), static_a.Get_Radius(),
+								 b_trans->Get_Translation() + static_b.Get_Offset(), static_b.Get_Radius());
+}
+
+bool Collider::static_dynamic_circle_circle_check(Circle& dynamic, Circle& static_circ, float dT)
 {
 	Rigid_Body* dynamic_rb = dynamic.Get_Parent()->Get_Component<Rigid_Body>(Component_Type::ct_Rigid_Body);
-	if (dynamic_rb == nullptr) return false;
+	if (dynamic_rb == nullptr)
+	{
+		// TODO: Error Logging
+		return false;
+	}
 
 	Transform* static_trans = static_circ.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (static_trans == nullptr) return false;
+	if (static_trans == nullptr)
+	{
+		// TODO: Error Logging
+		return false;
+	}
 
 	Transform* dynamic_trans = dynamic.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
-	if (dynamic_trans == nullptr) return false;
+	if (dynamic_trans == nullptr)
+	{
+		// TODO: Error Logging
+		return false;
+	}
 
-	glm::vec2 direction = dynamic_rb->Get_Direction();
+	glm::vec2 velocity = dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity() * dT;
 
-	glm::vec2 closest_point = glm::closestPointOnLine(static_trans->Get_Translation() + static_circ.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic.Get_Offset(),
-		dynamic_trans->Get_Translation() + dynamic.Get_Offset() + dynamic_rb->Get_Direction() * dynamic_rb->Get_Current_Velocity());
+	glm::vec2 stat_pos = static_trans->Get_Translation() + static_circ.Get_Offset();
+	glm::vec2 dyn_pos = dynamic_trans->Get_Translation() + dynamic.Get_Offset();
 
-	glm::vec2 distance = static_trans->Get_Translation() + static_circ.Get_Offset() - closest_point;
+	glm::vec2 dest_pos = dyn_pos + velocity;
 
-	if (glm::length(distance) < dynamic.Get_Radius() + static_circ.Get_Radius())
-		return true;
+	glm::vec2 closest_pt = dest_pos;
 
-	return false;
+	if (dest_pos != dyn_pos)
+		closest_pt = glm::closestPointOnLine(stat_pos, dyn_pos, dest_pos);
+
+	return circle_circle_overlap(stat_pos, static_circ.Get_Radius(), closest_pt, dynamic.Get_Radius());
 }
 
 // Circle-AABB
@@ -136,7 +327,7 @@ bool Collider::static_circle_dynamic_aabb_check(Circle& static_circ, AABB& dynam
 
 	glm::vec2 aabb_vec(glm::normalize(distance).x * dynamic_aabb.Get_Half_Length().x,
 		glm::normalize(distance).y * dynamic_aabb.Get_Half_Length().y);
-	
+
 	if (glm::length(distance) <= glm::length(aabb_vec) + static_circ.Get_Radius())
 		return true;
 
@@ -289,14 +480,14 @@ void Collider::static_circle_circle_response(Circle& static_a, Circle& static_b)
 	Transform* b_trans = static_b.Get_Parent()->Get_Component<Transform>(Component_Type::ct_Transform);
 	if (b_trans == nullptr) return;
 
-	glm::vec2 midpoint = ((b_trans->Get_Translation() + static_b.Get_Offset()) 
+	glm::vec2 midpoint = ((b_trans->Get_Translation() + static_b.Get_Offset())
 		+ (a_trans->Get_Translation() + static_a.Get_Offset())) / 2.0f;
 
 	a_trans->Set_Translation((midpoint - static_a.Get_Offset())
 		+ static_a.Get_Radius() * glm::normalize((a_trans->Get_Translation() + static_a.Get_Offset()) -
 			(b_trans->Get_Translation() + static_b.Get_Offset())));
 	b_trans->Set_Translation((midpoint - static_a.Get_Offset())
-		+ static_a.Get_Radius() * glm::normalize((b_trans->Get_Translation() + static_b.Get_Offset()) - 
+		+ static_a.Get_Radius() * glm::normalize((b_trans->Get_Translation() + static_b.Get_Offset()) -
 			(a_trans->Get_Translation() + static_a.Get_Offset())));
 }
 
@@ -616,7 +807,7 @@ bool Collider::circle_circle_check(Circle& a, Circle& b)
 		return static_dynamic_circle_circle_check(b, a);
 	else if (b_rb == nullptr)
 		return static_dynamic_circle_circle_check(a, b);
-	else 
+	else
 		return (static_dynamic_circle_circle_check(b, a) || static_dynamic_circle_circle_check(a, b));
 }
 
@@ -716,13 +907,13 @@ void Circle::initialize_circle_outline()
 		vertices[i * 4 + 3] = 0.5f * sinf(i * angle + angle);
 	}
 
-	glGenVertexArrays(1, &this->line_VAO_);
+	glGenVertexArrays(1, &this->collider_outline_VAO_);
 	glGenBuffers(1, &VBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * segments_ * 4, vertices, GL_STATIC_DRAW);
 
-	glBindVertexArray(this->line_VAO_);
+	glBindVertexArray(this->collider_outline_VAO_);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -741,7 +932,7 @@ Component* Circle::Clone()
 	circle->on_exit_ = on_exit_;
 	circle->while_triggered_ = while_triggered_;
 
-	circle->color_ = color_;
+	circle->outline_color_ = outline_color_;
 
 	circle->radius_ = radius_;
 
@@ -752,9 +943,13 @@ Component* Circle::Clone()
 
 void Circle::Start()
 {
-	shader_ = *Shader_Manager::Get_Instance()->Get_Resource("line");
-	color_ = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
+	line_shader_ = *Shader_Manager::Get_Instance()->Get_Resource("line");
+	outline_color_ = glm::uvec4(0, 255, 0, 127);
+	point_color_ = glm::uvec4(0, 31, 133, 255);
+	vec_color_ = glm::uvec4(209, 135, 6, 255);
 	initialize_circle_outline();
+	init_point();
+	init_vec();
 
 	Collider_Manager::Get_Instance()->Add_Collider(this);
 }
@@ -801,10 +996,10 @@ void Circle::Render()
 	position += offset_;
 	position.y *= -1.0f;
 
-	shader_.Use();
-	shader_.Set_Matrix_4("projection",
+	line_shader_.Use();
+	line_shader_.Set_Matrix_4("projection",
 		Engine::Get_Instance()->Projection);
-	shader_.Set_Matrix_4("view", Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix());
+	line_shader_.Set_Matrix_4("view", Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix());
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(position, 0.0f));
@@ -815,14 +1010,16 @@ void Circle::Render()
 		Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix() *
 		model * glm::vec4(position, 0.0f, 1.0f);
 
-	this->shader_.Set_Matrix_4("model", model);
+	this->line_shader_.Set_Matrix_4("model", model);
 
-	shader_.Set_Vector_4f("in_color", color_);
-	
-	glBindVertexArray(this->line_VAO_);
+	line_shader_.Set_Vector_4f("in_color", outline_color_);
+
+	glBindVertexArray(this->collider_outline_VAO_);
 	glDrawArrays(GL_LINES, 0, segments_ * 4);
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+	render_collision_points();
 }
 
 void Circle::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)
@@ -842,10 +1039,10 @@ void Circle::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, 
 
 	writer.Key("color");
 	writer.StartArray();
-	writer.Double(color_.r);
-	writer.Double(color_.g);
-	writer.Double(color_.b);
-	writer.Double(color_.a);
+	writer.Double(outline_color_.r);
+	writer.Double(outline_color_.g);
+	writer.Double(outline_color_.b);
+	writer.Double(outline_color_.a);
 	writer.EndArray();
 
 	// I don't think the shader name is needed since it will be overwritten in the start
@@ -870,7 +1067,7 @@ void Circle::Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader
 	{
 		const rapidjson::Value& offset = reader["circle"]["offset"];
 
-		offset_ = glm::vec2((float)offset[0].GetDouble(), 
+		offset_ = glm::vec2((float)offset[0].GetDouble(),
 			(float)offset[1].GetDouble());
 	}
 
@@ -883,7 +1080,7 @@ void Circle::Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader
 	{
 		const rapidjson::Value& color = reader["circle"]["color"];
 
-		color_ = glm::vec4((float)color[0].GetDouble(),
+		outline_color_ = glm::vec4((float)color[0].GetDouble(),
 			(float)color[1].GetDouble(),
 			(float)color[2].GetDouble(),
 			(float)color[3].GetDouble());
@@ -955,13 +1152,13 @@ void AABB::initialize_square_outline()
 		-0.5f, 0.5f     /*0.0f, 1.0f,*/     // top-left
 	};
 
-	glGenVertexArrays(1, &this->line_VAO_);
+	glGenVertexArrays(1, &this->collider_outline_VAO_);
 	glGenBuffers(1, &VBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindVertexArray(this->line_VAO_);
+	glBindVertexArray(this->collider_outline_VAO_);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -980,7 +1177,7 @@ Component* AABB::Clone()
 	aabb->on_exit_ = on_exit_;
 	aabb->while_triggered_ = while_triggered_;
 
-	aabb->color_ = color_;
+	aabb->outline_color_ = outline_color_;
 
 	aabb->half_length_ = half_length_;
 
@@ -989,9 +1186,13 @@ Component* AABB::Clone()
 
 void AABB::Start()
 {
-	shader_ = *Shader_Manager::Get_Instance()->Get_Resource("line");
-	color_ = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
+	line_shader_ = *Shader_Manager::Get_Instance()->Get_Resource("line");
+	outline_color_ = glm::uvec4(0, 255, 0, 127);
+	point_color_ = glm::uvec4(0, 31, 133, 255);
+	vec_color_ = glm::uvec4(209, 135, 6, 255);
 	initialize_square_outline();
+	init_point();
+	init_vec();
 
 	Collider_Manager::Get_Instance()->Add_Collider(this);
 }
@@ -1038,10 +1239,10 @@ void AABB::Render()
 	position += offset_;
 	position.y *= -1.0f;
 
-	shader_.Use();
-	shader_.Set_Matrix_4("projection",
+	line_shader_.Use();
+	line_shader_.Set_Matrix_4("projection",
 		Engine::Get_Instance()->Projection);
-	shader_.Set_Matrix_4("view", Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix());
+	line_shader_.Set_Matrix_4("view", Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix());
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(position, 0.0f));
@@ -1052,14 +1253,16 @@ void AABB::Render()
 		Engine::Get_Instance()->Get_Current_Camera()->Get_Matrix() *
 		model * glm::vec4(position, 0.0f, 1.0f);
 
-	this->shader_.Set_Matrix_4("model", model);
+	this->line_shader_.Set_Matrix_4("model", model);
 
-	shader_.Set_Vector_4f("in_color", color_);
+	line_shader_.Set_Vector_4f("in_color", outline_color_);
 
-	glBindVertexArray(this->line_VAO_);
+	glBindVertexArray(this->collider_outline_VAO_);
 	glDrawArrays(GL_LINES, 0, 4 * 4);
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+	render_collision_points();
 }
 
 void AABB::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bool preserve_values)
@@ -1079,10 +1282,10 @@ void AABB::Write_To(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, bo
 
 	writer.Key("color");
 	writer.StartArray();
-	writer.Double(color_.r);
-	writer.Double(color_.g);
-	writer.Double(color_.b);
-	writer.Double(color_.a);
+	writer.Double(outline_color_.r);
+	writer.Double(outline_color_.g);
+	writer.Double(outline_color_.b);
+	writer.Double(outline_color_.a);
 	writer.EndArray();
 
 	// I don't think the shader name is needed since it will be overwritten in the start
@@ -1120,7 +1323,7 @@ void AABB::Read_From(rapidjson::GenericObject<false, rapidjson::Value>& reader)
 	{
 		const rapidjson::Value& color = reader["aabb"]["color"];
 
-		color_ = glm::vec4((float)color[0].GetDouble(),
+		outline_color_ = glm::vec4((float)color[0].GetDouble(),
 			(float)color[1].GetDouble(),
 			(float)color[2].GetDouble(),
 			(float)color[3].GetDouble());
